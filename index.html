@@ -10,10 +10,20 @@
     
     <script>
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('sw.js')
+        navigator.serviceWorker.register('sw.js').then(reg => {
+          reg.onupdatefound = () => {
+            const newWorker = reg.installing
+            newWorker.onstatechange = () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                if (confirm('A new version is available. Reload now?')) {
+                  window.location.reload()
+                }
+              }
+            }
+          }
         })
       }
+
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -212,14 +222,36 @@
       showScreen('capture')
       updateCoords()
 
-      let lastTouchEnd = 0
+      let touchStartY = 0;
+
+      document.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].screenY;
+      }, { passive: true });
+
       document.addEventListener('touchend', (e) => {
-        const now = new Date().getTime()
+        const now = new Date().getTime();
+        const deltaY = e.changedTouches[0].screenY - touchStartY;
+
+        // Double tap prevention
         if (now - lastTouchEnd <= 300) {
-          e.preventDefault()
+          e.preventDefault();
         }
-        lastTouchEnd = now
-      }, false)
+        lastTouchEnd = now;
+
+        // Swipe down detection
+        if (deltaY > 100) {
+          // Clear caches and reload
+          caches.keys().then(keys =>
+            Promise.all(keys.map(key => caches.delete(key)))
+          ).then(() => {
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+              navigator.serviceWorker.controller.postMessage({ action: 'skipWaiting' });
+            }
+            window.location.reload();
+          });
+        }
+      }, { passive: false });
+
 
     </script>
   </body>
