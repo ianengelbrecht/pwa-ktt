@@ -2,36 +2,39 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
     <meta name="theme-color" content="#0f172a" />
     <link rel="manifest" href="manifest.json" />
     <title>Geo Recorder</title>
-
-    <!-- iOS support -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="icon-192.png">
-
-
-
+    
     <script>
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').then(reg => {
-          reg.onupdatefound = () => {
-            const newWorker = reg.installing;
-            newWorker.onstatechange = () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                if (confirm('A new version is available. Reload now?')) {
-                  window.location.reload();
-                }
-              }
-            };
-          };
-        });
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+        })
       }
-
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=close" />
+
+    <style>
+      #toast {
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      #toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .swipe-transition {
+        transition: transform 0.2s ease-out;
+      }
+
+    </style>
   </head>
   <body class="bg-slate-900 text-white min-h-screen flex flex-col">
     <nav class="bg-slate-800 p-4 flex justify-between">
@@ -50,6 +53,11 @@
       <ul id="savedList" class="space-y-2"></ul>
       <button onclick="exportCSV()" class="mt-4 p-2 bg-green-600 rounded">Export CSV</button>
     </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded shadow-lg">
+      Coordinates saved!
+    </div>
 
     <script>
       let currentPosition = null
@@ -77,6 +85,14 @@
         )
       }
 
+      const showToast = (message, bgColor) => {
+        const toast = document.getElementById('toast')
+        toast.style.backgroundColor = bgColor || '#4CAF50'
+        toast.textContent = message
+        toast.classList.add('show')
+        setTimeout(() => toast.classList.remove('show'), 1000)
+      }
+
       const saveCoords = () => {
         if (!currentPosition) return alert('No position available')
         const data = JSON.parse(localStorage.getItem('geoData') || '[]')
@@ -89,7 +105,7 @@
           deviceId: getDeviceId()
         })
         localStorage.setItem('geoData', JSON.stringify(data))
-        alert('Coordinates saved!')
+        showToast('Coordinates saved!')
       }
 
       const showScreen = (screen) => {
@@ -103,11 +119,77 @@
         const list = document.getElementById('savedList')
         const data = JSON.parse(localStorage.getItem('geoData') || '[]')
         list.innerHTML = ''
-        data.forEach(entry => {
+        data.forEach((entry, index) => {
+
+          const wrapper = document.createElement('div')
+          wrapper.className = 'relative rounded overflow-hidden'
+
+          const bg = document.createElement('div')
+          bg.className = 'absolute inset-0 bg-red-600 opacity-0 transition-opacity duration-200'
+
           const li = document.createElement('li')
-          li.className = 'bg-slate-700 p-2 rounded'
-          li.textContent = `${entry.timestamp} | Lat: ${entry.latitude.toFixed(6)}, Long: ${entry.longitude.toFixed(6)}, Accuracy: ${entry.accuracy.toFixed(1)}m | ID: ${entry.deviceId}`
-          list.appendChild(li)
+          li.className = 'bg-slate-700 p-2 rounded relative z-10'
+          const dt = new Date(entry.timestamp)
+          const pad = n => n.toString().padStart(2, '0');
+          const formatted = `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+          li.textContent = `${formatted} | Lat: ${entry.latitude.toFixed(6)}, Long: ${entry.longitude.toFixed(6)}, Accuracy: ${entry.accuracy.toFixed(1)}m`
+          
+          const deleteIcon = document.createElement('span')
+          deleteIcon.className = 'material-symbols-outlined cursor-pointer float-right'
+          deleteIcon.textContent = 'close'
+
+          deleteIcon.addEventListener('click', () => {
+            li.classList.add('swipe-transition')
+            li.style.transform = 'translateX(-100%)'
+            bg.classList.remove('opacity-0')
+            bg.style.opacity = '1'
+            setTimeout(() => {
+              data.splice(index, 1)
+              localStorage.setItem('geoData', JSON.stringify(data))
+              showToast('Record deleted')
+              renderList()
+            }, 200)
+          })
+
+          li.appendChild(deleteIcon)
+
+          let startX, currentX, swiping = false
+
+          li.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX
+            swiping = true
+          })
+
+          li.addEventListener('touchmove', (e) => {
+            if (!swiping) return
+            currentX = e.touches[0].clientX - startX
+            if (currentX < 0) {
+              li.style.transform = `translateX(${currentX}px)`
+              const progress = Math.min(Math.abs(currentX) / 100, 1)
+              bg.style.opacity = progress.toString()
+            }
+          })
+
+          li.addEventListener('touchend', () => {
+            swiping = false
+            li.classList.add('swipe-transition')
+            if (currentX < -100) {
+              li.style.transform = 'translateX(-100%)'
+              setTimeout(() => {
+                data.splice(index, 1)
+                localStorage.setItem('geoData', JSON.stringify(data))
+                showToast('Record deleted')
+                renderList()
+              }, 200)
+            } else {
+              li.style.transform = 'translateX(0)'
+              bg.style.opacity = '0'
+            }
+          })
+
+          wrapper.appendChild(bg)
+          wrapper.appendChild(li)
+          list.appendChild(wrapper)
         })
       }
 
@@ -129,6 +211,16 @@
 
       showScreen('capture')
       updateCoords()
+
+      let lastTouchEnd = 0
+      document.addEventListener('touchend', (e) => {
+        const now = new Date().getTime()
+        if (now - lastTouchEnd <= 300) {
+          e.preventDefault()
+        }
+        lastTouchEnd = now
+      }, false)
+
     </script>
   </body>
 </html>
