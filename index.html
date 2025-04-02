@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="manifest" href="manifest.json" />
+    <title>Geo Recorder</title>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('sw.js')
+        })
+      }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-900 text-white min-h-screen flex flex-col">
+    <nav class="bg-slate-800 p-4 flex justify-between">
+      <button onclick="showScreen('capture')">Capture</button>
+      <button onclick="showScreen('list')">Saved</button>
+    </nav>
+
+    <main id="captureScreen" class="flex-1 p-4 hidden">
+      <h1 class="text-xl mb-4">Current Coordinates</h1>
+      <p id="coords">Waiting for location...</p>
+      <button onclick="saveCoords()" class="mt-4 p-2 bg-blue-600 rounded">Save Coordinates</button>
+    </main>
+
+    <main id="listScreen" class="flex-1 p-4 hidden">
+      <h1 class="text-xl mb-4">Saved Coordinates</h1>
+      <ul id="savedList" class="space-y-2"></ul>
+      <button onclick="exportCSV()" class="mt-4 p-2 bg-green-600 rounded">Export CSV</button>
+    </main>
+
+    <script>
+      let currentPosition = null
+
+      const getDeviceId = () => {
+        let id = localStorage.getItem('deviceId')
+        if (!id) {
+          id = crypto.randomUUID()
+          localStorage.setItem('deviceId', id)
+        }
+        return id
+      }
+
+      const updateCoords = () => {
+        navigator.geolocation.watchPosition(
+          (pos) => {
+            currentPosition = pos
+            const { latitude, longitude, accuracy } = pos.coords
+            document.getElementById('coords').innerText = `Lat: ${latitude.toFixed(6)}, Long: ${longitude.toFixed(6)}, Accuracy: ${accuracy.toFixed(1)}m`
+          },
+          (err) => {
+            document.getElementById('coords').innerText = 'Error getting location.'
+          },
+          { enableHighAccuracy: true }
+        )
+      }
+
+      const saveCoords = () => {
+        if (!currentPosition) return alert('No position available')
+        const data = JSON.parse(localStorage.getItem('geoData') || '[]')
+        const { latitude, longitude, accuracy } = currentPosition.coords
+        data.push({
+          timestamp: new Date().toISOString(),
+          latitude,
+          longitude,
+          accuracy,
+          deviceId: getDeviceId()
+        })
+        localStorage.setItem('geoData', JSON.stringify(data))
+        alert('Coordinates saved!')
+      }
+
+      const showScreen = (screen) => {
+        document.getElementById('captureScreen').classList.add('hidden')
+        document.getElementById('listScreen').classList.add('hidden')
+        document.getElementById(screen + 'Screen').classList.remove('hidden')
+        if (screen === 'list') renderList()
+      }
+
+      const renderList = () => {
+        const list = document.getElementById('savedList')
+        const data = JSON.parse(localStorage.getItem('geoData') || '[]')
+        list.innerHTML = ''
+        data.forEach(entry => {
+          const li = document.createElement('li')
+          li.className = 'bg-slate-700 p-2 rounded'
+          li.textContent = `${entry.timestamp} | Lat: ${entry.latitude.toFixed(6)}, Long: ${entry.longitude.toFixed(6)}, Accuracy: ${entry.accuracy.toFixed(1)}m | ID: ${entry.deviceId}`
+          list.appendChild(li)
+        })
+      }
+
+      const exportCSV = () => {
+        const data = JSON.parse(localStorage.getItem('geoData') || '[]')
+        if (data.length === 0) return alert('No data to export.')
+        const header = ['timestamp', 'latitude', 'longitude', 'accuracy', 'deviceId']
+        const rows = [header.join(',')].concat(
+          data.map(d => [d.timestamp, d.latitude, d.longitude, d.accuracy, d.deviceId].join(','))
+        )
+        const blob = new Blob([rows.join('\n')], { type: 'text/csv' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'coordinates.csv'
+        a.click()
+        URL.revokeObjectURL(url)
+      }
+
+      showScreen('capture')
+      updateCoords()
+    </script>
+  </body>
+</html>
