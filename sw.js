@@ -1,4 +1,4 @@
-const CACHE_NAME = "geo-recorder-cache-v2";
+const CACHE_NAME = "geo-recorder-cache-v3";
 const ASSETS = [
   ".",
   "index.html",
