@@ -1,11 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { toast } from '@zerodevx/svelte-toast'
+  import type { record}  from '$lib/types'
+
 
   let coordsPresenter: HTMLParagraphElement | null
   let currentPosition: GeolocationPosition | null
 
-  let data: {timestamp: number, latitude: number, longitude: number, accuracy: number}[] = []
+  let data: record[] = []
 
   onMount(() => {
     console.log('mounting the form')
@@ -28,6 +30,7 @@
     }
 
     data = JSON.parse(localStorage.getItem('geoData') || '[]')
+    console.log('there are', data.length, 'items recorded')
   })
 
   const saveCoords = () => {

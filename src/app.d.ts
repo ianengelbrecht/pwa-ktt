@@ -10,4 +10,6 @@ declare global {
 	}
 }
 
+/// <reference types="@react2svelte/swipeable" />
+
 export {};
