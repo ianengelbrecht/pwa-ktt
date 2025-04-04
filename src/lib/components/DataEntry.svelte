@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { toast } from '@zerodevx/svelte-toast'
-  import type { record}  from '$lib/types'
+  import type { record}  from '$lib/types/types'
 
 
   let coordsPresenter: HTMLParagraphElement | null
@@ -15,7 +15,9 @@
       navigator.geolocation.getCurrentPosition(position => {
         currentPosition = position
         if (coordsPresenter) {
-          coordsPresenter.innerHTML = `Latitude: ${position.coords.latitude.toFixed(6)}, Longitude: ${position.coords.longitude.toFixed(6)}<br> Accuracy: ${position.coords.accuracy}m`
+          coordsPresenter.innerHTML = `Latitude: ${position.coords.latitude.toFixed(5)}, 
+            Longitude: ${position.coords.longitude.toFixed(5)}
+            <br> Accuracy: ${position.coords.accuracy.toFixed(2)}m`
         }
       }, error => {
         if (coordsPresenter) {

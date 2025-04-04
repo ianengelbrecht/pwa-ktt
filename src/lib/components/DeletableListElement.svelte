@@ -1,9 +1,10 @@
 <script lang="ts">
+  /// still uses old event handler syntax, see the repo for issue submitted
   import { slide } from 'svelte/transition'
   import { swipeable } from '@react2svelte/swipeable';
   import type { SwipeEventData } from '@react2svelte/swipeable';
 
-  const { deleteHandler, children } = $props()
+  const { confirmDialog, deleteHandler, children } = $props()
 
   let bg: HTMLDivElement | null = null
   let container: HTMLDivElement | null = null
@@ -15,11 +16,19 @@
     }
   }
 
-  function swipeleftHandler(e: CustomEvent<SwipeEventData>) {
+  async function swipeleftHandler(e: CustomEvent<SwipeEventData>) {
     if (container && bg) {
       if (e.detail.deltaX < -100) {
-        container.style.transform = `translateX(-100%)`
-        deleteHandler()
+        const conf = await confirmDialog()
+        if (conf) {
+          container.style.transform = `translateX(-100%)`
+          bg.style.opacity = '0';
+          deleteHandler()
+        }
+        else {
+          container.style.transform = `translateX(0)`
+          bg.style.opacity = '0';
+        }
       }
       else {
         container.style.transform = `translateX(0)`
@@ -28,11 +37,11 @@
     } 
   }
 
-  function swipeRightHandler(e: CustomEvent<SwipeEventData>) {
-    if (container) container.style.transform = `translateX(0)`
-    bg.style.opacity = '0';
-    // console.log('User swiped right!');
-    // e.detail
+  async function deleteButtonHandler() {
+    const conf = await confirmDialog()
+    if (conf) {
+      deleteHandler()
+    }
   }
 
 </script>
@@ -42,16 +51,16 @@
   </div>
   <div id="container" 
       bind:this={container} 
-      class="swipe-transition bg-slate-700 rounded p-2 flex items-center justify-between"
+      class="group swipe-transition bg-slate-700 rounded p-4 flex items-center justify-between hover:bg-slate-600"
       style="color: aliceblue; "
       use:swipeable 
-      onswiping={swipeHandler}
-      onswipedleft={swipeleftHandler}
+      on:swiping={swipeHandler}
+      on:swipedleft={swipeleftHandler}
     >
-    <div id="content">
+    <div id="content" class="w-full" >
       {@render children()}
     </div>
-    <button class="p-4 cursor-pointer" onclick={deleteHandler}>
+    <button class="p-4 cursor-pointer" on:click={deleteButtonHandler}>
       <span class="material-symbols-outlined">close</span>
     </button>
   </div>

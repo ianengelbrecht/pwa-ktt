@@ -25,14 +25,13 @@
 
 
 <nav class="bg-slate-800 p-4 flex justify-between">
-  <a href="form">Capture</a>
-  <a href="list">Saved</a>
+  <a href="/form">Capture</a>
+  <a href="/list">Saved</a>
 </nav>
 
 <div>
   {@render children()}
 </div>
-
 
 <SvelteToast options={{ duration: 500, reversed: true, intro: { y: 20 } }} />
 
