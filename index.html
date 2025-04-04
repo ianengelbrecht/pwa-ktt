@@ -9,24 +9,7 @@
     <link rel="manifest" href="manifest.json" />
     <title>Geo Recorder</title>
     
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').then(reg => {
-          reg.onupdatefound = () => {
-            const newWorker = reg.installing
-            newWorker.onstatechange = () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                if (confirm('A new version is available. Reload now?')) {
-                  window.location.reload()
-                }
-              }
-            }
-          }
-        })
-      }
 
-    </script>
-    <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=close" />
 
@@ -53,17 +36,9 @@
       <button onclick="showScreen('list')">Saved</button>
     </nav>
 
-    <main id="captureScreen" class="flex-1 p-4 hidden">
-      <h1 class="text-xl mb-4">Current Coordinates</h1>
-      <p id="coords">Waiting for location...</p>
-      <button onclick="saveCoords()" class="mt-4 p-2 bg-blue-600 rounded">Save Coordinates</button>
-    </main>
+    
 
-    <main id="listScreen" class="flex-1 p-4 hidden">
-      <h1 class="text-xl mb-4">Saved Coordinates</h1>
-      <ul id="savedList" class="space-y-2"></ul>
-      <button onclick="exportCSV()" class="mt-4 p-2 bg-green-600 rounded">Export CSV</button>
-    </main>
+    
 
     <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded shadow-lg">

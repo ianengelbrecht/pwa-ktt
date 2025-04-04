@@ -1,1 +1,8 @@
 @import 'tailwindcss';
+
+:root {
+  --toastContainerTop: auto;
+  --toastContainerRight: 20px;
+  --toastContainerBottom: 2rem;
+  --toastBarHeight: 0
+}
