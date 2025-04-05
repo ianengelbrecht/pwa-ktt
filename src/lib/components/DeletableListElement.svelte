@@ -16,19 +16,13 @@
     }
   }
 
+  // we don't confirm swipe deletions, only button click deletions
   async function swipeleftHandler(e: CustomEvent<SwipeEventData>) {
     if (container && bg) {
       if (e.detail.deltaX < -100) {
-        const conf = await confirmDialog()
-        if (conf) {
-          container.style.transform = `translateX(-100%)`
-          bg.style.opacity = '0';
-          deleteHandler()
-        }
-        else {
-          container.style.transform = `translateX(0)`
-          bg.style.opacity = '0';
-        }
+        container.style.transform = `translateX(-100%)`
+        bg.style.opacity = '0';
+        deleteHandler()
       }
       else {
         container.style.transform = `translateX(0)`

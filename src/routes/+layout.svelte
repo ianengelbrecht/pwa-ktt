@@ -23,14 +23,16 @@
   }
 </script>
 
+<div class="h-vh flex flex-col">
 
-<nav class="bg-slate-800 p-4 flex justify-between">
-  <a href="/form">Capture</a>
-  <a href="/list">Saved</a>
-</nav>
-
-<div>
-  {@render children()}
+  <nav class="bg-slate-800 p-4 flex justify-between">
+    <a href="/form">Capture</a>
+    <a href="/list">Saved</a>
+  </nav>
+  
+  <div class="flex-1 min-h-0 overflow-auto">
+    {@render children()}
+  </div>
 </div>
 
 <SvelteToast options={{ duration: 500, reversed: true, intro: { y: 20 } }} />
