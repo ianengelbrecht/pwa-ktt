@@ -1,11 +1,46 @@
 <script lang="ts">
+  import type { Component } from 'svelte';
   import Select from 'svelte-select';
   import DeletableListElement from "./DeletableListElement.svelte";
   import { exportCSV } from '$lib/utils';
+
+  type SortableObject = Record<string, any>; 
+  let sortField: {index: number, value: string, label: string} | null = $state(null)
+  let ascending: boolean = $state(false)
+
+  interface Props { 
+    data: SortableObject[], 
+    deleteItem: (index: number) => void, 
+    deleteAll: () => void, 
+    ItemComponent: Component<{item: SortableObject}>, 
+    confirmItemDeletion?: boolean, 
+    sortable?: boolean 
+  }
   
-  const { data, deleteItem, deleteAll, ItemComponent, confirmItemDeletion=true, sortable=true } = $props()
+  const { data, deleteItem, deleteAll, ItemComponent, confirmItemDeletion = true, sortable = true }: Props  = $props()
   
-  let sortField: string |null = $state(null)
+  // same records, but sorted
+  let displayData = $derived.by(() => {
+    console.log('sorting')
+    if (sortField) {
+      console.log('sortField', $state.snapshot(sortField))
+      return data.toSorted((a, b) => {
+        if (a[sortField!.value] < b[sortField!.value]) return ascending ? -1 : 1;
+        if (a[sortField!.value] > b[sortField!.value]) return ascending ? 1 : -1;
+        return 0;
+      });
+    }
+    else {
+      return data
+    }
+  })
+
+  // $effect(() => {
+  //   if (sortField !== null) {
+  //     console.log('sortField', $state.snapshot(sortField))
+  //     console.log('displayData', displayData.map(item => item[sortField!.value]).join(', '))
+  //   }
+  // })
 
   let dataFields = data.length? Object.keys(data[0]) : []
   
@@ -42,13 +77,16 @@
 </script>
 
 {#if sortable}
-<div class="mb-4">
+<div class="mb-4 md:w-1/2 lg:w-1/3 ml-auto flex items-center gap-2">
   <Select bind:value={sortField} items={dataFields} placeholder="Sort by field" class="text-black" />
+  <button class="cursor-pointer p-2" onclick={() => {ascending = !ascending}}>
+    <span class="material-symbols-outlined" class:flip-icon={ascending} style="font-size: 2.5rem; transition: transform 0.2s ease-in-out;">sort</span>
+  </button>
 </div>
 {/if}
 
 <ul class="space-y-2">
-  {#each data as item, index (item)}
+  {#each displayData as item, index (item)}
     <DeletableListElement confirmDialog={openConfirmDialog} deleteHandler={() => deleteItem(index)}>
       <a href={'/items/' + item.timestamp} class="w-full">
         <ItemComponent item={item} />
@@ -57,7 +95,7 @@
   {/each}
 </ul>
 <div class="flex justify-between">
-  <button onclick={() => exportCSV(data)} class="mt-4 p-2 bg-green-600 rounded cursor-pointer disabled:bg-transparent disabled:cursor-auto " disabled={!data.length}>Export CSV</button>
+  <button onclick={() => exportCSV(displayData)} class="mt-4 p-2 bg-green-600 rounded cursor-pointer disabled:bg-transparent disabled:cursor-auto " disabled={!data.length}>Export CSV</button>
   <button onclick={confirmAndDeleteAll} class="mt-4 p-2 rounded border-2 border-gray-200 cursor-pointer disabled:cursor-auto" disabled={!data.length} >Delete all</button>
 </div>
 
@@ -70,3 +108,9 @@
     </menu>
   </form>
 </dialog>
+
+<style>
+  .flip-icon {
+    transform: scaleY(-1);
+  }
+</style>

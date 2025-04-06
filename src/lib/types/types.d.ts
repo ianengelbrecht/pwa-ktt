@@ -1,3 +1,7 @@
+// note these have to kept in sync with schemas
+
+
+//this is just temporary, used in the original testing
 export type record = {
   timestamp: number, 
   latitude: number, 
@@ -5,26 +9,14 @@ export type record = {
   accuracy: number
 }
 
-// 1. The schema object with display names
-export const speciesSchema = {
-  commonName1: { displayName: "Common Name (Birdlife SA 2024)" },
-  commonName2: { displayName: "Afrikaans Name (Birdlife SA 2024" },
-  taxonName1: { displayName: "Taxonomic Name (Birdlasser)" },
-  taxonName2: { displayName: "Taxonomic Name (Birdlife SA 2024)" },
-  priorty: { displayName: "WEF Priority" },
-  scc: { displayName: "SCC" },
-  priorityRank: { displayName: "WEF Priority Species Rank" },
-  globalStatus: { displayName: "Global Status (IUCN, 2024)" },
-  regionalStatus: { displayName: "Regional Status (Taylor et  al. 2015)" },
-  text: { displayName: "Notes" },
-  smallBird: { displayName: "Small Bird (<30cm)" },
-  largeBird: { displayName: "Large Bird (>30cm)" },
-  raptor: { displayName: "Raptor" },
-  waterbird: { displayName: "Waterbird (Associated)" },
-};
-
+export type Checklist = {
+  checklistID: string;
+  checklistName: string;
+}
 
 export type Species = {
+  checklistID: string;
+  speciesID: string;
   commonName1: string;
   commonName2: string;
   taxonName1: string;
@@ -34,9 +26,66 @@ export type Species = {
   priorityRank: string;
   globalStatus: string;
   regionalStatus: string;
-  text: string;
+  speciesNotes: string;
   smallBird: number;
   largeBird: number;
   raptor: number;
   waterbird: number;
 };
+
+export type UserProfile = {
+  userID: string;
+  firstName: string;
+  lastName: string;
+  userInitials: string;
+}
+
+export type Project = {
+  projectID: string;
+  projectName: string;
+} 
+
+export type ProjectSurvey = {
+  surveyID: string;
+  projectID: string;
+  startDate: string; // changed from number to string
+  endDate: string; // changed from number to string
+  season: string;
+}
+
+export type ProjectSite = {
+  projectID: string;
+  siteID: string;
+  siteCode: string;
+  siteLatitude: number;
+  siteLongitude: number;
+  thresholdDistance: number;
+}
+
+export type SiteVisit = {
+  siteVisitID: string;
+  siteID: string;
+  date: string; 
+  startTime: string; 
+  endTime: string; 
+}
+
+export type Observation = {
+  recordID: string;
+  projectSurvey: ProjectSurvey;
+  projectSite: ProjectSite;
+  date: string; // changed from number to string
+  time: string; // changed from number to string
+  observerInitials: string; // from the user profile
+  species: Species;
+  count: number;
+  startDistance: number;
+  endDistance: number;
+  habitats: string[]; // changed from string to string[]
+  notes: string;
+  location: string;
+  isFlight: boolean;
+  flightNumber: string;
+  flightStart: string; // changed from number to string
+  flightEnd: string; // changed from number to string
+}
