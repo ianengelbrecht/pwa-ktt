@@ -32,7 +32,7 @@
   }
 
   async function deleteButtonHandler() {
-    const conf = await confirmDialog()
+    const conf = await confirmDialog('Are you sure you want to delete this item?')
     if (conf) {
       deleteHandler()
     }

@@ -1,13 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { toast } from '@zerodevx/svelte-toast'
-  import type { record}  from '$lib/types/types'
-
+  import type { Record}  from '$lib/types/types'
 
   let coordsPresenter: HTMLParagraphElement | null
   let currentPosition: GeolocationPosition | null
 
-  let data: record[] = []
+  let data: Record[] = []
 
   onMount(() => {
     console.log('mounting the form')

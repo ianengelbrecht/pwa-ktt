@@ -26,8 +26,8 @@
 <div class="h-vh flex flex-col">
 
   <nav class="bg-slate-800 p-4 flex justify-between">
-    <a href="/form">Capture</a>
-    <a href="/list">Saved</a>
+    <a href="/demo/new">Capture</a>
+    <a href="/demo">Saved</a>
   </nav>
   
   <div class="flex-1 min-h-0 overflow-auto">

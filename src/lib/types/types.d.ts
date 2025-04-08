@@ -2,7 +2,7 @@
 
 
 //this is just temporary, used in the original testing
-export type record = {
+export interface Record extends Record<string, any> {
   timestamp: number, 
   latitude: number, 
   longitude: number, 
@@ -12,6 +12,8 @@ export type record = {
 export type Checklist = {
   checklistID: string;
   checklistName: string;
+  createdBy: string; // userID of the creator
+  createdDate: string; // date of creation
 }
 
 export type Species = {

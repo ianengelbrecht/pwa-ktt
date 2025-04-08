@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
 
   // Navigate to /form after mount
-  goto('/form');
+  goto('/demo');
 </script>
 
 
