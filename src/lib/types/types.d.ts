@@ -2,7 +2,7 @@
 
 
 //this is just temporary, used in the original testing
-export interface Record extends Record<string, any> {
+export interface CoordsRecord extends Record<string, any> {
   timestamp: number, 
   latitude: number, 
   longitude: number, 
@@ -23,16 +23,16 @@ export type Species = {
   commonName2: string;
   taxonName1: string;
   taxonName2: string;
-  priorty: string;
-  scc: string;
+  priority: boolean;
+  scc: boolean;
   priorityRank: string;
   globalStatus: string;
   regionalStatus: string;
-  speciesNotes: string;
-  smallBird: number;
-  largeBird: number;
-  raptor: number;
-  waterbird: number;
+  notes: string;
+  smallBird: boolean;
+  largeBird: boolean;
+  raptor: boolean;
+  waterbird: boolean;
 };
 
 export type UserProfile = {

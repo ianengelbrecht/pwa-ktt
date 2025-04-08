@@ -8,21 +8,29 @@
   import DeletableListElement from "$lib/components/generic/DeletableListElement.svelte";
   import { exportCSV } from '$lib/utils';
 
-  let showSearch = $state(false)
-  let showSort = $state(false)
+  let showSearch = $state(localStorage.getItem('showSearch') === 'true')
+  let showSort = $state(localStorage.getItem('showSort') === 'true')
   let sortField: {index: number, value: string, label: string} | null = $state(null)
   let ascending: boolean = $state(false)
   let dialogMessage: string = $state('Are you sure you want to delete this item?')
+  let searchTerm: string = $state('')
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   interface Props<T extends Record<string, any>> { 
     items: T[], 
-    deleteItem: (index: number) => void, 
+    deleteItem: (item: T) => void, 
+
+    /**
+     * * Deletes all items in the list. This function should be called when the user confirms the deletion of all items.
+     * * Note that this needs to remove items from the database as well as the local state.
+     */
     deleteAll: () => void, 
+    itemIDfield: string,
     ItemComponent: Component<{item: T}>, 
     sortable?: boolean 
   }
   
-  const { items, deleteItem, deleteAll, ItemComponent, sortable = true }: Props<Record<string, any>> = $props()
+  const { items, deleteItem, deleteAll, itemIDfield, ItemComponent, sortable = true }: Props<Record<string, any>> = $props()
   
   // same records, but sorted
   let displayData = $derived.by(() => {
@@ -38,7 +46,28 @@
     }
   })
 
-  let dataFields = items.length? Object.keys(items[0]) : []
+  $effect(() => {
+    debounceTimer ? clearTimeout(debounceTimer) : null;
+    if (searchTerm) {
+      let reSearchTerm = '.*' + searchTerm.split(' ').join('.*\s+.*') + '.*';
+      const re = new RegExp(reSearchTerm, 'i');
+      debounceTimer = setTimeout(() => {
+        displayData = items.filter((item) => {
+          return Object.values(item).some((value) => {
+            if (typeof value === 'string') {
+              return re.test(value);
+            }
+            return false;
+          });
+        });
+      }, 300);
+    }
+    else {
+      displayData = items;
+    }
+  })
+
+  let dataFields = $derived(items.length? Object.keys(items[0]) : [])
   
   let dialog: HTMLDialogElement | null = null
 
@@ -69,47 +98,56 @@
     }
   }
 
-  console.log(page.url.pathname)
+  const handleSearchClick = () => {
+    showSearch = !showSearch;
+    localStorage.setItem('showSearch', String(showSearch));
+  };
+
+  const handleSortClick = () => {
+    showSort = !showSort;
+    localStorage.setItem('showSort', String(showSort));
+  };
 
 </script>
 
-<div class="flex justify-end gap-4 text-slate-500">
-  {#if sortable}
-  <button class="cursor-pointer" onclick={() => showSort = !showSort}>
-    <span class={["material-symbols-outlined", {'text-slate-200 ': showSort}]}  style="font-size: 2.5rem;">sort</span>
-  </button>
-  {/if}
 
-  <button class="cursor-pointer" onclick={() => showSearch = !showSearch}>
-    <span class="material-symbols-outlined" class:text-slate-200={showSearch}  style="font-size: 2rem;">search</span>
-  </button>
-</div>
-
-<div class="w-full flex flex-wrap items-center gap-2 mb-4">
-  {#if showSearch}
-    <input type="text" class="w-full md:w-1/2 lg:w-1/3 shrink-0 h-10 p-2 rounded bg-white text-black" placeholder="doesn't work yet">
-  {:else}
-    <span></span>
-  {/if}
-
-  {#if showSort && sortable}
-  <div class="w-full md:w-1/2 lg:w-1/3 shrink-0 ml-auto flex items-center gap-2">
-    <Select bind:value={sortField} items={dataFields} placeholder="Sort by field" class="text-black" />
-    <button class="cursor-pointer" onclick={() => {ascending = !ascending}}>
-      <span class="material-symbols-outlined" class:flip-icon={ascending} style="font-size: 2.5rem; transition: transform 0.2s ease-in-out;">sort</span>
-    </button>
-  </div>
-  {/if}
-</div>
 
 <!-- show the list or a message if the list is empty -->
-{#if displayData.length === 0}
+{#if items.length === 0}
   <div class="text-center text-slate-500 text-lg font-semibold">No items available</div>
 {:else}
+  <div class="flex justify-end gap-4 text-slate-500">
+    {#if sortable}
+    <button class="cursor-pointer" onclick={handleSortClick}>
+      <span class={["material-symbols-outlined", {'text-slate-200 ': showSort}]}  style="font-size: 2.5rem;">sort</span>
+    </button>
+    {/if}
+
+    <button class="cursor-pointer" onclick={handleSearchClick}>
+      <span class="material-symbols-outlined" class:text-slate-200={showSearch}  style="font-size: 2rem;">search</span>
+    </button>
+  </div>
+
+  <div class="w-full flex flex-wrap items-center gap-2 mb-4">
+    {#if showSearch}
+      <input type="text" class="w-full md:w-1/2 lg:w-1/3 shrink-0 h-10 p-2 rounded bg-white text-black" placeholder="Search" bind:value={searchTerm} />
+    {:else}
+      <span></span>
+    {/if}
+
+    {#if showSort && sortable}
+    <div class="w-full md:w-1/2 lg:w-1/3 shrink-0 ml-auto flex items-center gap-2">
+      <Select bind:value={sortField} items={dataFields} placeholder="Sort by field" class="text-black" />
+      <button class="cursor-pointer" onclick={() => {ascending = !ascending}}>
+        <span class="material-symbols-outlined" class:flip-icon={ascending} style="font-size: 2.5rem; transition: transform 0.2s ease-in-out;">sort</span>
+      </button>
+    </div>
+    {/if}
+  </div>
   <ul class="space-y-2">
     {#each displayData as item, index (item)}
-      <DeletableListElement confirmDialog={openConfirmDialog} deleteHandler={() => deleteItem(index)}>
-        <a href={page.url.pathname + '/' + item.timestamp} class="w-full">
+      <DeletableListElement confirmDialog={openConfirmDialog} deleteHandler={() => deleteItem(item)}>
+        <a href={page.url.pathname + '/' + item[itemIDfield]} class="w-full">
           <ItemComponent item={item} />
         </a>
       </DeletableListElement>
@@ -122,7 +160,7 @@
 {/if}
 
 <!-- Add new record button, always present -->
-<button class="fixed right-4 bottom-4 text-white bg-green-400 rounded-full shadow-xl p-4 cursor-pointer w-20 h-20 flex items-center justify-center border-4 border-slate-800"
+<button class="fixed right-4 bottom-4 text-white bg-green-400 rounded-full shadow-xl cursor-pointer w-15 h-15 flex items-center justify-center border-4 border-slate-800 hover:outline-2 hover:outline-white"
   onclick={() => goto(page.url.pathname + '/new')}>
   <span class="material-symbols-outlined leading-none" style="font-size: 3rem;">add</span>
 </button>

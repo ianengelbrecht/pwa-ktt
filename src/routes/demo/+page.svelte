@@ -1,11 +1,12 @@
 <script lang="ts">
   import SwipableList from '$lib/components/generic/SwipableList.svelte';
   import RecordCard from '$lib/components/demo/RecordCard.svelte';
-  import type { Record }  from '$lib/types/types'
+  import type { CoordsRecord }  from '$lib/types/types'
 
-  const data: Record[] = $state(JSON.parse(localStorage.getItem('geoData') || '[]'))
+  const data: CoordsRecord[] = $state(JSON.parse(localStorage.getItem('geoData') || '[]'))
 
-  const deleteItem = (index: number) => {
+  const deleteItem = (item: Record<string, any>) => {
+    const index = data.findIndex((record) => record === item as CoordsRecord)
     data.splice(index, 1)
     localStorage.setItem('geoData', JSON.stringify(data))
   }

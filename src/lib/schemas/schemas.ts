@@ -9,7 +9,7 @@ export const speciesSchema = {
   checklistID: { displayName: "Checklist ID" }, // won't be visible
   speciesID: { displayName: "Species ID" }, // won't be visible
   commonName1: { displayName: "Common Name (Birdlife SA 2024)" },
-  commonName2: { displayName: "Afrikaans Name (Birdlife SA 2024" },
+  commonName2: { displayName: "Afrikaans Name (Birdlife SA 2024)" },
   taxonName1: { displayName: "Taxonomic Name (Birdlasser)" },
   taxonName2: { displayName: "Taxonomic Name (Birdlife SA 2024)" },
   priorty: { displayName: "WEF Priority" },
@@ -17,7 +17,7 @@ export const speciesSchema = {
   priorityRank: { displayName: "WEF Priority Species Rank" },
   globalStatus: { displayName: "Global Status (IUCN, 2024)" },
   regionalStatus: { displayName: "Regional Status (Taylor et  al. 2015)" },
-  speciesNotes: { displayName: "Notes" },
+  notes: { displayName: "Notes" },
   smallBird: { displayName: "Small Bird (<30cm)" },
   largeBird: { displayName: "Large Bird (>30cm)" },
   raptor: { displayName: "Raptor" },

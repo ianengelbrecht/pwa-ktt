@@ -26,18 +26,41 @@ class AppDatabase extends Dexie {
     super('AppDatabase');
 
     this.version(1).stores({
-      checklists: 'checklistID',
-      species: '[checklistID+speciesID], checklistID, speciesID',
+      checklists: 'checklistID, checklistName',
+      species: 'speciesID, checklistID, commonName1',
       users: 'userID',
-      projects: 'projectID',
+      projects: 'projectID, projectName',
       projectSurveys: 'surveyID, projectID',
       projectSites: '[projectID+siteID], projectID, siteID',
       siteVisits: 'siteVisitID, siteID, date',
-      observations: 'recordID, date, observerInitials'
+      observations: 'recordID' //cannot index nested objects in IndexedDB, so we'll have to search manually
     });
 
     // optional: hooks, compound indexes, etc.
+
   }
 }
 
-export const db = new AppDatabase();
+// Initialize the database and extract all the collections
+const { 
+  checklists: checklistCollection,
+  species: speciesCollection,
+  users: userCollection,
+  projects: projectCollection,
+  projectSurveys: projectSurveyCollection,
+  projectSites: projectSiteCollection,
+  siteVisits: siteVisitCollection,
+  observations: observationCollection
+} = new AppDatabase();
+
+
+ export {
+  checklistCollection,
+  speciesCollection,
+  userCollection,
+  projectCollection,
+  projectSurveyCollection,
+  projectSiteCollection,
+  siteVisitCollection,
+  observationCollection
+};

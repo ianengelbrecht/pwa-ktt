@@ -1,35 +1,50 @@
-const CACHE_NAME = "geo-recorder-cache-v3";
+const CACHE_NAME = 'sveltekit-app-v1';
 const ASSETS = [
-  ".",
-  
-  "manifest.json",
-  "icon-192.png",
-  "icon-512.png"
+  '/', // important if using adapter-static
+  '/favicon.ico',
+  '/manifest.webmanifest',
+  // You can add pre-rendered routes or static assets here
 ];
 
-self.addEventListener("install", (event) => {
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(ASSETS);
+    })
   );
-});
-
-self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => response || fetch(event.request))
-  );
+  self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
-    )
+    caches.keys().then(keys => {
+      return Promise.all(keys.map(key => {
+        if (key !== CACHE_NAME) return caches.delete(key);
+      }));
+    })
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', event => {
+  const { request } = event;
+
+  // Skip POST requests or others
+  if (request.method !== 'GET') return;
+
+  event.respondWith(
+    caches.match(request).then(cached => {
+      return (
+        cached ||
+        fetch(request).then(response => {
+          return caches.open(CACHE_NAME).then(cache => {
+            cache.put(request, response.clone());
+            return response;
+          });
+        }).catch(() => {
+          // optionally return fallback content
+        })
+      );
+    })
   );
 });
-
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.action === 'skipWaiting') {
-    self.skipWaiting();
-  }
-});
-

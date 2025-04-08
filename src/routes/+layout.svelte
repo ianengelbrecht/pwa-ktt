@@ -6,7 +6,7 @@
 	let { children } = $props();
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').then(reg => {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
       reg.onupdatefound = () => {
         const newWorker = reg.installing
         if (newWorker) {
@@ -25,9 +25,9 @@
 
 <div class="h-vh flex flex-col">
 
-  <nav class="bg-slate-800 p-4 flex justify-between">
-    <a href="/demo/new">Capture</a>
-    <a href="/demo">Saved</a>
+  <nav class="w-full bg-slate-800 p-4 flex justify-end gap-4 text-slate-200">
+    <a href="/species">Species</a>
+    <a href="/demo">Demo</a>
   </nav>
   
   <div class="flex-1 min-h-0 overflow-auto">
