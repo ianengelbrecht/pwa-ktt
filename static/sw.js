@@ -29,9 +29,13 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   const { request } = event;
+  const url = new URL(request.url);
 
   // Skip POST requests or others
   if (request.method !== 'GET') return;
+
+  // Skip non-HTTP requests (e.g. chrome-extension://)
+  if (!url.protocol.startsWith("http")) return;
 
   event.respondWith(
     caches.match(request).then(cached => {

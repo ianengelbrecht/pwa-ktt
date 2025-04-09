@@ -9,6 +9,8 @@ export interface CoordsRecord extends Record<string, any> {
   accuracy: number
 }
 
+type CoordinatesString = `${number}, ${number}`; // e.g. "12.34 56.78"
+
 export type Settings = {
   settingsID: string | null; // unique ID for the settings
   user: UserProfile | null; // user profile of the logged in user
@@ -52,26 +54,31 @@ export type UserProfile = {
 }
 
 export type Project = {
-  projectID: string;
-  projectName: string;
+  projectID: string | null;
+  projectName: string | null;
+  vpCount: number; // number of VPs in the project
+  wtCount: number; // number of WTs in the project
+  dtCount: number; // number of DTs in the project
+  createdBy: string | null; // initials of the creator
+  createdDate: string | null; // date of creation
 } 
-
-// The survey number / season for this project
-export type ProjectSurvey = {
-  surveyID: string;
-  projectID: string;
-  startDate: string; // changed from number to string
-  endDate: string; // changed from number to string
-  season: string;
-}
 
 export type ProjectSite = {
   projectID: string;
   siteID: string;
   siteCode: string;
-  siteLatitude: number;
-  siteLongitude: number;
-  thresholdDistance: number;
+  siteLocation: CoordinatesString | null; // coordinates of the site
+  thresholdDistance: number | null;
+}
+
+// The survey number / season for this project
+export type ProjectSurvey = {
+  surveyID: string | null;
+  projectID: string | null;
+  surveyName: string | null; // name of the survey (e.g. "Year 2 Season 4")
+  startDate: string | null; // changed from number to string
+  endDate: string | null; // changed from number to string
+  season: string | null; // summer, autumn, etc
 }
 
 export type SiteVisit = {
@@ -86,7 +93,7 @@ export type Observation = {
   observationID: string | null;
   projectSurvey: ProjectSurvey | null;
   projectSite: ProjectSite | null;
-  location: string | null; // the coordinates
+  location: CoordinatesString | null; // the coordinates
   locationAccuracy: number | null; // gps accuracy in meters
   date: string | null; // changed from number to string
   time: string | null; // changed from number to string

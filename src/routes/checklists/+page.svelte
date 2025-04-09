@@ -5,7 +5,7 @@
   import CheckListCard from "./CheckListCard.svelte";
   import { checklistCollection, speciesCollection } from "$lib/db/dexie";
   
-  const checklists: Checklist[] = []
+  const checklists: Checklist[] = $state([])
 
   onMount(async () => {
     const checklistsFromDB = await checklistCollection.toArray();

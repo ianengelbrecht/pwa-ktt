@@ -66,17 +66,16 @@
 
 </script>
 
-<form class="flex flex-col gap-2 p-4  text-slate-100">
+<form class="p-4">
   <div class="flex flex-col gap-2">
     <label>
       Checklist Name:
       <input type="text" name="checklistName" class="w-full input-base" bind:value={checklist.checklistName} />
-    </label><br />
+    </label>
     <label>
       Notes:
-      <textarea name="notes" class="w-full input-base" bind:value={checklist.notes} rows="4"></textarea>
-    </label><br />
-    <p class="text-sm">Created By: {checklist.createdBy || ''} on {checklist.createdDate}</p>
+      <textarea name="notes" class="w-full input-base" bind:value={checklist.notes} rows="2"></textarea>
+    </label>
     <div class="flex justify-between">
       <button class="w-24 p-4 border rounded border-white  cursor-pointer" onclick={() => window.history.back()}>Done</button>
       <button class="w-24 p-4 border rounded border-white bg-green-400 cursor-pointer" onclick={handleSaveClick}>Save</button>

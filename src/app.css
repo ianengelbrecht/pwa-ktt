@@ -11,4 +11,24 @@
   .input-base {
     @apply border rounded-md px-3 py-2 bg-slate-600 text-slate-100  shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-200;
   }
+
+  .btn {
+    @apply p-2 border rounded border-slate-100 cursor-pointer
+  }
+
+  .btn:hover {
+    @apply ring ring-white
+  }
+
+  .btn:disabled {
+    @apply border-slate-300 text-slate-300
+  }
+
+  .btn:disabled:hover {
+    @apply ring-0 cursor-auto
+  }
+  
+  .btn-primary {
+    @apply bg-green-400
+  }
 }
