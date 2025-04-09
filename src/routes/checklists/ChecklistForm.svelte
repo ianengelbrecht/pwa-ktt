@@ -47,7 +47,7 @@
     try {
       const data = $state.snapshot(checklist);
       await checklistCollection.put(data);
-      alert('Checklist saved successfully!');
+
       // Reset the form after saving
       checklist.checklistName = null;
       checklist.notes = null;
