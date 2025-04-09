@@ -26,8 +26,10 @@
 <div class="h-vh flex flex-col">
 
   <nav class="w-full bg-slate-800 p-4 flex justify-end gap-4 text-slate-200">
-    <a href="/species">Species</a>
+    <a href="/checklists">Checklists</a>
+    <a href="/observations">Observations</a>
     <a href="/demo">Demo</a>
+    <a href="/settings">Settings</a>
   </nav>
   
   <div class="flex-1 min-h-0 overflow-auto">

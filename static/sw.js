@@ -1,8 +1,9 @@
 const CACHE_NAME = 'sveltekit-app-v1';
 const ASSETS = [
   '/', // important if using adapter-static
-  '/favicon.ico',
-  '/manifest.webmanifest',
+  '/favicon-dark.png',
+  '/favicon-light.png',
+  '/manifest.json',
   // You can add pre-rendered routes or static assets here
 ];
 

@@ -8,15 +8,17 @@
   import DeletableListElement from "$lib/components/generic/DeletableListElement.svelte";
   import { exportCSV } from '$lib/utils';
 
-  let showSearch = $state(localStorage.getItem('showSearch') === 'true')
-  let showSort = $state(localStorage.getItem('showSort') === 'true')
+  let showSearch = $state(localStorage.getItem(page.url.pathname + 'showSearch') === 'true')
+  let searchTerm: string = $state('')
+  let searchInputValue: string = $state('')
+  
+  let showSort = $state(localStorage.getItem(page.url.pathname + 'showSort') === 'true')
   let sortField: {index: number, value: string, label: string} | null = $state(null)
   let ascending: boolean = $state(false)
+  
   let dialogMessage: string = $state('Are you sure you want to delete this item?')
-  let searchTerm: string = $state('')
-  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
-  interface Props<T extends Record<string, any>> { 
+  interface Props<T> { 
     items: T[], 
     deleteItem: (item: T) => void, 
 
@@ -46,26 +48,7 @@
     }
   })
 
-  $effect(() => {
-    debounceTimer ? clearTimeout(debounceTimer) : null;
-    if (searchTerm) {
-      let reSearchTerm = '.*' + searchTerm.split(' ').join('.*\s+.*') + '.*';
-      const re = new RegExp(reSearchTerm, 'i');
-      debounceTimer = setTimeout(() => {
-        displayData = items.filter((item) => {
-          return Object.values(item).some((value) => {
-            if (typeof value === 'string') {
-              return re.test(value);
-            }
-            return false;
-          });
-        });
-      }, 300);
-    }
-    else {
-      displayData = items;
-    }
-  })
+  
 
   let dataFields = $derived(items.length? Object.keys(items[0]) : [])
   
@@ -100,12 +83,12 @@
 
   const handleSearchClick = () => {
     showSearch = !showSearch;
-    localStorage.setItem('showSearch', String(showSearch));
+    localStorage.setItem(page.url.pathname + 'showSearch', String(showSearch));
   };
 
   const handleSortClick = () => {
     showSort = !showSort;
-    localStorage.setItem('showSort', String(showSort));
+    localStorage.setItem(page.url.pathname + 'showSort', String(showSort));
   };
 
 </script>

@@ -9,16 +9,25 @@ export interface CoordsRecord extends Record<string, any> {
   accuracy: number
 }
 
+export type Settings = {
+  settingsID: string | null; // unique ID for the settings
+  user: UserProfile | null; // user profile of the logged in user
+  project: Project | null; // project the user is currently working on
+  projectSurvey: ProjectSurvey | null; // survey the user is currently busy with
+  checklist: Checklist | null; // checklist the user is currently working with
+}
+
 export type Checklist = {
-  checklistID: string;
-  checklistName: string;
-  createdBy: string; // userID of the creator
-  createdDate: string; // date of creation
+  checklistID: string | null;
+  checklistName: string | null;
+  createdBy: string | null; // userID of the creator
+  createdDate: string | null; // date of creation
+  notes: string | null; // notes about the checklist
 }
 
 export type Species = {
-  checklistID: string;
   speciesID: string;
+  checkList: Checklist;
   commonName1: string;
   commonName2: string;
   taxonName1: string;
@@ -36,10 +45,10 @@ export type Species = {
 };
 
 export type UserProfile = {
-  userID: string;
-  firstName: string;
-  lastName: string;
-  userInitials: string;
+  userID: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  userInitials: string | null;
 }
 
 export type Project = {
@@ -47,6 +56,7 @@ export type Project = {
   projectName: string;
 } 
 
+// The survey number / season for this project
 export type ProjectSurvey = {
   surveyID: string;
   projectID: string;
@@ -73,21 +83,22 @@ export type SiteVisit = {
 }
 
 export type Observation = {
-  recordID: string;
-  projectSurvey: ProjectSurvey;
-  projectSite: ProjectSite;
-  date: string; // changed from number to string
-  time: string; // changed from number to string
-  observerInitials: string; // from the user profile
-  species: Species;
-  count: number;
-  startDistance: number;
-  endDistance: number;
+  observationID: string | null;
+  projectSurvey: ProjectSurvey | null;
+  projectSite: ProjectSite | null;
+  location: string | null; // the coordinates
+  locationAccuracy: number | null; // gps accuracy in meters
+  date: string | null; // changed from number to string
+  time: string | null; // changed from number to string
+  observerInitials: string | null; // from the user profile
+  species: Species | null;
+  count: number | null;
+  startDistance: number | null;
+  endDistance: number | null;
   habitats: string[]; // changed from string to string[]
-  notes: string;
-  location: string;
+  notes: string | null;
   isFlight: boolean;
-  flightNumber: string;
-  flightStart: string; // changed from number to string
-  flightEnd: string; // changed from number to string
+  flightNumber: string | null;
+  flightStart: string | null; // changed from number to string
+  flightEnd: string | null; // changed from number to string
 }

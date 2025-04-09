@@ -2,6 +2,7 @@ import Dexie from 'dexie';
 import type { Table } from 'dexie';
 
 import type {
+  Settings,
   Checklist,
   Species,
   UserProfile,
@@ -13,6 +14,7 @@ import type {
 } from '$lib/types/types'; // update with your actual file path
 
 class AppDatabase extends Dexie {
+  settings!: Table<Settings, string>;
   checklists!: Table<Checklist, string>;
   species!: Table<Species, string>;
   users!: Table<UserProfile, string>;
@@ -26,6 +28,7 @@ class AppDatabase extends Dexie {
     super('AppDatabase');
 
     this.version(1).stores({
+      settings: 'settingsID',
       checklists: 'checklistID, checklistName',
       species: 'speciesID, checklistID, commonName1',
       users: 'userID',
@@ -43,6 +46,7 @@ class AppDatabase extends Dexie {
 
 // Initialize the database and extract all the collections
 const { 
+  settings: settingsCollection,
   checklists: checklistCollection,
   species: speciesCollection,
   users: userCollection,
@@ -55,6 +59,7 @@ const {
 
 
  export {
+  settingsCollection,
   checklistCollection,
   speciesCollection,
   userCollection,

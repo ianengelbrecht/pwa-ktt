@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { page } from "$app/state";
   import SwipableList from "$lib/components/generic/SwipableList.svelte";
   import SpeciesCard from "./SpeciesCard.svelte";
   import type { Species } from "$lib/types/types";
@@ -7,17 +8,31 @@
   import { readCSV } from "$lib/utils/readCSV";
   import nanoid from "$lib/utils/nanoid";
 
-  import { speciesCollection } from "$lib/db/dexie"
+  import { settingsCollection, speciesCollection } from "$lib/db/dexie"
   const species: Species[] = $state([]);
 
   let fileInput: HTMLInputElement | null = null;
 
-  onMount(() => {
-    speciesCollection.toArray().then((speciesRecords) => {
-      speciesRecords.forEach((speciesRecord) => {
-        species.push(speciesRecord);
+  onMount(async () => {
+    let checklistID = page.url.searchParams.get('checklistID') || null;
+    if (!checklistID) {
+      //get it from settings
+      const settings = await settingsCollection.toArray()
+      if (settings.length > 0) {
+        checklistID = settings[0].checklist?.checklistID || null;
+      }
+    }
+    if (!checklistID) {
+      //show all species
+      speciesCollection.toArray().then((speciesRecords) => {
+        species.push(...speciesRecords);
       });
-    });
+    }
+    else {
+      speciesCollection.where('checklistID').equals(checklistID).toArray().then((speciesRecords) => {
+        species.push(...speciesRecords);
+      });
+    }
   });
 
   const deleteSpecies = (speciesRecord: Record<string, any>) => {
@@ -33,6 +48,7 @@
     });
   }
 
+  //TODO move this to utils
   const importSpecies = async () => {
     if (fileInput && fileInput.files && fileInput.files.length > 0) {
       const file = fileInput.files[0];

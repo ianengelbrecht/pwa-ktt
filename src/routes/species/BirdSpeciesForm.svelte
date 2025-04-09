@@ -33,7 +33,23 @@
     record.speciesID = nanoid();
     console.log('Saving record:', record);
     try {
-      await saveRecord($state.snapshot(record));
+      const data = $state.snapshot(record);
+      await saveRecord(data);
+      // Reset the form after saving
+      record.commonName1 = '';
+      record.commonName2 = '';
+      record.taxonName1 = '';
+      record.taxonName2 = '';
+      record.scc = false;
+      record.priority = false;
+      record.priorityRank = '';
+      record.globalStatus = '';
+      record.regionalStatus = '';
+      record.notes = '';
+      record.smallBird = false;
+      record.largeBird = false;
+      record.raptor = false;
+      record.waterbird = false;
     }
     catch(err) {
       if (err instanceof Error) {
