@@ -36,7 +36,7 @@ class AppDatabase extends Dexie {
       projectSurveys: 'surveyID, projectID',
       projectSites: '[projectID+siteID], projectID, siteID',
       siteVisits: 'siteVisitID, siteID, date',
-      observations: 'recordID' //cannot index nested objects in IndexedDB, so we'll have to search manually
+      observations: 'observationID' //cannot index nested objects in IndexedDB, so we'll have to search manually
     });
 
     // optional: hooks, compound indexes, etc.

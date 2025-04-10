@@ -1,6 +1,6 @@
 <script lang="ts">
   import Select from "svelte-select";
-  const { observationRecord, projectSites } = $props()
+  const { observationRecord = $bindable(), projectSites } = $props()
   
   const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
   const habitats = [
@@ -18,6 +18,18 @@
     'Woodland',
     'Other'
   ]
+
+  const handleClickNow = (e: Event) => {
+    e.preventDefault()
+    const dateTimeNowString = new Date().toString();
+    const dateTimeNowParts = dateTimeNowString.split(' ');
+    const dateNow = dateTimeNowParts.slice(1, 4).join(' ');
+    console.log(dateTimeNowString)
+    console.log(dateNow)
+    const timeNow = dateTimeNowParts[4].split(':').slice(0, 2).join(':');
+    observationRecord.date = new Date(dateNow + ' UTC').toISOString().split('T')[0]; // we need this so that Date() doesn't make any adjustments for the local timezone
+    observationRecord.time = timeNow;
+  }
 
 </script>
 
@@ -45,16 +57,19 @@
       </div>
     </label>
   </div>
-  <div class="flex gap-2">
-    <label>
+  <div class="flex gap-2 items-end">
+    <label class="flex flex-col w-48">
       Date:
-      <input type="date" name="date" class="w-full md:w-1/2 input-base" bind:value={observationRecord.date}/>
+      <input type="date" name="date" class="input-base" bind:value={observationRecord.date} />
     </label>
-    <label>
+    <label class="flex flex-col w-28">
       Time:
-      <input type="time" name="time" lang="en-GB" class="w-full md:w-1/2 input-base" bind:value={observationRecord.time} />
+      <input type="time" name="time" lang="en-GB" class="input-base" bind:value={observationRecord.time} />
     </label>
+    <button class="w-16 btn" onclick={handleClickNow}>Now</button>
   </div>
+  
+  
   <label>
     No. individuals:
     <input type="number" class="w-full md:w-1/2 input-base" bind:value={observationRecord.count} />
@@ -67,8 +82,10 @@
     Dir. at start:
     <Select items={directions} />
   </label>
-  <p>Habitats utlized</p>
-  <Select items={habitats} multiple={true} />
+  <label>
+    Habitats utlized
+    <Select items={habitats} multiple={true} />
+  </label>
   <label>
     Notes:
     <textarea name="notes" class="w-full md:w-1/2 input-base" bind:value={observationRecord.notes} rows="2"></textarea>

@@ -26,11 +26,14 @@
 
 </script>
 
-<SwipableList
-  items={projects}
-  deleteItem={handleDelete}
-  ItemComponent={ProjectCard}
-  itemIDfield="projectID"
-  deleteAll={handleDeleteAll}
-  sortable={true}
-/>
+<main class="p-4">
+
+  <SwipableList
+    items={projects}
+    deleteItem={handleDelete}
+    ItemComponent={ProjectCard}
+    itemIDfield="projectID"
+    deleteAll={handleDeleteAll}
+    sortable={true}
+  />
+</main>

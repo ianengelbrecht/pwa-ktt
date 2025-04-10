@@ -2,27 +2,23 @@
   import nanoid from "$lib/utils/nanoid";
   import ObservationForm from "../ObservationForm.svelte";
   import type {Observation} from "$lib/types/types";
-  import { observationCollection, settingsCollection, speciesCollection } from "$lib/db/dexie";
+  import { observationCollection, speciesCollection } from "$lib/db/dexie";
 
   let { data } = $props()
+
   let coordsError: boolean = false
 
-  const dateTimeNowString = new Date().toString();
-  const dateTimeNowParts = dateTimeNowString.split(' ');
-  const dateNow = dateTimeNowParts.slice(1, 3).join(' ');
-  const timeNow = dateTimeNowParts[4].split(':').slice(0, 2).join(':');
-
-  const observationRecord: Observation = $state({
+  let observationRecord: Observation = $state({
     observationID: null, //auto generated on save
-    project: null,
-    projectSurvey: null, // from settings
+    project: data.settings.project,
+    projectSurvey: data.settings.projectSurvey, // from settings
     projectSite: null,
     species: null,
     location: null, // from GPS
     locationAccuracy: null, // from GPS
     date: null, //date now, not UTC date
     time: null, //ditto, see above
-    observerInitials: null, // from settings
+    observerInitials: data.settings.user?.userInitials || null, // from settings
     count: null,
     startDistance: null,
     startDirection: null,
@@ -39,10 +35,6 @@
     flightEndReason: null
   });
 
-  observationRecord.project = data.settings.project
-  observationRecord.projectSurvey = data.settings.projectSurvey
-  observationRecord.observerInitials = data.settings.user?.userInitials || null // It should be there
-
   let coordsWatcherID = navigator.geolocation.watchPosition(position => {
       coordsError = false
       observationRecord.location = `${Number(position.coords.latitude.toFixed(6))}, ${Number(position.coords.longitude.toFixed(6))}`
@@ -58,6 +50,11 @@
 
   const recordValidation = (): boolean => {
     const requiredFields: string[] = []
+    
+    if (!observationRecord.projectSite) {
+      requiredFields.push('projectSite')
+    }
+    
     if (!observationRecord.location) {
       requiredFields.push('location')
     }
@@ -69,24 +66,27 @@
     if (requiredFields.length > 0) {
       alert('The following fields must be filled in: ' + requiredFields.join('; '))
     }
-    return requiredFields.length > 0
+    return requiredFields.length == 0
   }
 
 
   const handleSaveClick = async (ev: Event) => {
     ev.preventDefault();
 
+    console.log('running validations')
     if (!recordValidation()) {
       return
     }
 
     // TODO set fields that need setting
+    console.log('settings values')
     observationRecord.observationID = nanoid();
     observationRecord.date = ''
     observationRecord.time = ''
 
+    console.log('saving record')
     try {
-      await observationCollection.add($state.snapshot(observationRecord));
+      await observationCollection.put($state.snapshot(observationRecord));
     }
     catch(err) {
       if (err instanceof Error) {
@@ -95,10 +95,12 @@
       } else {
         alert('Error saving record: ' + JSON.stringify(err));
       }
+      console.error($state.snapshot(observationRecord))
       return
     }
 
     //reset the record for the next entry
+    console.log('resetting record')
     observationRecord.observationID = null
     observationRecord.species = null
     observationRecord.date = null
@@ -123,9 +125,9 @@
   };
 </script>
 
-<main class="p-4">
+<main class="p-4 flex flex-col gap-4">
   <p class="text-sm">{observationRecord.project?.projectName} {observationRecord.projectSurvey?.surveyName}</p>
-  <ObservationForm {observationRecord} projectSites={data.projectSites} />
+  <ObservationForm bind:observationRecord={observationRecord} projectSites={data.projectSites} />
   <div class="flex justify-between">
     <button class="w-24 p-4 border rounded border-white  cursor-pointer" onclick={() => window.history.back()}>Done</button>
     <button class="p-4 border rounded border-white bg-green-400 cursor-pointer" onclick={handleSaveClick}>Save and new</button>
