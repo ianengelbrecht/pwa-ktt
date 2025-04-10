@@ -5,7 +5,7 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import Select from 'svelte-select';
-  import DeletableListElement from "$lib/components/generic/DeletableListElement.svelte";
+  import DeletableListElement from "./DeletableListElement.svelte";
   import { exportCSV } from '$lib/utils';
 
   let showSearch = $state(localStorage.getItem(page.url.pathname + 'showSearch') === 'true')
@@ -130,9 +130,7 @@
   <ul class="space-y-2">
     {#each displayData as item, index (item)}
       <DeletableListElement confirmDialog={openConfirmDialog} deleteHandler={() => deleteItem(item)}>
-        <a href={page.url.pathname + '/' + item[itemIDfield]} class="w-full">
-          <ItemComponent item={item} />
-        </a>
+        <ItemComponent item={item} />
       </DeletableListElement>
     {/each}
   </ul>

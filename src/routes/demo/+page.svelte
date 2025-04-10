@@ -1,6 +1,6 @@
 <script lang="ts">
-  import SwipableList from '$lib/components/generic/SwipableList.svelte';
-  import RecordCard from '$lib/components/demo/RecordCard.svelte';
+  import SwipableList from '$lib/components/SwipableList.svelte';
+  import RecordCard from './RecordCard.svelte';
   import type { CoordsRecord }  from '$lib/types/types'
 
   const data: CoordsRecord[] = $state(JSON.parse(localStorage.getItem('geoData') || '[]'))
@@ -19,6 +19,6 @@
 </script>
 
 <main id="listScreen" class="flex-1 p-4">
-  <h1 class="text-xl mb-4">Saved Coordinates</h1>
-  <SwipableList items={data} {deleteItem} {deleteAll} ItemComponent={RecordCard} />
+  <h1 class="text-xl mb-4">Some example data...</h1>
+  <SwipableList items={data} {deleteItem} {deleteAll} ItemComponent={RecordCard} itemIDfield='' />
 </main>

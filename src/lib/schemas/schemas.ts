@@ -1,11 +1,12 @@
 // note these have to be kept in sync with types
+import type { schema } from "$lib/types/types";
 
-export const checklistSchema = {
+export const checklistSchema: schema = {
   checklistID: { displayName: "Checklist ID" }, // won't be visible
   checklistName: { displayName: "Checklist Name" },
 }
 
-export const speciesSchema = {
+export const speciesSchema: schema = {
   checklistID: { displayName: "Checklist ID" }, // won't be visible
   speciesID: { displayName: "Species ID" }, // won't be visible
   commonName1: { displayName: "Common Name (Birdlife SA 2024)" },
@@ -24,20 +25,20 @@ export const speciesSchema = {
   waterbird: { displayName: "Waterbird (Associated)" },
 };
 
-export const userProfileSchema = {
+export const userProfileSchema: schema = {
   userID: { displayName: "" }, // the auth ID, won't be visible
   firstName: { displayName: "First Name" },
   lastName: { displayName: "Last Name" },
   userInitials: { displayName: "User Initials" },
 }
 
-export const projectSchema = {
+export const projectSchema: schema = {
   projectID: { displayName: "Project ID" }, // won't be visible
   projectName: { displayName: "Project Name" }
 }
 
 // for a project, there are multiple surveys/visits
-export const projectSurveySchema = {
+export const projectSurveySchema: schema = {
   surveyID: { displayName: "Survey ID" }, // won't be visible
   projectID: { displayName: "Project ID" }, // won't be visible
   startDate: { displayName: "Start Date" },
@@ -46,7 +47,7 @@ export const projectSurveySchema = {
 }
 
 // project sites are the VPs, WT, DTs, etc
-export const projectSiteSchema = {
+export const projectSiteSchema: schema = {
   projectID: { displayName: "Project ID" }, // won't be visible
   siteID: { displayName: "Site ID" }, // won't be visible
   siteCode: { displayName: "Site Code" },
@@ -56,7 +57,7 @@ export const projectSiteSchema = {
 }
 
 // the visit to each project site, not a lot of good terms for this
-export const siteVisitSchema = {
+export const siteVisitSchema: schema = {
   siteVisitID: { displayName: "Site Visit ID" }, // won't be visible
   siteID: { displayName: "Site ID" }, // won't be visible
   date: { displayName: "Date" },
@@ -64,7 +65,7 @@ export const siteVisitSchema = {
   endTime: { displayName: "End Time" },
 }
 
-export const observationSchema = {
+export const observationSchema: schema = {
   recordID: { displayName: "" }, // won't be visible
   projectSurvey: { displayName: "" }, // won't be visible
   projectSite: { displayName: "Site" }, 

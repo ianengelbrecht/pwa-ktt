@@ -116,12 +116,6 @@
     goto('/project-surveys/new' + '?projectID=' + settings.project?.projectID);
   }
 
-  const logProjects = async (ev: Event) => {
-    ev.preventDefault();
-    console.log('Selected project:', $state.snapshot(settings.project));
-    console.log('Selected project survey:', $state.snapshot(settings.projectSurvey));
-  }
-
   // not used currently, as checklists must be added via the checklists page
   // const handleAddChecklist = (ev: Event) => {
   //   ev.preventDefault();

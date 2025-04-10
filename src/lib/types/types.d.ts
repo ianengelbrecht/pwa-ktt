@@ -29,7 +29,7 @@ export type Checklist = {
 
 export type Species = {
   speciesID: string;
-  checkList: Checklist;
+  checklistID: string;
   commonName1: string;
   commonName2: string;
   taxonName1: string;
