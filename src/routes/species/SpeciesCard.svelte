@@ -13,7 +13,7 @@
   </div>
 {/snippet}
 
-<div>
+<a href={'/species/edit?speciesID=' + speciesRecord.speciesID} class="flex flex-col group-hover:bg-slate-600 p-2 rounded-lg">
   <p class="text-sm">Checklist name</p>
   {@render fieldName(speciesSchema.commonName1.displayName)}
   <p class="text-lg font-bold">{speciesRecord.commonName1}</p>
@@ -34,5 +34,5 @@
     }
   </div>
 
-</div>
+</a>
 

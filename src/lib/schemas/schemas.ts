@@ -13,7 +13,7 @@ export const speciesSchema: schema = {
   commonName2: { displayName: "Afrikaans Name (Birdlife SA 2024)" },
   taxonName1: { displayName: "Taxonomic Name (Birdlasser)" },
   taxonName2: { displayName: "Taxonomic Name (Birdlife SA 2024)" },
-  priorty: { displayName: "WEF Priority" },
+  priority: { displayName: "WEF Priority" },
   scc: { displayName: "SCC" },
   priorityRank: { displayName: "WEF Priority Species Rank" },
   globalStatus: { displayName: "Global Status (IUCN, 2024)" },

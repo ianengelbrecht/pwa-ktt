@@ -2,7 +2,7 @@
   import {onMount} from "svelte";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
-  import SwipableList from "$lib/components/generic/SwipableList.svelte";
+  import SwipableList from "$lib/components/SwipableList.svelte";
   import ProjectSurveyCard from "./ProjectSurveyCard.svelte";
   import { projectSurveyCollection } from "$lib/db/dexie";
   import type { ProjectSurvey } from "$lib/types/types";

@@ -10,7 +10,6 @@
 
   let showSearch = $state(localStorage.getItem(page.url.pathname + 'showSearch') === 'true')
   let searchTerm: string = $state('')
-  let searchInputValue: string = $state('')
   
   let showSort = $state(localStorage.getItem(page.url.pathname + 'showSort') === 'true')
   let sortField: {index: number, value: string, label: string} | null = $state(null)
@@ -91,13 +90,19 @@
     localStorage.setItem(page.url.pathname + 'showSort', String(showSort));
   };
 
+  const handleNewClick = () => {
+    const newURL = page.url.pathname + '/new' + (page.url.search ? page.url.search : '');
+    console.log('New URL:', newURL);
+    goto(newURL);
+  };
+
 </script>
 
 
 
 <!-- show the list or a message if the list is empty -->
 {#if items.length === 0}
-  <div class="text-center text-slate-500 text-lg font-semibold">No items available</div>
+  <div class="text-center text-slate-500 text-lg font-semibold">This list is empty</div>
 {:else}
   <div class="flex justify-end gap-4 text-slate-500">
     {#if sortable}
@@ -142,7 +147,7 @@
 
 <!-- Add new record button, always present -->
 <button class="fixed right-4 bottom-4 text-white bg-green-400 rounded-full shadow-xl cursor-pointer w-15 h-15 flex items-center justify-center border-4 border-slate-800 hover:outline-2 hover:outline-white"
-  onclick={() => goto(page.url.pathname + '/new')}>
+  onclick={handleNewClick}>
   <span class="material-symbols-outlined leading-none" style="font-size: 3rem;">add</span>
 </button>
 

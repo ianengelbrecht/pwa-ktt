@@ -1,9 +1,9 @@
 import { readCSVRecordsFile } from "./readCSVRecordsFile";
 import { getFileMapping } from "./createFileMapping";
-import { makeMappedRecordWithIDField } from "./getMappedRecordWithIDField";
+import { makeMappedRecord } from "./getMappedRecord";
 
 export {
   readCSVRecordsFile,
   getFileMapping,
-  makeMappedRecordWithIDField
+  makeMappedRecord
 }

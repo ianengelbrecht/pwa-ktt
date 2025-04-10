@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import type {Project } from "$lib/types/types";
-  import SwipableList from "$lib/components/generic/SwipableList.svelte";
+  import SwipableList from "$lib/components/SwipableList.svelte";
   import ProjectCard from "./ProjectCard.svelte";
   import { projectCollection } from "$lib/db/dexie";
 
@@ -30,7 +30,7 @@
   items={projects}
   deleteItem={handleDelete}
   ItemComponent={ProjectCard}
-  itemIDfield={"projectID"}
+  itemIDfield="projectID"
   deleteAll={handleDeleteAll}
   sortable={true}
 />

@@ -4,34 +4,35 @@
   import { goto } from "$app/navigation";
   import SwipableList from "$lib/components/SwipableList.svelte";
   import SpeciesCard from "./SpeciesCard.svelte";
-  import type { Species } from "$lib/types/types";
+  import type { Checklist, Species } from "$lib/types/types";
+  import { speciesCollection, checklistCollection } from "$lib/db/dexie"
   
+  let checklistID = page.url.searchParams.get('checklistID') || null;
+  
+  //we should only be able to get here from a checklist page
+  if (!checklistID) {
+    //redirect to  error page
+    goto('/error', { replaceState: true });
+  }
 
-  import { settingsCollection, speciesCollection } from "$lib/db/dexie"
   const species: Species[] = $state([]);
-
+  let checklist: Checklist | null = $state(null);
   let fileInput: HTMLInputElement | null = null;
 
   onMount(async () => {
-    let checklistID = page.url.searchParams.get('checklistID') || null;
-    if (!checklistID) {
-      //get it from settings
-      const settings = await settingsCollection.toArray()
-      if (settings.length > 0) {
-        checklistID = settings[0].checklist?.checklistID || null;
+
+    speciesCollection.where('checklistID').equals(checklistID!).toArray().then((speciesRecords) => {
+      species.push(...speciesRecords);
+    });
+
+    checklistCollection.where('checklistID').equals(checklistID!).toArray().then((checklists) => {
+      if (checklists.length > 0) {
+        checklist = checklists[0];
+      } else {
+        checklist = null;
       }
-    }
-    if (!checklistID) {
-      //show all species
-      speciesCollection.toArray().then((speciesRecords) => {
-        species.push(...speciesRecords);
-      });
-    }
-    else {
-      speciesCollection.where('checklistID').equals(checklistID).toArray().then((speciesRecords) => {
-        species.push(...speciesRecords);
-      });
-    }
+    });
+
   });
 
   const deleteSpecies = (speciesRecord: Record<string, any>) => {
@@ -51,12 +52,10 @@
 
 <main id="listScreen" class="flex-1 p-4">
   <div class="mb-4">
-    <h1 class="text-xl">Species</h1>
-    <p class="text-xs">South African birds checklist</p> <!-- TODO, add this dunamically from settings -->
+    <h1 class="text-xl">{checklist?.checklistName || 'Oops! No checklist name...'}</h1>
   </div>
   <SwipableList items={species} deleteItem={deleteSpecies} deleteAll={deleteAllSpecies} itemIDfield={'speciesID'} ItemComponent={SpeciesCard}/>
   {#if !species.length}
-    <button class="rounded p-2 border border-slate-200 mt-2 hover:ring" onclick={() => goto('/species/import?')}>Import species</button>
-    <input type="file" name="" id="" accept=".csv" bind:this={fileInput}>
+    <button class="rounded p-2 border border-slate-200 mt-2 hover:ring" onclick={() => goto('/species/import?checklistID=' + checklistID)}>Import species</button>
   {/if}
 </main>

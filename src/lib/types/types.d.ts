@@ -9,6 +9,12 @@ export interface CoordsRecord extends Record<string, any> {
   accuracy: number
 }
 
+export type schemaField = {
+  displayName: string; // the name of the field in the schema
+}
+
+export type schema = Record<string, schemaField> // the schema of the entity, with a displayName property for each field
+
 type CoordinatesString = `${number}, ${number}`; // e.g. "12.34 56.78"
 
 export type Settings = {
@@ -27,6 +33,8 @@ export type Checklist = {
   notes: string | null; // notes about the checklist
 }
 
+// I think having checklists will solve this multiple names problem
+// TODO sort out multiple names in different checklists
 export type Species = {
   speciesID: string;
   checklistID: string;

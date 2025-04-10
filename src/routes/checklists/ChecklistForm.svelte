@@ -48,10 +48,7 @@
       const data = $state.snapshot(checklist);
       await checklistCollection.put(data);
 
-      // Reset the form after saving
-      checklist.checklistName = null;
-      checklist.notes = null;
-      checklist.createdDate= new Date().toISOString().split('T')[0];
+      //no form reset, we go strait to the species page
       goto('/species?checklistID=' + checklist.checklistID); // Redirect to the species page with the checklist ID
     }
     catch(err) {

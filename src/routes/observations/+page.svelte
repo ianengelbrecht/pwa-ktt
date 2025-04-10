@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import SwipableList from "$lib/components/generic/SwipableList.svelte";
+  import SwipableList from "$lib/components/SwipableList.svelte";
   import ObservationCard from "./ObservationCard.svelte";
   import type { Observation } from "$lib/types/types";
   import { observationCollection } from "$lib/db/dexie.js";

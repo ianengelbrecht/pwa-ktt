@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import type { Checklist } from "$lib/types/types.d.ts";
-  import SwipableList from "$lib/components/generic/SwipableList.svelte";
+  import SwipableList from "$lib/components/SwipableList.svelte";
   import CheckListCard from "./CheckListCard.svelte";
   import { checklistCollection, speciesCollection } from "$lib/db/dexie";
   
@@ -31,12 +31,13 @@
   };
 
 </script>
-
-<SwipableList 
-  items={checklists} 
-  deleteItem={handleDelete} 
-  ItemComponent={CheckListCard} 
-  itemIDfield={'checklistID'}
-  deleteAll={handleDeleteAll}
-  sortable={true} 
-/>
+<div class="p-4">
+  <SwipableList 
+    items={checklists} 
+    deleteItem={handleDelete} 
+    ItemComponent={CheckListCard} 
+    itemIDfield={'checklistID'}
+    deleteAll={handleDeleteAll}
+    sortable={true} 
+  />
+</div>
