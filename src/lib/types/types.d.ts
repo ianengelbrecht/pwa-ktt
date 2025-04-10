@@ -1,6 +1,5 @@
 // note these have to kept in sync with schemas
 
-
 //this is just temporary, used in the original testing
 export interface CoordsRecord extends Record<string, any> {
   timestamp: number, 
@@ -99,21 +98,27 @@ export type SiteVisit = {
 
 export type Observation = {
   observationID: string | null;
+  project: Project | null
   projectSurvey: ProjectSurvey | null;
   projectSite: ProjectSite | null;
   location: CoordinatesString | null; // the coordinates
-  locationAccuracy: number | null; // gps accuracy in meters
+  locationAccuracy: string | null; // gps accuracy in meters
   date: string | null; // changed from number to string
   time: string | null; // changed from number to string
   observerInitials: string | null; // from the user profile
   species: Species | null;
   count: number | null;
   startDistance: number | null;
-  endDistance: number | null;
+  startDirection: string | null;
   habitats: string[]; // changed from string to string[]
   notes: string | null;
   isFlight: boolean;
   flightNumber: string | null;
   flightStart: string | null; // changed from number to string
   flightEnd: string | null; // changed from number to string
+  minHeight: number | null;
+  maxHeight: number | null;
+  averageHeight: number | null
+  flightMode: string[];
+  flightEndReason: string | null
 }

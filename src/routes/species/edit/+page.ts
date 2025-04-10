@@ -1,6 +1,5 @@
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { page } from "$app/state";
 import { speciesCollection } from "$lib/db/dexie";
 
 export const load: PageLoad = async ({ url }) => {
