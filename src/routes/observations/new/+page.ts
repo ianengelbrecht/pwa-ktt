@@ -40,5 +40,7 @@ export const load: PageLoad = async () => {
     });
   }
 
-	return { projectSites, species };
+	return {settings, projectSites, species };
 };
+
+

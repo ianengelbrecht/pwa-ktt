@@ -1,9 +1,10 @@
 <script lang="ts">
   import Select from "svelte-select";
   import type {Species} from "$lib/types/types";
-  const { observationRecord = $bindable(), data } = $props()
-  const { projectSites, species } = data
-  
+  const { observationRecord = $bindable(), projectSites, species } = $props()
+
+  console.log('got', species.length, 'species')
+
   const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
 
   const habitats = [
@@ -22,16 +23,23 @@
     'Other'
   ]
 
-  const speciesOptions: Species[] = $state([])
-  let speciesFilterText: string = ''
-  $effect(() => {
-    if (speciesFilterText && speciesFilterText.trim()) {
-
+  const filterSpecies = async (filterText: string) => {
+    if (filterText && filterText.trim()) {
+      const searchString = filterText
+      .trim()
+      .split(/\s+/)
+      .map(part => `\\b${part}`)  // Enforce word boundary *before* each part
+      .join('.*') + '.*';  
+      const regex = new RegExp(searchString, 'i')
+      const matchingSpecies = species.filter((species: Species) => {
+        return regex.test(species.commonName1) ||  regex.test(species.commonName2) || regex.test(species.taxonName1) || regex.test(species.taxonName2)
+      })
+      return matchingSpecies
     }
     else {
-      speciesOptions.length = 0
+      return []
     }
-  })
+  }
 
   const handleClickNow = (e: Event) => {
     e.preventDefault()
@@ -63,10 +71,10 @@
   </label>
   <label>
     Species:
-    <Select items={directions}
+    <Select loadOptions={filterSpecies}
+    debounceWait={500}
     itemId="speciesID"
     label="commonName1"
-    filterText={speciesFilterText}
     placeholder="Search for species..."
     --placeholder-color="oklch(96.8% 0.007 247.896)"
     --background="oklch(44.6% 0.043 257.281)" 
@@ -76,9 +84,9 @@
     --item-hover-color="black"
     bind:value={observationRecord.species} />
   </label>
-  <div class={["flex gap-2 w-full lg:w-1/2 p-1 items-center rounded", 
-    {"ring-2 ring-orange-300": observationRecord.locationAccuracy > 20 && observationRecord.locationAccuracy < 50 },
-    , {"ring-3 ring-red-600": observationRecord.locationAccuracy >= 50  }
+  <div class={["flex gap-2 w-full lg:w-1/2 items-center rounded", 
+    {"ring-2 ring-offset-2 ring-offset-black ring-orange-300": observationRecord.locationAccuracy > 20 && observationRecord.locationAccuracy < 50 },
+    , {"ring-3 ring-offset-2 ring-offset-black ring-red-600": observationRecord.locationAccuracy >= 50  }
     ]} >
     <label class="w-full">
       Location:

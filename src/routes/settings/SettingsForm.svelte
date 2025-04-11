@@ -31,6 +31,7 @@
     projects.push(...projectsFromDB);
 
     // load the checklists
+    //TODO only load checklists which have species
     const checklistsFromDB = await checklistCollection.toArray();
     checklists.push(...checklistsFromDB);
 
@@ -62,7 +63,6 @@
       }
 
       if (dbSettings.checklist) {
-        console.log('we have a checklist!')
         const dbChecklist = checklistsFromDB.find((c) => c.checklistID === dbSettings.checklist!.checklistID);
         if (dbChecklist) { // it should always be true
           settings.checklist = dbChecklist;
@@ -96,10 +96,7 @@
       settings.settingsID = nanoid();
     }
     settingsCollection.put($state.snapshot(settings)).then((result) => {
-      console.log('result:', result);
-      console.log('Settings saved!');
-      console.log($state.snapshot(settings));
-      // window.history.back()
+      window.history.back()
     }).catch((err) => {
       if (err instanceof Error) {
         console.log(err);

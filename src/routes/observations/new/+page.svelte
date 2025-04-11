@@ -127,7 +127,7 @@
 
 <main class="p-4 flex flex-col gap-4">
   <p class="text-sm">{observationRecord.project?.projectName} {observationRecord.projectSurvey?.surveyName}</p>
-  <ObservationForm bind:observationRecord={observationRecord} projectSites={data.projectSites} />
+  <ObservationForm bind:observationRecord={observationRecord} projectSites={data.projectSites} species={data.species} />
   <div class="flex justify-between">
     <button class="w-24 p-4 border rounded border-white  cursor-pointer" onclick={() => window.history.back()}>Done</button>
     <button class="p-4 border rounded border-white bg-green-400 cursor-pointer" onclick={handleSaveClick}>Save and new</button>
