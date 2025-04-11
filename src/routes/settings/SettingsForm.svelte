@@ -39,6 +39,7 @@
     if (settingsFromDB.length > 0) {
 
       let dbSettings = settingsFromDB[0];
+      settings.settingsID = dbSettings.settingsID;
       if (dbSettings.user) {
         Object.assign(settings.user!, dbSettings.user)
       }
@@ -58,11 +59,10 @@
             }
           }
         }
-
-        
       }
 
       if (dbSettings.checklist) {
+        console.log('we have a checklist!')
         const dbChecklist = checklistsFromDB.find((c) => c.checklistID === dbSettings.checklist!.checklistID);
         if (dbChecklist) { // it should always be true
           settings.checklist = dbChecklist;
@@ -95,8 +95,11 @@
     if (!settings.settingsID) {
       settings.settingsID = nanoid();
     }
-    settingsCollection.put($state.snapshot(settings)).then(() => {
-      alert("Settings saved successfully!");
+    settingsCollection.put($state.snapshot(settings)).then((result) => {
+      console.log('result:', result);
+      console.log('Settings saved!');
+      console.log($state.snapshot(settings));
+      // window.history.back()
     }).catch((err) => {
       if (err instanceof Error) {
         console.log(err);
@@ -154,11 +157,12 @@
         placeholder="Select a project"
         itemId={'projectID'}
         label={'projectName'}
-        --background="#45556c"
-        --list-background="red"
-        --item-color="black"
-        --item-active-background="red"
-        --input-color="green"
+        --placeholder-color="oklch(96.8% 0.007 247.896)"
+        --background="oklch(44.6% 0.043 257.281)" 
+        --list-background="oklch(44.6% 0.043 257.281)"
+        --list-border="4px solid white"
+        --item-hover-bg="oklch(70.4% 0.04 256.788)"
+        --item-hover-color="black"
         on:change={handleProjectChange}
       />
       <button class="w-36 p-2  rounded border border-white hover:ring ring-white cursor-pointer" onclick={handleAddProject}>Add project</button>
@@ -173,7 +177,12 @@
         placeholder="Select a survey/season"
         itemId={'surveyID'}
         label={'surveyName'}
-        --background="#45556c"
+        --placeholder-color="oklch(96.8% 0.007 247.896)"
+        --background="oklch(44.6% 0.043 257.281)" 
+        --list-background="oklch(44.6% 0.043 257.281)"
+        --list-border="4px solid white"
+        --item-hover-bg="oklch(70.4% 0.04 256.788)"
+        --item-hover-color="black"
       />
       <button class="w-36 p-2  rounded border border-white hover:ring ring-white cursor-pointer disabled:hover:ring-0 disabled:border-slate-400 disabled:text-slate-400 disabled:cursor-auto" onclick={handleAddSurvey} disabled={!settings.project}>Add season</button>
     </div>
@@ -184,17 +193,23 @@
       <Select
         bind:value={settings.checklist}
         items={checklists}
-        placeholder="Select a checklist"
+        placeholder="Select a project checklist"
         itemId={'checklistID'}
         label={'checklistName'}
-        --background="#45556c"
+        --placeholder-color="oklch(96.8% 0.007 247.896)"
+        --background="oklch(44.6% 0.043 257.281)" 
+        --list-background="oklch(44.6% 0.043 257.281)"
+        --list-border="4px solid white"
+        --item-hover-bg="oklch(70.4% 0.04 256.788)"
+        --item-hover-color="black"
       />
       <!-- Checklists must be added via checklists -->
       <!-- <button class="w-36 p-2  rounded border border-white hover:ring ring-white cursor-pointer" onclick={handleAddChecklist}>Add list</button> -->
     </div>
   </div>
-  <div class="flex justify-end gap-4">
-    <button type="button" class="w-24 btn btn-primary" onclick={saveSettings}>Save</button>
+  <div class="flex justify-between gap-4">
+    <button class="btn" onclick={() => console.log($state.snapshot(settings))}>Log settings</button>
+    <button type="button" class="btn btn-primary" onclick={saveSettings}>Save and back</button>
   </div>
 </form>
 

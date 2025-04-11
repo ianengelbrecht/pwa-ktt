@@ -1,9 +1,11 @@
 <script lang="ts">
   import Select from "svelte-select";
-  import { SvelteSelectStyles } from "$lib/utils/SvelteSelectStyles";
-  const { observationRecord = $bindable(), projectSites } = $props()
+  import type {Species} from "$lib/types/types";
+  const { observationRecord = $bindable(), data } = $props()
+  const { projectSites, species } = data
   
   const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+
   const habitats = [
     'Agricultural field', 
     'Drainage line', 
@@ -19,6 +21,17 @@
     'Woodland',
     'Other'
   ]
+
+  const speciesOptions: Species[] = $state([])
+  let speciesFilterText: string = ''
+  $effect(() => {
+    if (speciesFilterText && speciesFilterText.trim()) {
+
+    }
+    else {
+      speciesOptions.length = 0
+    }
+  })
 
   const handleClickNow = (e: Event) => {
     e.preventDefault()
@@ -48,7 +61,21 @@
       {/each}
     </select>
   </label>
-  <!-- TODO Species field -->
+  <label>
+    Species:
+    <Select items={directions}
+    itemId="speciesID"
+    label="commonName1"
+    filterText={speciesFilterText}
+    placeholder="Search for species..."
+    --placeholder-color="oklch(96.8% 0.007 247.896)"
+    --background="oklch(44.6% 0.043 257.281)" 
+    --list-background="oklch(44.6% 0.043 257.281)"
+    --list-border="4px solid white"
+    --item-hover-bg="oklch(70.4% 0.04 256.788)"
+    --item-hover-color="black"
+    bind:value={observationRecord.species} />
+  </label>
   <div class={["flex gap-2 w-full lg:w-1/2 p-1 items-center rounded", 
     {"ring-2 ring-orange-300": observationRecord.locationAccuracy > 20 && observationRecord.locationAccuracy < 50 },
     , {"ring-3 ring-red-600": observationRecord.locationAccuracy >= 50  }
@@ -95,7 +122,7 @@
     bind:value={observationRecord.startDirection} />
   </label>
   <label>
-    Habitats utlized
+    Habitats utilized
     <Select 
     items={habitats} 
     multiple={true} 
@@ -108,6 +135,7 @@
     --item-hover-color="black"
     --multi-item-bg="oklch(70.4% 0.04 256.788)"
     --multi-item-clear-icon-color="white"
+    bind:value={observationRecord.habitats}
     />
   </label>
   <label>
