@@ -56,7 +56,7 @@
       await projectSiteCollection.add({
         siteID: nanoid(10),
         projectID: project.projectID!,
-        siteCode: `VP ${i + 1}`,
+        siteCode: `VP${i + 1}`,
         siteLocation: null,
         thresholdDistance: null
       });
@@ -66,7 +66,7 @@
       await projectSiteCollection.add({
         siteID: nanoid(10),
         projectID: project.projectID!,
-        siteCode: `WT ${i + 1}`,
+        siteCode: `WT${i + 1}`,
         siteLocation: null,
         thresholdDistance: null
       });
@@ -76,7 +76,7 @@
       await projectSiteCollection.add({
         siteID: nanoid(10),
         projectID: project.projectID!,
-        siteCode: `DT ${i + 1}`,
+        siteCode: `DT${i + 1}`,
         siteLocation: null,
         thresholdDistance: null
       });

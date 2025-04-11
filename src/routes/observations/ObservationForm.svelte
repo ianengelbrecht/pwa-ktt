@@ -1,5 +1,6 @@
 <script lang="ts">
   import Select from "svelte-select";
+  import { SvelteSelectStyles } from "$lib/utils/SvelteSelectStyles";
   const { observationRecord = $bindable(), projectSites } = $props()
   
   const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
@@ -48,12 +49,18 @@
     </select>
   </label>
   <!-- TODO Species field -->
-  <div class={["flex gap-2 w-full lg:w-1/2 p-1 items-center rounded", {"ring-2 ring-orange-300": observationRecord.locationAccuracy > 20}]} >
+  <div class={["flex gap-2 w-full lg:w-1/2 p-1 items-center rounded", 
+    {"ring-2 ring-orange-300": observationRecord.locationAccuracy > 20 && observationRecord.locationAccuracy < 50 },
+    , {"ring-3 ring-red-600": observationRecord.locationAccuracy >= 50  }
+    ]} >
     <label class="w-full">
       Location:
       <div class="w-full flex gap-2 items-center break-inside-avoid">
         <input type="text" name="location" class="w-64 md:w-1/2 input-base" bind:value={observationRecord.location} />
-        <span class={["break-inside-avoid", {"text-orange-300": observationRecord.locationAccuracy > 20}]}>± {observationRecord.locationAccuracy}m</span>
+        <span class={["break-inside-avoid", 
+        {"text-orange-300": observationRecord.locationAccuracy > 20 && observationRecord.locationAccuracy < 50 },
+        {"text-red-600": observationRecord.locationAccuracy >= 50  }
+        ]}> ± {observationRecord.locationAccuracy}m</span>
       </div>
     </label>
   </div>
@@ -68,8 +75,6 @@
     </label>
     <button class="w-16 btn" onclick={handleClickNow}>Now</button>
   </div>
-  
-  
   <label>
     No. individuals:
     <input type="number" class="w-full md:w-1/2 input-base" bind:value={observationRecord.count} />
@@ -80,11 +85,30 @@
   </label>
   <label>
     Dir. at start:
-    <Select items={directions} />
+    <Select items={directions}
+    --placeholder-color="oklch(96.8% 0.007 247.896)"
+    --background="oklch(44.6% 0.043 257.281)" 
+    --list-background="oklch(44.6% 0.043 257.281)"
+    --list-border="4px solid white"
+    --item-hover-bg="oklch(70.4% 0.04 256.788)"
+    --item-hover-color="black"
+    bind:value={observationRecord.startDirection} />
   </label>
   <label>
     Habitats utlized
-    <Select items={habitats} multiple={true} />
+    <Select 
+    items={habitats} 
+    multiple={true} 
+    closeListOnChange={false}
+    --placeholder-color="oklch(96.8% 0.007 247.896)"
+    --background="oklch(44.6% 0.043 257.281)" 
+    --list-background="oklch(44.6% 0.043 257.281)"
+    --list-border="4px solid white"
+    --item-hover-bg="oklch(70.4% 0.04 256.788)"
+    --item-hover-color="black"
+    --multi-item-bg="oklch(70.4% 0.04 256.788)"
+    --multi-item-clear-icon-color="white"
+    />
   </label>
   <label>
     Notes:
