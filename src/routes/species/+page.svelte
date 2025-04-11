@@ -21,7 +21,16 @@
 
   onMount(async () => {
 
+
     speciesCollection.where('checklistID').equals(checklistID!).toArray().then((speciesRecords) => {
+      console.log('got', speciesRecords.length, 'species records');
+      console.log(speciesRecords.slice(0, 5))
+      speciesRecords.sort((a, b) => {
+        const nameA = (a.commonName1 || '').toLowerCase();
+        const nameB = (b.commonName1 || '').toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+      console.log('there are', speciesRecords.length, 'sorted species records');
       species.push(...speciesRecords);
     });
 

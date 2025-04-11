@@ -7,19 +7,11 @@
 
 </script>
 
-{#snippet fieldName(text: string)}
-  <div class="flex justify-right">
-    <p class="text-xs">{text}</p>
-  </div>
-{/snippet}
-
 <a href={'/species/edit?speciesID=' + speciesRecord.speciesID} class="flex flex-col group-hover:bg-slate-600 p-2 rounded-lg">
-  <p class="text-sm">Checklist name</p>
-  {@render fieldName(speciesSchema.commonName1.displayName)}
-  <p class="text-lg font-bold">{speciesRecord.commonName1}</p>
-  {@render fieldName(speciesSchema.taxonName1.displayName)}
+  <p class="text-xs">{speciesSchema.commonName1.displayName}</p>
+  <p class="text-lg font-bold underline">{speciesRecord.commonName1}</p>
   <p class="italic">{speciesRecord.taxonName1}</p>
-  <div>
+  <p class="text-xs">
     {
       [
         speciesRecord.priorityRank ? 'WEF Rank ' + speciesRecord.priorityRank : '',
@@ -32,7 +24,7 @@
         speciesRecord.waterbird ? 'waterbird' : ''
       ].filter(x => x).join(' | ')
     }
-  </div>
+  </p>
 
 </a>
 
