@@ -1,13 +1,11 @@
 <script lang="ts">
   import { error } from '@sveltejs/kit';
   import { page } from "$app/state";
-  import { goto } from "$app/navigation";
   import { toast } from '@zerodevx/svelte-toast'
   import ProjectSurveyForm from "../ProjectSurveyForm.svelte";
   import type { Project, ProjectSurvey } from "$lib/types/types";
   import { projectCollection, projectSurveyCollection } from "$lib/db/dexie";
   import nanoid from "$lib/utils/nanoid";
-
   
   // make sure we can only get here if we have a projectID
   const projectID = page.url.searchParams.get("projectID");
@@ -27,6 +25,9 @@
     project = dbProject;
   });
 
+  // new or edit
+  const edit = page.params.projectSurveyID != 'new'
+
   let projectSurvey: ProjectSurvey = $state({
     surveyID: null,
     projectID: null,
@@ -36,6 +37,18 @@
     endDate: null
   });
 
+  if (edit) {
+    projectSurveyCollection
+      .get(page.params.projectSurveyID)
+      .then(dbProjectSurvey => {
+        if (!dbProjectSurvey) {
+          error(404, 'Uh oh! There is no project survey with ID ' + page.params.projectSurveyID + '. Something is wrong!');
+        }
+        projectSurvey = dbProjectSurvey;
+      });
+  }
+
+  // yay! now we can keep all this logic in the UI component!
   const validateProjectSurvey = () => {
     const missingFields = []
     if (!projectSurvey.surveyName) {
@@ -70,24 +83,15 @@
       return
     }
 
-    if (!projectSurvey.surveyID) {
+    
+    if (!edit) {
       projectSurvey.surveyID = nanoid(10);
-    }
-
-    if (!projectSurvey.projectID) {
       projectSurvey.projectID = projectID;
     }
 
     try {
-      await projectSurveyCollection.add($state.snapshot(projectSurvey));
+      await projectSurveyCollection.put($state.snapshot(projectSurvey));
       toast.push('record saved')
-
-      //clear the record
-      projectSurvey.surveyID = null;
-      projectSurvey.surveyName = null;
-      projectSurvey.season = null;
-      projectSurvey.startDate = null;
-      projectSurvey.endDate = null;
     }
     catch (err) {
       if (err instanceof Error) {
@@ -95,6 +99,19 @@
         alert('Error saving record: ' + err.message);
       }
     }
+
+    if (edit) {
+      window.history.back()
+    }
+    else {
+      //clear the record
+      projectSurvey.surveyID = null;
+      projectSurvey.surveyName = null;
+      projectSurvey.season = null;
+      projectSurvey.startDate = null;
+      projectSurvey.endDate = null;
+    }
+    
   };
 
 </script>
@@ -104,6 +121,6 @@
   <ProjectSurveyForm bind:projectSurvey />
   <div class="flex justify-between">
     <button class="w-24 btn " onclick={() => window.history.back()}>Done</button>
-    <button class=" btn btn-primary"  onclick={handleSaveClick} >Save and new</button>
+    <button class=" btn btn-primary"  onclick={handleSaveClick} >Save{ edit ? 'and new' : ''}</button>
   </div>
 </main>

@@ -20,19 +20,14 @@
     }
   };
 
-  const handleDeleteAll = async () => {
-    alert("Cannot delete all projects. Please delete individually, and proceed with caution!");
-  };
-
 </script>
 
 <main class="p-4">
-
+  <h1 class="text-lg font-bold">Projects</h1>
   <SwipableList
     items={projects}
     deleteItem={handleDelete}
     ItemComponent={ProjectCard}
-    deleteAll={handleDeleteAll}
     sortable={true}
   />
 </main>

@@ -13,7 +13,7 @@
   }
 
   .btn {
-    @apply p-2 border rounded border-slate-100 cursor-pointer
+    @apply min-w-24 p-2 border rounded border-slate-100 cursor-pointer
   }
 
   .btn:hover {

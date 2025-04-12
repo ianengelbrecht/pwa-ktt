@@ -4,7 +4,9 @@
   const projectSurvey = item as ProjectSurvey
 </script>
 
-<div>
-  <p>{projectSurvey.surveyName} ({projectSurvey.season})</p>
-  <p class="text-xs">{projectSurvey.startDate} - {projectSurvey.endDate}</p>
-</div>
+<a href={"/project-surveys/" + projectSurvey.surveyID}>
+  <div class="w-full p-4">
+    <p>{projectSurvey.surveyName} ({projectSurvey.season})</p>
+    <p class="text-xs">{projectSurvey.startDate} - {projectSurvey.endDate}</p>
+  </div>
+</a>

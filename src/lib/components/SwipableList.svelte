@@ -25,7 +25,7 @@
      * * Deletes all items in the list. This function should be called when the user confirms the deletion of all items.
      * * Note that this needs to remove items from the database as well as the local state.
      */
-    deleteAll: () => void, 
+    deleteAll?: () => void, 
     ItemComponent: Component<{item: T}>, 
     sortable?: boolean 
   }
@@ -74,7 +74,7 @@
   //we always want to confirm before delete all
   const confirmAndDeleteAll = async () => {
     const confirmed = await openConfirmDialog('Are you sure you want to delete ALL items?');
-    if (confirmed) {
+    if (confirmed && deleteAll) {
       deleteAll();
     }
   }
@@ -140,7 +140,9 @@
   </ul>
   <div class="flex justify-left gap-8">
     <button onclick={() => exportCSV(displayData)} class="mt-4 p-2 bg-green-600 rounded cursor-pointer disabled:bg-transparent disabled:cursor-auto " disabled={!items.length}>Export CSV</button>
+    {#if deleteAll}
     <button onclick={confirmAndDeleteAll} class="mt-4 p-2 rounded border-2 border-gray-200 cursor-pointer disabled:cursor-auto" disabled={!items.length} >Delete all</button>
+    {/if}
   </div>
 {/if}
 
