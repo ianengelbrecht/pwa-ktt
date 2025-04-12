@@ -26,12 +26,11 @@
      * * Note that this needs to remove items from the database as well as the local state.
      */
     deleteAll: () => void, 
-    itemIDfield: string,
     ItemComponent: Component<{item: T}>, 
     sortable?: boolean 
   }
   
-  const { items, deleteItem, deleteAll, itemIDfield, ItemComponent, sortable = true }: Props<Record<string, any>> = $props()
+  const { items, deleteItem, deleteAll, ItemComponent, sortable = true }: Props<Record<string, any>> = $props()
   
   // same records, but sorted
   let displayData = $derived.by(() => {
