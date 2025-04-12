@@ -71,8 +71,8 @@ export type Project = {
 } 
 
 export type ProjectSite = {
+  projectSiteID: string;
   projectID: string;
-  siteID: string;
   siteCode: string;
   verbatimLocation: string | null; // the location as it was entered by the user
   siteLocation: CoordinatesString | null; // coordinates of the site

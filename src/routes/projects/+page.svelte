@@ -32,7 +32,6 @@
     items={projects}
     deleteItem={handleDelete}
     ItemComponent={ProjectCard}
-    itemIDfield="projectID"
     deleteAll={handleDeleteAll}
     sortable={true}
   />
