@@ -4,8 +4,7 @@
   import { makeID } from '$lib/utils';
   import type { Species }  from '$lib/types/types';
   import { speciesCollection } from "$lib/db/dexie";
-
-  import BirdSpeciesForm from "../BirdSpeciesForm.svelte";
+  import BirdSpeciesForm from "./BirdSpeciesForm.svelte";
 
   const checklistID = page.url.searchParams.get('checklistID') || null;
   if (!checklistID) {

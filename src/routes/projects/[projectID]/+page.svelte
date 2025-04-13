@@ -5,7 +5,7 @@
   import { goto } from "$app/navigation";
   import { toast } from '@zerodevx/svelte-toast'
   import { makeID } from '$lib/utils';
-  import ProjectForm from '../ProjectForm.svelte';
+  import ProjectForm from './ProjectForm.svelte';
   import type { Project } from "$lib/types/types";
   import { projectCollection, projectSiteCollection, settingsCollection } from "$lib/db/dexie";
 

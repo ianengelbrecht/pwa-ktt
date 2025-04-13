@@ -1,5 +1,5 @@
 <script lang="ts">
-  import RecordForm from "../RecordForm.svelte";
+  import RecordForm from "./RecordForm.svelte";
 </script>
 
 <RecordForm />

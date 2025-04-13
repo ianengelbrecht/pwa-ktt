@@ -3,7 +3,7 @@
   import { page } from "$app/state";
   import { toast } from '@zerodevx/svelte-toast'
   import { makeID } from '$lib/utils';
-  import ProjectSurveyForm from "../ProjectSurveyForm.svelte";
+  import ProjectSurveyForm from "./ProjectSurveyForm.svelte";
   import type { Project, ProjectSurvey } from "$lib/types/types";
   import { projectCollection, projectSurveyCollection } from "$lib/db/dexie";
 

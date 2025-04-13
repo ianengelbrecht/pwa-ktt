@@ -3,7 +3,7 @@
   import { error } from "@sveltejs/kit";
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
-  import ChecklistForm  from "../ChecklistForm.svelte";
+  import ChecklistForm  from "./ChecklistForm.svelte";
   import  { makeID } from '$lib/utils';
   import type { Settings, Checklist } from "$lib/types/types";
   import { settingsCollection, checklistCollection } from "$lib/db/dexie";
