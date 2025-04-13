@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { toast } from "@zerodevx/svelte-toast";
   import { error } from "@sveltejs/kit";
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
@@ -78,9 +79,10 @@
       checklist.checklistID = nanoid();
     }
     try {
-      const data = $state.snapshot(checklist);
-      await checklistCollection.put(data);
+      await checklistCollection.put( $state.snapshot(checklist));
 
+      toast.push("Checklist saved")
+      
       //no form reset, we go straight to the species page
       goto('/species?checklistID=' + checklist.checklistID); 
     }
