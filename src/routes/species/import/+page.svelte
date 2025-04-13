@@ -1,16 +1,13 @@
 <script lang="ts">
-  import { page } from "$app/state";
   import { goto } from "$app/navigation";
   import { makeID } from '$lib/utils';
   import type { Species } from "$lib/types/types";
   import { speciesSchema } from "$lib/schemas/schemas";
   import { readCSVRecordsFile, getFileMapping, makeMappedRecord } from "$lib/use-cases/import-records";
-  import { speciesCollection } from "$lib/db/dexie";
+  import { speciesCollection, checklistCollection } from "$lib/db/dexie";
 
-  const checklistID = page.url.searchParams.get('checklistID') || null;
-  if (!checklistID) {
-    goto('/error', {  replaceState: true });
-  }
+  const { data } = $props();
+  const { checklist } = data;
 
   let fileInput: HTMLInputElement | null = $state(null)
   let selectedFile: File | null = $state(null)
@@ -67,34 +64,52 @@
   
       fileMapping = getFileMapping(csvRecords[0], speciesSchema)
     }
-
-
   }
 
   const handleImportClick = async (ev:Event) => {
     ev.preventDefault()
 
+    const mappedRecords = []
     for (const csvRecord of csvRecords) {
       const mappedRecord = makeMappedRecord(csvRecord, fileMapping, 'speciesID') as Species
       if (mappedRecord) {
         mappedRecord.speciesID = makeID()
-        mappedRecord.checklistID = checklistID!
-        try {
-          await speciesCollection.add((mappedRecord) as Species)
-        }
-        catch(err) {
-          if (err instanceof Error) {
-            alert('' + err.message)
-          }
-          else {
-            alert('Unspecified error importing record')
-          }
-          return
-        }
+        mappedRecord.checklistID = checklist.checklistID!
+        mappedRecords.push(mappedRecord)
       }
     }
+
+    //try save them
+    try {
+      await speciesCollection.bulkAdd(mappedRecords)
+    }
+    catch(err) {
+      if (err instanceof Error) {
+        alert('Error importing records: ' + err.message)
+      }
+      else {
+        alert('Unspecified error importing records')
+      }
+      return
+    }
+
+    //so far so good, update the checklist record
+    checklist.speciesCount += mappedRecords.length
+    try {
+      await checklistCollection.put(checklist)
+    }
+    catch(err) {
+      if (err instanceof Error) {
+        alert('Error updating checklist record: ' + err.message)
+      }
+      else {
+        alert('Unspecified error updating checklist record')
+      }
+      return
+    }
+
     alert('Records imported successfully')
-    goto('/species' + '?checklistID=' + checklistID);
+    goto('/species' + '?checklistID=' + checklist.checklistID);
   }
 
 </script>
