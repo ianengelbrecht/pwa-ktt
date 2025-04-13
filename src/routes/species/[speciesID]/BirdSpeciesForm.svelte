@@ -1,7 +1,7 @@
 <script lang="ts">
 
   import type { Species }  from '$lib/types/types';
-  const { speciesRecord }: {speciesRecord: Species} = $props()
+  const { speciesRecord =$bindable() }: {speciesRecord: Species} = $props()
 
 </script>
 <form id="species-form" class="flex flex-col" >

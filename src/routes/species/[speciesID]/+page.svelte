@@ -1,20 +1,18 @@
 <script lang="ts">
+  import { toast } from "@zerodevx/svelte-toast"
   import { page } from "$app/state";
-  import { goto } from "$app/navigation";
   import { makeID } from '$lib/utils';
   import type { Species }  from '$lib/types/types';
-  import { speciesCollection } from "$lib/db/dexie";
+  import { speciesCollection, checklistCollection } from "$lib/db/dexie";
   import BirdSpeciesForm from "./BirdSpeciesForm.svelte";
 
-  const checklistID = page.url.searchParams.get('checklistID') || null;
-  if (!checklistID) {
-    //redirect to error page
-    goto('/error', { replaceState: true });
-  }
+  const { data } = $props();
+  const { species, checklist } = data;
+  const isNew = page.params.speciesID === 'new';
 
-  const speciesRecord: Species = $state({
+  let speciesRecord: Species = $state({
     speciesID: '',
-    checklistID: checklistID!,
+    checklistID: checklist.checklistID!,
     commonName1: '',
     commonName2: '',
     taxonName1: '',
@@ -31,15 +29,46 @@
     waterbird: false
   });
 
+  if (species) {
+    speciesRecord = species
+  }
+
   const handleSaveClick = async (ev: Event) => {
     ev.preventDefault();
     
-    speciesRecord.speciesID = makeID();
+    if (isNew) {
+      speciesRecord.speciesID = makeID();
+    }
 
     try {
-      
       await speciesCollection.put($state.snapshot(speciesRecord));
-      // Reset the form after saving
+      toast.push('Species saved')
+    }
+    catch(err) {
+      if (err instanceof Error) {
+        console.log(err)
+        alert('Error saving record: ' + err.message);
+      } else {
+        alert('Error saving record: ' + JSON.stringify(err));
+      }
+    }
+
+    if (isNew) {
+      // update the checklist count
+      checklist.speciesCount++
+      try {
+        await checklistCollection.put(checklist)
+      }
+      catch(err) {
+        if (err instanceof Error) {
+          console.log(err)
+          alert('Error updating checklist count: ' + err.message);
+        } else {
+          alert('Error updating checklist count: ' + JSON.stringify(err));
+        }
+      }
+
+      //reset the values
       speciesRecord.speciesID = '';
       speciesRecord.commonName1 = '';
       speciesRecord.commonName2 = '';
@@ -58,14 +87,8 @@
 
       window.scrollTo(0, 0) // Scroll to the top of the page after saving
     }
-
-    catch(err) {
-      if (err instanceof Error) {
-        console.log(err)
-        alert('Error saving record: ' + err.message);
-      } else {
-        alert('Error saving record: ' + JSON.stringify(err));
-      }
+    else {
+      window.history.back(); // Go back to the previous page after saving
     }
   };
 
@@ -73,7 +96,7 @@
 </script>
 
 <div class="p-4">
-  <BirdSpeciesForm {speciesRecord} />
+  <BirdSpeciesForm bind:speciesRecord />
   <div class="flex justify-between">
     <button class="w-24 p-4 border rounded border-white  cursor-pointer" onclick={() => window.history.back()}>Done</button>
     <button class="p-4 border rounded border-white bg-green-400 cursor-pointer" onclick={handleSaveClick}>Save and new</button>
