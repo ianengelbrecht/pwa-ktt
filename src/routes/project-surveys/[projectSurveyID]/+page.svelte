@@ -2,10 +2,11 @@
   import { error } from '@sveltejs/kit';
   import { page } from "$app/state";
   import { toast } from '@zerodevx/svelte-toast'
+  import { makeID } from '$lib/utils';
   import ProjectSurveyForm from "../ProjectSurveyForm.svelte";
   import type { Project, ProjectSurvey } from "$lib/types/types";
   import { projectCollection, projectSurveyCollection } from "$lib/db/dexie";
-  import nanoid from "$lib/utils/nanoid";
+
   
   // make sure we can only get here if we have a projectID
   const projectID = page.url.searchParams.get("projectID");
@@ -86,7 +87,7 @@
 
     
     if (isNew) {
-      projectSurvey.surveyID = nanoid(10);
+      projectSurvey.surveyID = makeID(10);
       projectSurvey.projectID = projectID;
     }
 

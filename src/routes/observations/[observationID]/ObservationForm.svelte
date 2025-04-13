@@ -1,27 +1,9 @@
 <script lang="ts">
   import Select from "svelte-select";
+  import { dateTimeNow } from "$lib/utils";
   import type {Species} from "$lib/types/types";
   const { observationRecord = $bindable(), projectSites, species } = $props()
-
-  console.log('got', species.length, 'species')
-
-  const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
-
-  const habitats = [
-    'Agricultural field', 
-    'Drainage line', 
-    'Forest/plantation',
-    'Man-made structure',
-    'No habitat used',
-    'Open grassland',
-    'Ridgeline',
-    'Rocky hillside',
-    'Valley',
-    'Water body',
-    'Wetland',
-    'Woodland',
-    'Other'
-  ]
+  import { directions, habitats } from "./picklists"
 
   const filterSpecies = async (filterText: string) => {
     if (filterText && filterText.trim()) {
@@ -43,14 +25,13 @@
 
   const handleClickNow = (e: Event) => {
     e.preventDefault()
-    const dateTimeNowString = new Date().toString();
-    const dateTimeNowParts = dateTimeNowString.split(' ');
-    const dateNow = dateTimeNowParts.slice(1, 4).join(' ');
-    console.log(dateTimeNowString)
-    console.log(dateNow)
-    const timeNow = dateTimeNowParts[4].split(':').slice(0, 2).join(':');
-    observationRecord.date = new Date(dateNow + ' UTC').toISOString().split('T')[0]; // we need this so that Date() doesn't make any adjustments for the local timezone
+    const { dateNow, timeNow } = dateTimeNow()
+    observationRecord.date = dateNow
     observationRecord.time = timeNow;
+  }
+
+  const handleSiteCodeChange = (e: Event) => {
+    console.log('selected site is', observationRecord.projectSite)
   }
 
 </script>
@@ -62,10 +43,13 @@
   </label>
   <label>
     Site:
-    <select class="w-full md:w-1/2 input-base" bind:value={observationRecord.projectSite}>
+    <select class="w-full md:w-1/2 input-base" bind:value={observationRecord.projectSite} onchange={handleSiteCodeChange}>
+      {#if projectSites.length === 0}
+        <option value="" disabled>No sites available</option>
+      {/if}
       <option value="" selected>Select an option</option>
       {#each projectSites as site}
-        <option value={site}>{site.siteCode}</option>
+        <option value={site.siteCode}>{site.siteCode}</option>
       {/each}
     </select>
   </label>

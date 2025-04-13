@@ -47,7 +47,7 @@
   </div>
 </div>
 
-<SvelteToast options={{ duration: 500, reversed: true, intro: { y: 20 } }} />
+<SvelteToast options={{ duration: 1000, reversed: true, intro: { y: 20 } }} />
 
 <div class="fixed bottom-4 right-4">
   v1.2.2

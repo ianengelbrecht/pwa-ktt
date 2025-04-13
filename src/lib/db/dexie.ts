@@ -30,13 +30,13 @@ class AppDatabase extends Dexie {
     this.version(1).stores({
       settings: 'settingsID',
       checklists: 'checklistID, checklistName',
-      species: 'speciesID, checklistID, commonName1', //also have to search for species manually because we don't do regex searches in indexeddb, for now...
-      users: 'userID',
+      species: 'speciesID, checklistID', //no name searches here I'm afraid, we have to do that in code
+      users: 'userID, firstName, lastName, userInitials',
       projects: 'projectID, projectName',
       projectSurveys: 'surveyID, projectID',
       projectSites: 'projectSiteID, projectID',
       siteVisits: 'siteVisitID, siteID, date',
-      observations: 'observationID' //cannot index nested objects in IndexedDB, so we'll have to search manually
+      observations: 'observationID, projectSurveyID' 
     });
 
     // optional: hooks, compound indexes, etc.

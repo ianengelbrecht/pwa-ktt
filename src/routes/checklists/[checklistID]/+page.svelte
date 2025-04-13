@@ -4,7 +4,7 @@
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
   import ChecklistForm  from "../ChecklistForm.svelte";
-  import  nanoid from '$lib/utils/nanoid';
+  import  { makeID } from '$lib/utils';
   import type { Settings, Checklist } from "$lib/types/types";
   import { settingsCollection, checklistCollection } from "$lib/db/dexie";
   
@@ -76,7 +76,7 @@
     }
 
     if (!checklist.checklistID) {
-      checklist.checklistID = nanoid();
+      checklist.checklistID = makeID();
     }
     try {
       await checklistCollection.put( $state.snapshot(checklist));

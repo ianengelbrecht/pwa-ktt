@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
-  import  nanoid from '$lib/utils/nanoid';
+  import { makeID } from '$lib/utils';
   import type { Species }  from '$lib/types/types';
   import { speciesCollection } from "$lib/db/dexie";
 
@@ -35,7 +35,7 @@
   const handleSaveClick = async (ev: Event) => {
     ev.preventDefault();
     
-    speciesRecord.speciesID = nanoid();
+    speciesRecord.speciesID = makeID();
 
     try {
       

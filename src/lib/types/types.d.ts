@@ -9,6 +9,13 @@ export interface CoordsRecord extends Record<string, any> {
   accuracy: number;
 }
 
+export interface dbCollection<T> {
+  get: (id: string) => Promise<T | undefined>; // get a record by ID  
+  put: (record: T) => Promise<void>; // add or update a record
+  delete: (id: string) => Promise<void>; // delete a record by ID
+  toArray: () => Promise<T[]>; // get all records in the collection
+}
+
 export type schemaField = {
   displayName: string; // the name of the field in the schema
 }
@@ -16,6 +23,13 @@ export type schemaField = {
 export type schema = Record<string, schemaField> // the schema of the entity, with a displayName property for each field
 
 type CoordinatesString = `${number}, ${number}`; // e.g. "12.34 56.78"
+
+export type UserProfile = {
+  userID: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  userInitials: string | null;
+}
 
 export type Settings = {
   settingsID: string | null; // unique ID for the settings
@@ -54,12 +68,7 @@ export type Species = {
   waterbird: boolean;
 };
 
-export type UserProfile = {
-  userID: string | null;
-  firstName: string | null;
-  lastName: string | null;
-  userInitials: string | null;
-}
+
 
 export type Project = {
   projectID: string | null;
@@ -100,11 +109,10 @@ export type SiteVisit = {
 
 export type Observation = {
   observationID: string | null;
-  project: Project | null
-  projectSurvey: ProjectSurvey | null;
-  projectSite: ProjectSite | null;
+  projectSurveyID: string | null;
+  projectSite: string | null; // the site name
   location: CoordinatesString | null; // the coordinates
-  locationAccuracy: string | null; // gps accuracy in meters
+  locationAccuracy: number | null; // gps accuracy in meters
   date: string | null; // changed from number to string
   time: string | null; // changed from number to string
   observerInitials: string | null; // from the user profile
@@ -123,4 +131,15 @@ export type Observation = {
   averageHeight: number | null
   flightMode: string[];
   flightEndReason: string | null
+}
+
+export type ObservationSummary = {
+  observationID: string | null; // unique ID for the observation
+  speciesName: string | null; // name of the species
+  location: CoordinatesString | null; // coordinates of the observation
+  locationAccuracy: number | null; // gps accuracy in meters
+  siteCode: string | null; // site code of the observation
+  date: string | null; // date of the observation
+  time: string | null; // time of the observation
+  observerInitials: string | null; // initials of the observer
 }

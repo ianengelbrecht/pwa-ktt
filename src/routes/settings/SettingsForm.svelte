@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import Select from "svelte-select";
-  import nanoid from "$lib/utils/nanoid";
+  import { makeID } from '$lib/utils';
   import type { Settings, Project, ProjectSurvey, Checklist } from "$lib/types/types";
   import { settingsCollection, projectCollection, projectSurveyCollection, checklistCollection } from "$lib/db/dexie";
 
@@ -98,10 +98,10 @@
     }
 
     if (settings.user && !settings.user.userID) {
-      settings.user.userID = nanoid();
+      settings.user.userID = makeID();
     }
     if (!settings.settingsID) {
-      settings.settingsID = nanoid();
+      settings.settingsID = makeID();
     }
     await settingsCollection.put($state.snapshot(settings))
 

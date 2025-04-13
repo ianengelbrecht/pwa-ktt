@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
-  import nanoid from "$lib/utils/nanoid";
+  import { makeID } from '$lib/utils';
   import type { Species } from "$lib/types/types";
   import { speciesSchema } from "$lib/schemas/schemas";
   import { readCSVRecordsFile, getFileMapping, makeMappedRecord } from "$lib/use-cases/import-records";
@@ -77,7 +77,7 @@
     for (const csvRecord of csvRecords) {
       const mappedRecord = makeMappedRecord(csvRecord, fileMapping, 'speciesID') as Species
       if (mappedRecord) {
-        mappedRecord.speciesID = nanoid()
+        mappedRecord.speciesID = makeID()
         mappedRecord.checklistID = checklistID!
         try {
           await speciesCollection.add((mappedRecord) as Species)

@@ -4,7 +4,7 @@
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
   import { toast } from '@zerodevx/svelte-toast'
-  import nanoid from "$lib/utils/nanoid";
+  import { makeID } from '$lib/utils';
   import ProjectForm from '../ProjectForm.svelte';
   import type { Project } from "$lib/types/types";
   import { projectCollection, projectSiteCollection, settingsCollection } from "$lib/db/dexie";
@@ -62,7 +62,7 @@
     }
 
     if (isNew) {
-      project.projectID = nanoid(10);
+      project.projectID = makeID(10);
     }
     
     try {
@@ -80,7 +80,7 @@
         //add the project sites
         for (let i = 0; i < project.vpCount; i++) {
           await projectSiteCollection.add({
-            projectSiteID: nanoid(10),
+            projectSiteID: makeID(10),
             projectID: project.projectID!,
             siteCode: `VP${i + 1}`,
             verbatimLocation: null,
@@ -91,7 +91,7 @@
 
         for (let i = 0; i < project.wtCount; i++) {
           await projectSiteCollection.add({
-            projectSiteID: nanoid(10),
+            projectSiteID: makeID(10),
             projectID: project.projectID!,
             siteCode: `WT${i + 1}`,
             verbatimLocation: null,
@@ -102,7 +102,7 @@
 
         for (let i = 0; i < project.dtCount; i++) {
           await projectSiteCollection.add({
-            projectSiteID: nanoid(10),
+            projectSiteID: makeID(10),
             projectID: project.projectID!,
             siteCode: `DT${i + 1}`,
             verbatimLocation: null,
@@ -112,7 +112,7 @@
         }
 
         await projectSiteCollection.add({
-          projectSiteID: nanoid(10),
+          projectSiteID: makeID(10),
           projectID: project.projectID!,
           siteCode: `incidental`,
           verbatimLocation: null,

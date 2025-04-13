@@ -27,7 +27,7 @@
      */
     deleteAll?: () => void, 
     ItemComponent: Component<{item: T}>, 
-    sortable?: boolean 
+    sortable?: boolean
   }
   
   const { items, deleteItem, deleteAll, ItemComponent, sortable = true }: Props<Record<string, any>> = $props()
@@ -90,7 +90,7 @@
   };
 
   const handleNewClick = () => {
-    const newURL = page.url.pathname + '/new' + (page.url.search ? page.url.search : '');
+    const newURL = page.url.pathname + '/new' + (page.url.search ? page.url.search : ''); // searchString is '' by default
     goto(newURL);
   };
 
@@ -100,7 +100,7 @@
 
 <!-- show the list or a message if the list is empty -->
 {#if items.length === 0}
-  <div class="text-center text-slate-500 text-lg font-semibold">This list is empty</div>
+  <div class="text-center text-slate-500 text-lg font-semibold">No {page.url.pathname.replace(/-/g, ' ').replace(/\//g, '')} recorded</div>
 {:else}
   <div class="flex justify-end gap-4 text-slate-500">
     {#if sortable}
