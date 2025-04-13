@@ -62,7 +62,7 @@
     itemId="speciesID"
     label="commonName1"
     placeholder="Search for species..."
-    --placeholder-color="oklch(96.8% 0.007 247.896)"
+    --placeholder-color="oklch(70.4% 0.04 256.788)"
     --background="oklch(44.6% 0.043 257.281)" 
     --list-background="oklch(44.6% 0.043 257.281)"
     --list-border="4px solid white"
@@ -107,7 +107,7 @@
   <label>
     Dir. at start:
     <Select items={directions}
-    --placeholder-color="oklch(96.8% 0.007 247.896)"
+    --placeholder-color="oklch(70.4% 0.04 256.788)"
     --background="oklch(44.6% 0.043 257.281)" 
     --list-background="oklch(44.6% 0.043 257.281)"
     --list-border="4px solid white"
@@ -121,7 +121,7 @@
     items={habitats} 
     multiple={true} 
     closeListOnChange={false}
-    --placeholder-color="oklch(96.8% 0.007 247.896)"
+    --placeholder-color="oklch(70.4% 0.04 256.788)"
     --background="oklch(44.6% 0.043 257.281)" 
     --list-background="oklch(44.6% 0.043 257.281)"
     --list-border="4px solid white"

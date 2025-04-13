@@ -1,18 +1,34 @@
 <script lang="ts">
-  import type { PageProps } from './$types';
+  import { toast } from "@zerodevx/svelte-toast";
   import { goto } from "$app/navigation";
   import { makeID } from '$lib/utils';
   import SettingsForm from "./SettingsForm.svelte";
+  import type { Settings } from "$lib/types/types";
   import { settingsCollection, projectSurveyCollection } from "$lib/db/dexie";
 
-  let { data  }: PageProps = $props();
+  let { data } = $props();
   let { settings, projects, projectSurveys, checklists } = data; // destructure the data object
 
-  let settingsViewModel = $state(settings)
+  let settingsRecord: Settings = $state({
+    settingsID: null,
+    user: {
+      userID: null,
+      firstName: null,
+      lastName: null,
+      userInitials: null,
+    },
+    project: null,
+    projectSurvey: null,
+    checklist: null
+  })
+
+  if (settings) {
+    settingsRecord = settings
+  }
 
   const handleProjectChange = async () => {
-    if (settingsViewModel.project) {
-      projectSurveyCollection.where('projectID').equals(settingsViewModel.project!.projectID!).toArray().then((surveys) => {
+    if (settingsRecord.project) {
+      projectSurveyCollection.where('projectID').equals(settingsRecord.project!.projectID!).toArray().then((surveys) => {
         projectSurveys.length = 0; // clear the array
         if (surveys.length) {
           projectSurveys.push(...surveys); // add the new surveys
@@ -22,7 +38,7 @@
   }
 
   const validateSettings = () => {
-    if (!settingsViewModel.user?.firstName || !settingsViewModel.user?.lastName || !settingsViewModel.user?.userInitials) {
+    if (!settingsRecord.user?.firstName || !settingsRecord.user?.lastName || !settingsRecord.user?.userInitials) {
       alert('Please enter your details!')
       return false;
     }
@@ -34,13 +50,13 @@
       return false;
     }
 
-    if (settingsViewModel.user && !settingsViewModel.user.userID) {
-      settingsViewModel.user.userID = makeID();
+    if (settingsRecord.user && !settingsRecord.user.userID) {
+      settingsRecord.user.userID = makeID();
     }
-    if (!settingsViewModel.settingsID) {
-      settingsViewModel.settingsID = makeID();
+    if (!settingsRecord.settingsID) {
+      settingsRecord.settingsID = makeID();
     }
-    await settingsCollection.put($state.snapshot(settingsViewModel))
+    await settingsCollection.put($state.snapshot(settingsRecord))
 
     return true
   }
@@ -67,7 +83,7 @@
     try {
       const success = await saveSettings()
       if (success) {
-        goto('/project-surveys/' + settingsViewModel.project?.projectID);
+        goto('/project-surveys/' + settingsRecord.project?.projectID);
       }
     }
     catch(err) {
@@ -89,11 +105,7 @@
 
     try {
       await saveSettings()
-      if (settingsViewModel.checklist) {
-        goto('/observations' + '?projectID=' + settingsViewModel.project?.projectID);
-      } else {
-        goto('/checklists/new');
-      }
+      toast.push('Settings saved');
     }
     catch(err) {
       if (err instanceof Error) {
@@ -106,18 +118,17 @@
   
 </script>
 
-<main class="p-2 flex flex-col gap-4">
-  <h2 class="text-xl">Settings</h2>
+<main class="p-4 flex flex-col gap-4">
+  <h2 class="text-2xl">Settings</h2>
   <SettingsForm 
-  bind:settings={settingsViewModel}
+  bind:settingsRecord
   {projects} 
   {projectSurveys} 
   {checklists}  
   {handleProjectChange}
   {handleAddProject}
   {handleAddSurvey} />
-  <div class="flex justify-between gap-4">
-    <button class="btn" onclick={() => console.log($state.snapshot(settingsViewModel))}>Log settings</button>
+  <div class="flex justify-end gap-4">
     <button type="button" class="btn btn-primary" onclick={handleSaveSettings}>Save settings</button>
   </div>
 </main>

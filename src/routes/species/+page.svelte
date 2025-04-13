@@ -8,16 +8,27 @@
   const { data } = $props();
   const { species, checklist } = data;
 
-  const deleteSpecies = (speciesRecord: Record<string, any>) => {
-    speciesCollection.where('speciesID').equals(speciesRecord.speciesID).delete().then(() => {
-      const index = species.findIndex((record) => record === speciesRecord as Species);
-      species.splice(index, 1);
-    });
+  let speciesList: Species[] = $state([]);
+  speciesList = species;
+
+  const deleteSpecies = async (speciesRecord: Record<string, any>) => {
+    try {
+      await speciesCollection.delete(speciesRecord.speciesID)
+    }
+    catch(err) {
+      if (err instanceof Error) {
+        alert('Error deleting record: ' + err.message);
+      } else {
+        alert('Error deleting record: ' + JSON.stringify(err));
+      }
+    }
+    const index = speciesList.findIndex((record) => record === speciesRecord as Species);
+    speciesList.splice(index, 1);
   }
   
   const deleteAllSpecies = () => {
     speciesCollection.clear().then(() => {
-      species.length = 0;
+      speciesList.length = 0;
     });
   }
 
@@ -28,8 +39,8 @@
     <h1 class="text-2xl">Species:</h1>
     <h2 class="">{checklist?.checklistName || 'Oops! No checklist name...'}</h2>
   </div>
-  <SwipableList items={species} deleteItem={deleteSpecies} deleteAll={deleteAllSpecies} ItemComponent={SpeciesCard}/>
-  {#if !species.length}
+  <SwipableList items={speciesList} deleteItem={deleteSpecies} deleteAll={deleteAllSpecies} ItemComponent={SpeciesCard}/>
+  {#if !speciesList.length}
     <button class="rounded p-2 border border-slate-200 mt-2 hover:ring" onclick={() => goto('/species/import?checklistID=' + checklist.checklistID)}>Import species</button>
   {/if}
 </main>

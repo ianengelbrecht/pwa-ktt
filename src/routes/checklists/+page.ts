@@ -5,10 +5,9 @@ import { checklistCollection } from "$lib/db/dexie";
 
 export const load: PageLoad = async () => {
 
-  const checklists: Checklist[] = []
+  let checklists: Checklist[] = []
   try {
-    const checklistsArray = await checklistCollection.toArray()
-    checklists.push(...checklistsArray)
+    checklists = await checklistCollection.toArray()
   }
   catch (e) {
     if (e instanceof Error) {

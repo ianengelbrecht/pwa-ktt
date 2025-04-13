@@ -5,19 +5,7 @@ import { settingsCollection, projectCollection, projectSurveyCollection, checkli
 
 export const load: PageLoad = async () => {
 
-  let settings: Settings = {
-    settingsID: null,
-    user: {
-      userID: null,
-      firstName: null,
-      lastName: null,
-      userInitials: null,
-    },
-    project: null,
-    projectSurvey: null,
-    checklist: null
-  }
-
+  let settings: Settings | null = null
   let projects: Project[] = []
   let projectSurveys: ProjectSurvey[] = []
   let checklists: Checklist[] = []
@@ -67,7 +55,7 @@ export const load: PageLoad = async () => {
   }
 
   // reconcile nested objects loaded from the database
-  if (settings.project) {
+  if (settings && settings.project) {
     
     const dbProject = projects.find((p) => p.projectID === settings.project!.projectID);
     if (dbProject) { // it should always be true unless one deletes the project
@@ -106,15 +94,14 @@ export const load: PageLoad = async () => {
     }
   }
 
-
   // match up the checklists
-  if (settings.checklist) {
+  if (settings && settings.checklist) {
     const dbChecklist = checklists.find((c) => c.checklistID === settings.checklist!.checklistID);
     if (dbChecklist) { // it might have been deleted
       settings.checklist = dbChecklist;
     }
     else {
-      alert('The checklist you previously selected is missing from the database!');
+      alert('The checklist you previously selected is missing from the database or doesn\'t have a species count!');
       settings.checklist = null; // reset the checklist in settings	
     }
   }

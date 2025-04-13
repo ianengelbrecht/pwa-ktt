@@ -7,8 +7,9 @@
 
 <a href={'/species?checklistID=' + checklist.checklistID}>
   <div class="w-full flex flex-col group-hover:bg-slate-600">
-    <span class="text-xl">{checklist.checklistName}</span>
-    <span class="text-sm">created: {checklist.createdDate} by {checklist.createdBy}</span> <!-- just the initials -->
+    <p class="text-xl">{checklist.checklistName}</p>
+    <p class="text-sm">Species count: {checklist.speciesCount}</p>
+    <p class="text-sm">Created on {checklist.createdDate} by {checklist.createdBy}</p> <!-- just the initials -->
   </div>
 </a>
 
