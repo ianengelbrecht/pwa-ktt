@@ -136,13 +136,7 @@
       observationRecord.flightMode = []
       observationRecord.flightEndReason = null
 
-      toast.push('Observation saved', {
-        theme: {
-          '--toastColor': 'mintcream',
-          '--toastBackground': 'rgba(72,187,120,0.9)',
-          '--toastBarBackground': '#2F855A'
-        }
-      })
+      toast.push('Observation saved')
       
       window.scrollTo(0, 0)
 
