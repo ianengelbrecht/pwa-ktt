@@ -42,6 +42,7 @@ export type Settings = {
 export type Checklist = {
   checklistID: string | null;
   checklistName: string | null;
+  speciesCount: number
   createdBy: string | null; // userID of the creator
   createdDate: string | null; // date of creation
   notes: string | null; // notes about the checklist

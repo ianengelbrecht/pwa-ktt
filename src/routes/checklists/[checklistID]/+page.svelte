@@ -8,52 +8,20 @@
   import type { Settings, Checklist } from "$lib/types/types";
   import { settingsCollection, checklistCollection } from "$lib/db/dexie";
   
-  let settings: Settings;
+  let { data } = $props();
+  let { user, checklist: dbChecklist } = data;
 
   let checklist: Checklist = $state({
     checklistID: null, // auto generated on save
     checklistName: null,
+    speciesCount: 0,
     createdDate: new Date().toISOString().split('T')[0],
-    createdBy: null, // from settings
+    createdBy: user.userInitials, // from settings
     notes: null,
-  })
+  });
 
-  settingsCollection.toArray()
-    .then((settingsFromDB) => {
-      if (settingsFromDB.length > 0) {
-        settings = settingsFromDB[0];
-        checklist.createdBy = settings.user?.userInitials || null;
-      }
-    })
-    .catch((error) => {
-      if (error instanceof Error) {
-        alert("Error fetching settings: " + error.message);
-      } else {
-        alert("Error fetching settings: " + error);
-      }
-    });
-
-  const { checklistID } = page.params;
-
-  if (!checklistID) {
-    error(400, "Oops! We should not have got here without a checklist ID...");
-  }
-  else {
-    checklistCollection.get(checklistID)
-      .then((checklistFromDB) => {
-        if (checklistFromDB) {
-          checklist = checklistFromDB;
-        } else {
-          error(500, `Whoa! There's no checklist with ID ${checklistID} in the database...`);
-        }
-      })
-      .catch((err) => {
-        if (err instanceof Error) {
-          error(500, "Error fetching checklist: " + err.message);
-        } else {
-          error(500, "Error fetching checklist: " + err);
-        }
-      });
+  if (dbChecklist) {
+    checklist = dbChecklist;
   }
 
   const validateChecklist = () => {

@@ -4,11 +4,8 @@
   import CheckListCard from "./CheckListCard.svelte";
   import { checklistCollection, speciesCollection } from "$lib/db/dexie";
   
-  const checklists: Checklist[] = $state([])
-  checklistCollection.toArray().then((checklistsFromDB) => {
-    checklists.push(...checklistsFromDB);
-  });
-
+  const { data } = $props();
+  const { checklists } = data;
 
   const handleDelete = async (checklist: Record<string, any>) => {
     // first check if we have species in this checklist

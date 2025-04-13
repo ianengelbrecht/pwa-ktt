@@ -1,180 +1,31 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { goto } from "$app/navigation";
-  import Select from "svelte-select";
-  import { makeID } from '$lib/utils';
   import type { Settings, Project, ProjectSurvey, Checklist } from "$lib/types/types";
-  import { settingsCollection, projectCollection, projectSurveyCollection, checklistCollection } from "$lib/db/dexie";
+  import Select from "svelte-select";
 
-  // the select options
-  const projects: Project[] = $state([]);
-  const projectSurveys: ProjectSurvey[] = $state([]);
-  const checklists: Checklist[] = $state([]);
-
-  let settings: Settings = $state({
-    settingsID: null,
-    user: {
-      userID: null,
-      firstName: null,
-      lastName: null,
-      userInitials: null,
-    },
-    project: null,
-    projectSurvey: null,
-    checklist: null
-  });
-
-  //we have to load things carefully to match everything in the database and the Selects
-  onMount(async () => {
-    // load the projects
-    const projectsFromDB = await projectCollection.toArray();
-    projects.push(...projectsFromDB);
-
-    // load the checklists
-    //TODO only load checklists which have species
-    const checklistsFromDB = await checklistCollection.toArray();
-    checklists.push(...checklistsFromDB);
-
-    // load the settings
-    const settingsFromDB = await settingsCollection.toArray();
-    if (settingsFromDB.length > 0) {
-
-      let dbSettings = settingsFromDB[0];
-      settings.settingsID = dbSettings.settingsID;
-      if (dbSettings.user) {
-        Object.assign(settings.user!, dbSettings.user)
-      }
-      if (dbSettings.project) {
-        const dbProject = projectsFromDB.find((p) => p.projectID === dbSettings.project!.projectID);
-        if (dbProject) { // it should always be true
-          settings.project = dbProject;
-          
-          // load the project surveys
-          const projectSurveysFromDB = await projectSurveyCollection.where('projectID').equals(dbProject.projectID!).toArray();
-          projectSurveys.push(...projectSurveysFromDB);
-
-          if (dbSettings.projectSurvey) {
-            const dbProjectSurvey = projectSurveysFromDB.find((ps) => ps.surveyID === dbSettings.projectSurvey!.surveyID);
-            if (dbProjectSurvey) { // it should always be true
-              settings.projectSurvey = dbProjectSurvey;
-            }
-          }
-        }
-      }
-
-      if (dbSettings.checklist) {
-        const dbChecklist = checklistsFromDB.find((c) => c.checklistID === dbSettings.checklist!.checklistID);
-        if (dbChecklist) { // it should always be true
-          settings.checklist = dbChecklist;
-        }
-      }
-    }
-
-  });
-
-  const handleProjectChange = () => {
-    console.log('getting project surveys...')
-    if (settings.project) {
-      projectSurveyCollection.where('projectID').equals(settings.project!.projectID!).toArray().then((surveys) => {
-        projectSurveys.length = 0; // clear the array
-        if (surveys.length) {
-          projectSurveys.push(...surveys); // add the new surveys
-        }
-      });
-    }
+  interface SettingsFormProps {
+    settings: Settings;
+    projects: Project[];
+    projectSurveys: ProjectSurvey[];
+    checklists: Checklist[];
+    handleProjectChange: () => void;
+    handleAddProject: () => Promise<void>;
+    handleAddSurvey: () => Promise<void>;
   }
 
-  const validateSettings = () => {
-    if (!settings.user?.firstName || !settings.user?.lastName || !settings.user?.userInitials) {
-      alert('Please enter your details!')
-      return false;
-    }
-    return true;
-  }
-
-  const saveSettings = async () => {
-    if (!validateSettings()) {
-      return false;
-    }
-
-    if (settings.user && !settings.user.userID) {
-      settings.user.userID = makeID();
-    }
-    if (!settings.settingsID) {
-      settings.settingsID = makeID();
-    }
-    await settingsCollection.put($state.snapshot(settings))
-
-    return true
-  }
-
-  const handleAddProject = async (ev: Event) => {
-    ev.preventDefault();
-    try {
-      const success = await saveSettings()
-      if (success) {
-        goto('/projects/new');
-      }
-    }
-    catch(err) {
-      if (err instanceof Error) {
-        alert('Error saving settings:' + err.message);
-      } else {
-        alert('Error saving settings:' + err);
-      }
-    }
-    
-  }
-
-  const handleAddSurvey = async (ev: Event) => {
-    ev.preventDefault();
-    try {
-      const success = await saveSettings()
-      if (success) {
-        goto('/project-surveys/' + settings.project?.projectID);
-      }
-    }
-    catch(err) {
-      if (err instanceof Error) {
-        alert('Error saving settings:' + err.message);
-      } else {
-        alert('Error saving settings:' + err);
-      }
-    }
-  }
-
-  // not used currently, as checklists must be added via the checklists page
-  // const handleAddChecklist = (ev: Event) => {
-  //   ev.preventDefault();
-  //   goto('/checklists/new');
-  // }
-
-  const handleSaveSettings = async (ev: Event) => {
-    ev.preventDefault();
-    try {
-      await saveSettings()
-      if (settings.checklist) {
-        goto('/observations' + '?projectID=' + settings.project?.projectID);
-      } else {
-        goto('/checklists/new');
-      }
-    }
-    catch(err) {
-      if (err instanceof Error) {
-        alert('Error saving settings:' + err.message);
-      } else {
-        alert('Error saving settings:' + err);
-      }
-    }
-  }
+  let { settings = $bindable(), 
+    projects, 
+    projectSurveys, 
+    checklists, 
+    handleProjectChange,
+    handleAddProject,
+    handleAddSurvey,
+  }: SettingsFormProps = $props();
 
 </script>
 
 <form class="flex flex-col gap-4 p-4">
-  <h2 class="text-2xl">Settings</h2>
   <h4 class="text-lg">User details</h4>
   <fieldset class="aligned-fields">
-
     <label for="firstName">
       First Name:
       <input type="text" id="firstName" class="md:w-1/2 input-base" bind:value={settings.user!.firstName} required />
@@ -187,7 +38,6 @@
       User Initials:
       <input type="text" id="userInitials" class="md:w-1/2 input-base" bind:value={settings.user!.userInitials} required />
     </label>
-
   </fieldset>
   <hr/>
   <div>
@@ -250,10 +100,7 @@
       <!-- <button class="w-36 p-2  rounded border border-white hover:ring ring-white cursor-pointer" onclick={handleAddChecklist}>Add list</button> -->
     </div>
   </div>
-  <div class="flex justify-between gap-4">
-    <button class="btn" onclick={() => console.log($state.snapshot(settings))}>Log settings</button>
-    <button type="button" class="btn btn-primary" onclick={handleSaveSettings}>Save settings</button>
-  </div>
+  
 </form>
 
 <style>
