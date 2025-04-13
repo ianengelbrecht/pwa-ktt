@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { toast } from '@zerodevx/svelte-toast'
+  import nanoid from '$lib/utils/nanoid';
   import type { CoordsRecord}  from '$lib/types/types'
 
   let coordsPresenter: HTMLParagraphElement | null
@@ -39,6 +40,7 @@
 
     const { latitude, longitude, accuracy } = currentPosition.coords
     data.push({
+      recordID: nanoid(),
       timestamp: Date.now(),
       latitude,
       longitude,
