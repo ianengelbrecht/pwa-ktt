@@ -5,6 +5,7 @@
   import type { Species }  from '$lib/types/types';
   import { speciesCollection, checklistCollection } from "$lib/db/dexie";
   import BirdSpeciesForm from "./BirdSpeciesForm.svelte";
+  import BackButton from "$lib/components/BackButton.svelte";
 
   const { data } = $props();
   const { species, checklist } = data;
@@ -96,6 +97,7 @@
 </script>
 
 <div class="p-4">
+  <BackButton />
   <BirdSpeciesForm bind:speciesRecord />
   <div class="flex justify-between">
     <button class="w-24 p-4 border rounded border-white  cursor-pointer" onclick={() => window.history.back()}>Done</button>

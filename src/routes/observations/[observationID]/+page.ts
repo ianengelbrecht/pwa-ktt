@@ -1,13 +1,17 @@
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import type { Settings, ProjectSite, Species } from '$lib/types/types';
-import { settingsCollection, projectSiteCollection, speciesCollection } from "$lib/db/dexie";
+import type { Settings, ProjectSite, Species, Observation } from '$lib/types/types';
+import { settingsCollection, projectSiteCollection, speciesCollection, observationCollection } from "$lib/db/dexie";
 
 export const load: PageLoad = async ({ params }) => {
 
   const observationID = params.observationID;
 
   let settings: Settings
+  let projectSites: ProjectSite[] = []
+  let species: Species[] = []
+  let observation : Observation | null = null
+
   try {
     const settingsArray = await settingsCollection.toArray()
     settings = settingsArray[0] || null
@@ -44,7 +48,7 @@ export const load: PageLoad = async ({ params }) => {
     error(400, 'Species checklist must be added in settings first...');
   }
 
-  let projectSites: ProjectSite[] = []
+  
   try {
     projectSites = await projectSiteCollection
     .where('projectID')
@@ -60,7 +64,7 @@ export const load: PageLoad = async ({ params }) => {
     }
   }
 
-  let species: Species[] = []
+
   try {
     species = await speciesCollection
     .where('checklistID')
@@ -82,6 +86,24 @@ export const load: PageLoad = async ({ params }) => {
     }
   }
 
-	return {observationID, settings, projectSites, species };
+  if (observationID != 'new') {
+    try {
+      observation = await observationCollection.get(observationID) || null
+      if (!observation) {
+        //redirect to error page
+        error(500, `Whoah! The observation with ID ${observationID} does not exist in the database!`);
+      }
+    }
+    catch (e) {
+      if (e instanceof Error) {
+        error(500, 'Error getting observation from database:' + e.message);
+      }
+      else {
+        error(500, 'Error getting observation from database:' + e);
+      }
+    }
+  }
+
+	return {observation, settings, projectSites, species };
 
 };

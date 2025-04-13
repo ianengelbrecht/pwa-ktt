@@ -7,9 +7,9 @@
   import { observationCollection } from "$lib/db/dexie";
 
   const { data } = $props()
-  const { observationID, settings, projectSites, species } = data
+  const { observation, settings, projectSites, species } = data
 
-  const isNew = observationID === 'new'
+  const isNew = observation === null
 
   let coordsError: boolean = $state(false)
 
@@ -40,6 +40,10 @@
     flightMode: [],
     flightEndReason: null
   });
+
+  if (observation) {
+    observationRecord = observation
+  }
 
   // start watching coordinates
   navigator.geolocation.watchPosition(position => {
@@ -150,11 +154,17 @@
 </script>
 
 <main class="p-4 flex flex-col gap-4">
-  <h2 class="text-xl">{ isNew ? 'New' : 'Edit'} observation</h2>
-  <p class="text-sm">Project/survey: {settings.project?.projectName || ''} {settings.projectSurvey?.surveyName || ''}</p>
-<ObservationForm bind:observationRecord={observationRecord} {projectSites} {species} />
+  <div>
+    <h2 class="text-xl">{ isNew ? 'New' : 'Edit'} observation</h2>
+    <p class="text-sm">Project/survey: {settings.project?.projectName || ''} {settings.projectSurvey?.surveyName || ''}</p>
+  </div>
+  <ObservationForm 
+  bind:observationRecord
+  {projectSites} 
+  {species} 
+  />
   <div class="flex justify-between">
-    <button class="w-24 p-4 border rounded border-white  cursor-pointer" onclick={() => window.history.back()}>{ isNew ? 'Done' : 'Cancel'}</button>
-    <button class="p-4 border rounded border-white bg-green-400 cursor-pointer" onclick={handleSaveClick}>Save and new</button>
+    <button class="btn" onclick={() => window.history.back()}>{ isNew ? 'Done' : 'Cancel'}</button>
+    <button class="btn btn-primary" onclick={handleSaveClick}>Save {isNew ? 'and new' : ''}</button>
   </div>
 </main>

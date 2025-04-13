@@ -5,6 +5,7 @@
   const { observationRecord = $bindable(), projectSites, species } = $props()
   import { directions, habitats } from "./picklists"
 
+  // for filtering in the species Select
   const filterSpecies = async (filterText: string) => {
     if (filterText && filterText.trim()) {
       const searchString = filterText
@@ -28,6 +29,7 @@
     const { dateNow, timeNow } = dateTimeNow()
     observationRecord.date = dateNow
     observationRecord.time = timeNow;
+    console.log('date and time updated')
   }
 
   const handleSiteCodeChange = (e: Event) => {

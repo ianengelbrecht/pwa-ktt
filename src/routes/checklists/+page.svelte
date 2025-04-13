@@ -27,6 +27,7 @@
 
 </script>
 <div class="p-4">
+  <h1 class="text-2xl">Checklists:</h1>
   <SwipableList 
     items={checklists} 
     deleteItem={handleDelete} 

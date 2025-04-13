@@ -25,7 +25,8 @@
 
 <main id="listScreen" class="flex-1 p-4">
   <div class="mb-4">
-    <h1 class="text-xl">{checklist?.checklistName || 'Oops! No checklist name...'}</h1>
+    <h1 class="text-2xl">Species:</h1>
+    <h2 class="">{checklist?.checklistName || 'Oops! No checklist name...'}</h2>
   </div>
   <SwipableList items={species} deleteItem={deleteSpecies} deleteAll={deleteAllSpecies} ItemComponent={SpeciesCard}/>
   {#if !species.length}

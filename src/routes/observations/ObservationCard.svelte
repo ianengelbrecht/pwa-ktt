@@ -6,8 +6,10 @@
 
 </script>
 
-<div>
-  <p class="text-lg font-bold">{observation.speciesName || 'species name not recorded!'}</p>
-  <p>{observation.location} ±{observation.locationAccuracy}m</p>
-  <p>{observation.siteCode} {observation.date} {observation.time} {observation.observerInitials}</p>
-</div>
+<a href={"/observations/" + observation.observationID}>
+  <div class="w-full">
+    <p class="text-lg font-bold">{observation.speciesName || 'species name not recorded!'}</p>
+    <p>{observation.location} {observation.locationAccuracy == null ? '±?' :  '± ' + observation.locationAccuracy + 'm'}</p>
+    <p class="text-sm">Recorded at {observation.siteCode} on {observation.date} {observation.time}</p>
+  </div>
+</a>
