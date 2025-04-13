@@ -1,16 +1,14 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import type { Checklist } from "$lib/types/types.d.ts";
   import SwipableList from "$lib/components/SwipableList.svelte";
   import CheckListCard from "./CheckListCard.svelte";
   import { checklistCollection, speciesCollection } from "$lib/db/dexie";
   
   const checklists: Checklist[] = $state([])
-
-  onMount(async () => {
-    const checklistsFromDB = await checklistCollection.toArray();
+  checklistCollection.toArray().then((checklistsFromDB) => {
     checklists.push(...checklistsFromDB);
   });
+
 
   const handleDelete = async (checklist: Record<string, any>) => {
     // first check if we have species in this checklist
@@ -36,7 +34,6 @@
     items={checklists} 
     deleteItem={handleDelete} 
     ItemComponent={CheckListCard} 
-    itemIDfield={'checklistID'}
     deleteAll={handleDeleteAll}
     sortable={true} 
   />

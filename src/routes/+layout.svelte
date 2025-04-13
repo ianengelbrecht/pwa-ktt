@@ -5,22 +5,31 @@
 	
 	let { children } = $props();
 
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(reg => {
-      reg.onupdatefound = () => {
-        const newWorker = reg.installing
-        if (newWorker) {
-          newWorker.onstatechange = () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              if (confirm('A new version is available. Reload now?')) {
-                window.location.reload()
-              }
-            }
-          }
-        }
-      }
-    })
-  }
+  //switching off service worker for now
+  // if ('serviceWorker' in navigator) {
+  //   navigator.serviceWorker.register('/sw.js').then(reg => {
+  //     reg.onupdatefound = () => {
+  //       const newWorker = reg.installing
+  //       if (newWorker) {
+  //         newWorker.onstatechange = () => {
+  //           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+  //             if (confirm('A new version is available. Reload now?')) {
+  //               window.location.reload()
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   })
+  // }
+
+  // if ('serviceWorker' in navigator) {
+  //   navigator.serviceWorker.getRegistrations().then(registrations => {
+  //     for (const reg of registrations) {
+  //       reg.unregister();
+  //     }
+  //   });
+  // }
 </script>
 
 <div class="h-vh flex flex-col">

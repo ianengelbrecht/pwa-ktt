@@ -1,10 +1,20 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { settingsCollection } from '$lib/db/dexie';
 
-  // Navigate to /form after mount
-  goto('/demo');
+  console.log('about to get settings')
+  settingsCollection.toArray().then((settings) => {
+    console.log('managed to get the settings')
+    if (!settings || settings.length === 0 || !settings[0].user?.userInitials) {
+      goto('/settings');
+    } 
+    else {
+      goto('/observations/new');
+    }
+  });
+
 </script>
 
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<h1>Welcome to VP Pro!</h1>
+<p>Get ready to fly...</p>

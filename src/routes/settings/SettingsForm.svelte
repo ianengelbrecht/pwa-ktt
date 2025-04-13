@@ -85,35 +85,62 @@
   }
 
   const validateSettings = () => {
-
+    if (!settings.user?.firstName || !settings.user?.lastName || !settings.user?.userInitials) {
+      alert('Please enter your details!')
+      return false;
+    }
+    return true;
   }
 
-  const saveSettings = () => {
+  const saveSettings = async () => {
+    if (!validateSettings()) {
+      return false;
+    }
+
     if (settings.user && !settings.user.userID) {
       settings.user.userID = nanoid();
     }
     if (!settings.settingsID) {
       settings.settingsID = nanoid();
     }
-    settingsCollection.put($state.snapshot(settings)).then((result) => {
-      window.history.back()
-    }).catch((err) => {
-      if (err instanceof Error) {
-        console.log(err);
-        alert("Error saving settings: " + err.message);
-      }
-    });
+    await settingsCollection.put($state.snapshot(settings))
+
+    return true
   }
 
   const handleAddProject = async (ev: Event) => {
     ev.preventDefault();
-
-    goto('/projects/new');
+    try {
+      const success = await saveSettings()
+      if (success) {
+        goto('/projects/new');
+      }
+    }
+    catch(err) {
+      if (err instanceof Error) {
+        alert('Error saving settings:' + err.message);
+      } else {
+        alert('Error saving settings:' + err);
+      }
+    }
+    
   }
 
   const handleAddSurvey = async (ev: Event) => {
     ev.preventDefault();
-    goto('/project-surveys/new' + '?projectID=' + settings.project?.projectID);
+    try {
+      const success = await saveSettings()
+      if (success) {
+        goto('/project-surveys/' + settings.project?.projectID);
+      }
+    }
+    catch(err) {
+      if (err instanceof Error) {
+        alert('Error saving settings:' + err.message);
+      } else {
+        alert('Error saving settings:' + err);
+      }
+    }
   }
 
   // not used currently, as checklists must be added via the checklists page
@@ -121,6 +148,25 @@
   //   ev.preventDefault();
   //   goto('/checklists/new');
   // }
+
+  const handleSaveSettings = async (ev: Event) => {
+    ev.preventDefault();
+    try {
+      await saveSettings()
+      if (settings.checklist) {
+        goto('/observations' + '?projectID=' + settings.project?.projectID);
+      } else {
+        goto('/checklists/new');
+      }
+    }
+    catch(err) {
+      if (err instanceof Error) {
+        alert('Error saving settings:' + err.message);
+      } else {
+        alert('Error saving settings:' + err);
+      }
+    }
+  }
 
 </script>
 
@@ -162,7 +208,7 @@
         --item-hover-color="black"
         on:change={handleProjectChange}
       />
-      <button class="w-36 p-2  rounded border border-white hover:ring ring-white cursor-pointer" onclick={handleAddProject}>Add project</button>
+      <button class="btn" onclick={handleAddProject}>Add project</button>
     </div>
   </div>
   <div>
@@ -181,7 +227,7 @@
         --item-hover-bg="oklch(70.4% 0.04 256.788)"
         --item-hover-color="black"
       />
-      <button class="w-36 p-2  rounded border border-white hover:ring ring-white cursor-pointer disabled:hover:ring-0 disabled:border-slate-400 disabled:text-slate-400 disabled:cursor-auto" onclick={handleAddSurvey} disabled={!settings.project}>Add season</button>
+      <button class="btn" onclick={handleAddSurvey} disabled={!settings.project}>Add season</button>
     </div>
   </div>
   <div>
@@ -206,7 +252,7 @@
   </div>
   <div class="flex justify-between gap-4">
     <button class="btn" onclick={() => console.log($state.snapshot(settings))}>Log settings</button>
-    <button type="button" class="btn btn-primary" onclick={saveSettings}>Save and back</button>
+    <button type="button" class="btn btn-primary" onclick={handleSaveSettings}>Save settings</button>
   </div>
 </form>
 

@@ -2,10 +2,11 @@
 
 //this is just temporary, used in the original testing
 export interface CoordsRecord extends Record<string, any> {
-  timestamp: number, 
-  latitude: number, 
-  longitude: number, 
-  accuracy: number
+  recordID: string; // unique ID for the record
+  timestamp: number;
+  latitude: number;
+  longitude: number;
+  accuracy: number;
 }
 
 export type schemaField = {

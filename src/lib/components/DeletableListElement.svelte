@@ -45,7 +45,7 @@
   </div>
   <div id="container" 
       bind:this={container} 
-      class="group swipe-transition bg-slate-700 rounded p-4 flex items-center justify-between hover:bg-slate-600"
+      class="group swipe-transition bg-slate-700 rounded p-2 flex items-center justify-between hover:bg-slate-600"
       style="color: aliceblue; "
       use:swipeable 
       on:swiping={swipeHandler}
@@ -54,7 +54,7 @@
     <div id="content" class="w-full" >
       {@render children()}
     </div>
-    <button class="p-4 cursor-pointer" on:click={deleteButtonHandler}>
+    <button class="p-2 cursor-pointer" on:click={deleteButtonHandler}>
       <span class="material-symbols-outlined">close</span>
     </button>
   </div>

@@ -108,7 +108,7 @@
       Time:
       <input type="time" name="time" lang="en-GB" class="input-base" bind:value={observationRecord.time} />
     </label>
-    <button class="w-16 btn" onclick={handleClickNow}>Now</button>
+    <button class="btn" style="width: fit-content;" onclick={handleClickNow}>Now</button>
   </div>
   <label>
     No. individuals:

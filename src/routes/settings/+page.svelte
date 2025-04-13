@@ -2,4 +2,6 @@
   import SettingsForm from "./SettingsForm.svelte";
 </script>
 
-<SettingsForm />
+<main class="p-2 flex flex-col gap-4">
+  <SettingsForm />
+</main>

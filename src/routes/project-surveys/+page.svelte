@@ -1,5 +1,6 @@
 <script lang="ts">
   import { error } from '@sveltejs/kit';
+  import { onMount } from 'svelte';
   import { page } from "$app/state";
   import SwipableList from "$lib/components/SwipableList.svelte";
   import ProjectSurveyCard from "./ProjectSurveyCard.svelte";
@@ -17,8 +18,9 @@
   let project: Project | null = $state(null);
   const projectSurveys: ProjectSurvey[] = $state([]);
 
-  //load the project
-  projectCollection
+  onMount(() => {
+    //load the project
+    projectCollection
     .get(projectID)
     .then((dbProject) => {
       if (!dbProject) {
@@ -30,13 +32,16 @@
       }
     });
 
-  // load the project surveys
-  projectSurveyCollection
-    .where('projectID')
-    .equals(projectID!)
-    .toArray().then((projectSurveys) => {
-      projectSurveys.push(...projectSurveys);
-    });
+    // load the project surveys
+    projectSurveyCollection
+      .where('projectID')
+      .equals(projectID!)
+      .toArray()
+      .then((projectSurveysFromDB) => {
+        console.log('got', projectSurveysFromDB.length, 'surveys');
+        projectSurveys.push(...projectSurveysFromDB);
+      });
+  });
 
   const handleDelete = async (projectSurvey: Record<string, any>) => {
     await projectSurveyCollection.delete(projectSurvey.surveyID);
@@ -54,11 +59,10 @@
 
 </script>
 
-<main> class="p-4 flex flex-col gap-4">
+<main class="p-4 flex flex-col gap-4">
   <h1 class="text-lg font-bold">{project?.projectName || ''}</h1>
   <SwipableList
     items={projectSurveys}
-    itemIDfield={'surveyID'}
     deleteItem={handleDelete}
     deleteAll={handleDeleteAll}
     ItemComponent={ProjectSurveyCard}

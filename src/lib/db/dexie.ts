@@ -25,7 +25,7 @@ class AppDatabase extends Dexie {
   observations!: Table<Observation, string>;
 
   constructor() {
-    super('AppDatabase');
+    super('VPProDatabase');
 
     this.version(1).stores({
       settings: 'settingsID',

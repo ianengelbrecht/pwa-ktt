@@ -1,0 +1,80 @@
+<script lang="ts">
+  import { goto } from "$app/navigation";
+  import ChecklistForm  from "../ChecklistForm.svelte";
+  import  nanoid from '$lib/utils/nanoid';
+  import type { Settings, Checklist } from "$lib/types/types";
+  import { settingsCollection, checklistCollection } from "$lib/db/dexie";
+  
+  let settings: Settings;
+
+  let checklist: Checklist = $state({
+    checklistID: null, // auto generated on save
+    checklistName: null,
+    createdDate: new Date().toISOString().split('T')[0],
+    createdBy: null, // from settings
+    notes: null,
+  })
+
+  settingsCollection.toArray()
+    .then((settingsFromDB) => {
+      if (settingsFromDB.length > 0) {
+        settings = settingsFromDB[0];
+        checklist.createdBy = settings.user?.userInitials || null;
+      }
+    })
+    .catch((error) => {
+      if (error instanceof Error) {
+        alert("Error fetching settings: " + error.message);
+      } else {
+        alert("Error fetching settings: " + error);
+      }
+    });
+
+  const validateChecklist = () => {
+    if (!checklist.checklistName) {
+      alert('Checklist name is required!');
+      return false;
+    }
+    if (!checklist.createdBy) {
+      alert('Created by is required!');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSaveClick = async (ev: Event) => {
+    ev.preventDefault();
+
+    if (!validateChecklist()) {
+      return;
+    }
+
+    if (!checklist.checklistID) {
+      checklist.checklistID = nanoid();
+    }
+    try {
+      const data = $state.snapshot(checklist);
+      await checklistCollection.put(data);
+
+      //no form reset, we go strait to the species page
+      goto('/species?checklistID=' + checklist.checklistID); // Redirect to the species page with the checklist ID
+    }
+    catch(err) {
+      if (err instanceof Error) {
+        console.log(err)
+        alert('Error saving record: ' + err.message);
+      } else {
+        alert('Error saving record: ' + JSON.stringify(err));
+      }
+    }
+  };
+
+</script>
+
+<main class="p-4 flex flex-col gap-2">
+  <ChecklistForm bind:checklist />
+  <div class="flex justify-between">
+    <button class="btn" onclick={() => window.history.back()}>Done</button>
+    <button class="btn btn-primary" onclick={handleSaveClick}>Save</button>
+  </div>
+</main>

@@ -91,7 +91,6 @@
 
   const handleNewClick = () => {
     const newURL = page.url.pathname + '/new' + (page.url.search ? page.url.search : '');
-    console.log('New URL:', newURL);
     goto(newURL);
   };
 

@@ -16,17 +16,18 @@
   }
 
   let project: Project | null = $state(null);
+
   projectCollection
-  .get('projectID')
-  .then(dbProject => {
-    if (!dbProject) {
-      error(404, 'Uh oh! There is no project with ID ' + projectID + '. Something is wrong!');
-    }
-    project = dbProject;
-  });
+    .get(projectID)
+    .then(dbProject => {
+      if (!dbProject) {
+        error(404, 'Uh oh! There is no project with ID ' + projectID + '. Something is wrong!');
+      }
+      project = dbProject;
+    });
 
   // new or edit
-  const edit = page.params.projectSurveyID != 'new'
+  const isNew = page.params.projectSurveyID == 'new'
 
   let projectSurvey: ProjectSurvey = $state({
     surveyID: null,
@@ -37,7 +38,7 @@
     endDate: null
   });
 
-  if (edit) {
+  if (!isNew) {
     projectSurveyCollection
       .get(page.params.projectSurveyID)
       .then(dbProjectSurvey => {
@@ -84,7 +85,7 @@
     }
 
     
-    if (!edit) {
+    if (isNew) {
       projectSurvey.surveyID = nanoid(10);
       projectSurvey.projectID = projectID;
     }
@@ -100,7 +101,7 @@
       }
     }
 
-    if (edit) {
+    if (!isNew) {
       window.history.back()
     }
     else {
@@ -116,11 +117,13 @@
 
 </script>
 <main class="p-4 flex flex-col gap-4">
-  <h2 class="text-xl">New Project Survey/Season</h2>
-  <p class="text-sm">Project: {project?.projectName || ''}</p>
+  <div>
+    <h2 class="text-xl">{ isNew ? 'New' : 'Edit' } Survey/Season</h2>
+    <p class="text-sm">{ project?.projectName || 'no name' }</p>
+  </div>
   <ProjectSurveyForm bind:projectSurvey />
   <div class="flex justify-between">
-    <button class="w-24 btn " onclick={() => window.history.back()}>Done</button>
-    <button class=" btn btn-primary"  onclick={handleSaveClick} >Save{ edit ? 'and new' : ''}</button>
+    <button class="w-24 btn " onclick={() => window.history.back()}>{ isNew ? 'Done' : 'Cancel'}</button>
+    <button class=" btn btn-primary"  onclick={handleSaveClick} >Save{ isNew ? ' and new' : ''}</button>
   </div>
 </main>

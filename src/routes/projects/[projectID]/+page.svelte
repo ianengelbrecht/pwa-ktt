@@ -27,24 +27,22 @@
     createdDate: new Date().toISOString()
   })
 
-  const edit = page.params.projectID != 'new'
+  const isNew = page.params.projectID == 'new'
 
-  if (!edit) {
-    projectCollection
-    .get('projectID')
-    .then(dbProject => {
+  onMount(async () => {
+    if (isNew) {
+      const settingsFromDB = await settingsCollection.toArray();
+      if (settingsFromDB.length > 0) {
+        project.createdBy = settingsFromDB[0].user!.userInitials;
+      }
+    }
+    else {
+      const dbProject = await projectCollection.get(projectID)
       if (!dbProject) {
         error(404, 'Uh oh! There is no project with ID ' + projectID + '. Something is wrong!');
       }
-      project = dbProject;
-    });
-  }
-
-  onMount(async () => {
-    if (!edit) {
-      const settingsFromDB = await settingsCollection.toArray();
-      if (settingsFromDB.length > 0) {
-        project.createdBy = settingsFromDB[0].user!.userID;
+      else {
+        project = dbProject;
       }
     }
   });
@@ -63,13 +61,12 @@
       return
     }
 
-    if (!edit) {
+    if (isNew) {
       project.projectID = nanoid(10);
     }
     
     try {
       await projectCollection.put($state.snapshot(project));
-
     }
     catch (err) {
       if (err instanceof Error) {
@@ -78,7 +75,7 @@
       }
     }
 
-    if (!edit) {
+    if (isNew) {
       try {
         //add the project sites
         for (let i = 0; i < project.vpCount; i++) {
@@ -131,24 +128,29 @@
         else {
           alert('Unknown error saving project sites')
         }
+        return
       }
     }
 
     toast.push('Project saved')
     goto(`/projects/${project.projectID}`)
   };
+
   
 </script>
 
-<div class="p-4">
-  <h2 class="text-xl">{edit? 'Edit' : 'New'} project</h2>
+<main class="p-4 flex flex-col gap-4">
+  <h2 class="text-xl">{isNew? 'New' : 'Edit'} project</h2>
   <ProjectForm bind:project />
-  <div class="flex justify-between mt-2">
-    <button class="btn" onclick={() => window.history.back()}>{edit? 'Done' : 'Cancel'}</button>
-    {#if edit}
-      <button class="btn" onclick={() => goto('/project-sites?projectID=' + projectID)}>Sites</button>
-      <button class="btn" onclick={() => goto('/project-surveys?projectID=' + projectID)}>Surveys</button>
+
+  {#if !isNew}
+  <div class="flex justify-end gap-2">
+    <button class="btn" onclick={() => goto('/project-sites?projectID=' + projectID)}>Sites</button>
+    <button class="btn" onclick={() => goto('/project-surveys?projectID=' + projectID)}>Surveys</button>
+  </div>
     {/if}
+  <div class="flex justify-between mt-2">
+    <button class="btn" onclick={() => window.history.back()}>{isNew? 'Cancel' : 'Done'}</button>
     <button class="btn btn-primary" onclick={handleSaveClick}>Save</button>
   </div>
-</div>
+</main>

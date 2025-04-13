@@ -27,7 +27,7 @@
   projectSiteCollection
     .where('projectID')
     .equals(projectID)
-    .toArray()
+    .sortBy('siteCode')
     .then((sites) => {
       projectSites.push(...sites);
     });
