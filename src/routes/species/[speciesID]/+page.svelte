@@ -100,7 +100,7 @@
   <BackButton />
   <BirdSpeciesForm bind:speciesRecord />
   <div class="flex justify-between">
-    <button class="w-24 p-4 border rounded border-white  cursor-pointer" onclick={() => window.history.back()}>Done</button>
-    <button class="p-4 border rounded border-white bg-green-400 cursor-pointer" onclick={handleSaveClick}>Save and new</button>
+    <button class="btn" onclick={() => window.history.back()}>Done</button>
+    <button class="btn btn-primary" onclick={handleSaveClick}>Save and new</button>
   </div>
 </div>

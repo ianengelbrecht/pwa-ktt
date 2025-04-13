@@ -46,8 +46,6 @@
     }
   })
 
-  
-
   let dataFields = $derived(items.length? Object.keys(items[0]) : [])
   
   let dialog: HTMLDialogElement | null = null
@@ -108,7 +106,6 @@
       <span class={["material-symbols-outlined", {'text-slate-200 ': showSort}]}  style="font-size: 2.5rem;">sort</span>
     </button>
     {/if}
-
     <button class="cursor-pointer" onclick={handleSearchClick}>
       <span class="material-symbols-outlined" class:text-slate-200={showSearch}  style="font-size: 2rem;">search</span>
     </button>

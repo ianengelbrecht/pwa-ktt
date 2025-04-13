@@ -10,6 +10,7 @@
 <a href={'/species/' + speciesRecord.speciesID} class="flex flex-col group-hover:bg-slate-600 p-2 rounded-lg">
   <p class="text-xs">{speciesSchema.commonName1.displayName}</p>
   <p class="text-lg font-bold underline">{speciesRecord.commonName1}</p>
+  <p>{speciesRecord.commonName2}</p>
   <p class="italic">{speciesRecord.taxonName1}</p>
   <p class="text-xs">
     {
