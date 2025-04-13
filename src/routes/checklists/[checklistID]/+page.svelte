@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { error } from "@sveltejs/kit";
+  import { page } from "$app/state";
   import { goto } from "$app/navigation";
   import ChecklistForm  from "../ChecklistForm.svelte";
   import  nanoid from '$lib/utils/nanoid';
@@ -30,6 +32,29 @@
       }
     });
 
+  const { checklistID } = page.params;
+
+  if (!checklistID) {
+    error(400, "Oops! We should not have got here without a checklist ID...");
+  }
+  else {
+    checklistCollection.get(checklistID)
+      .then((checklistFromDB) => {
+        if (checklistFromDB) {
+          checklist = checklistFromDB;
+        } else {
+          error(500, `Whoa! There's no checklist with ID ${checklistID} in the database...`);
+        }
+      })
+      .catch((err) => {
+        if (err instanceof Error) {
+          error(500, "Error fetching checklist: " + err.message);
+        } else {
+          error(500, "Error fetching checklist: " + err);
+        }
+      });
+  }
+
   const validateChecklist = () => {
     if (!checklist.checklistName) {
       alert('Checklist name is required!');
@@ -56,8 +81,8 @@
       const data = $state.snapshot(checklist);
       await checklistCollection.put(data);
 
-      //no form reset, we go strait to the species page
-      goto('/species?checklistID=' + checklist.checklistID); // Redirect to the species page with the checklist ID
+      //no form reset, we go straight to the species page
+      goto('/species?checklistID=' + checklist.checklistID); 
     }
     catch(err) {
       if (err instanceof Error) {
