@@ -17,11 +17,16 @@ export const load: PageLoad = async ({ url, params }) => {
     error(400, 'Oops, we should not have got here without a speciesID...');
   }
 
+  //we should only be able to get here from a checklist page/card
+  if (!checklistID) {
+    //redirect to  error page
+    error(400, 'Oops, we should not have got here without a checklistID...');
+  }
+
   if (speciesID != 'new') {
     //fetch the species from the database
     try {
       species = await speciesCollection.get(speciesID) || null
-      console.log('species from the database:', species?.commonName1)
     }
     catch (e) {
       if (e instanceof Error) {
@@ -31,15 +36,6 @@ export const load: PageLoad = async ({ url, params }) => {
         error(500, 'Error getting species from database:' + e);
       }
     }
-
-    checklistID = species?.checklistID || null;
-
-  }
-
-  //we should only be able to get here from a checklist page/card
-  if (!checklistID) {
-    //redirect to  error page
-    error(400, 'Oops, we should not have got here without a checklistID...');
   }
 
   // fetch the checklist from the database
