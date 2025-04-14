@@ -3,6 +3,14 @@
  
   let { projectSurvey = $bindable() }: { projectSurvey: ProjectSurvey } = $props()
 
+  const handleStartDateChanged = (ev: Event) => {
+    if (projectSurvey.startDate) {
+      if (!projectSurvey.endDate || projectSurvey.endDate < projectSurvey.startDate) {
+        projectSurvey.endDate = projectSurvey.startDate
+      }
+    }
+  };
+
 </script>
 
 
@@ -19,7 +27,7 @@
   <div class="flex gap-2">
     <label>
       Start Date
-      <input type="date" bind:value={projectSurvey.startDate} class="input-base" />
+      <input type="date" class="input-base" bind:value={projectSurvey.startDate} onchange={handleStartDateChanged}/>
     </label>
     <label>
       End Date

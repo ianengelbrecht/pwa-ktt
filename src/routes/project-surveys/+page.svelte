@@ -2,6 +2,7 @@
   import { error } from '@sveltejs/kit';
   import { onMount } from 'svelte';
   import { page } from "$app/state";
+  import BackButton from '$lib/components/BackButton.svelte';
   import SwipableList from "$lib/components/SwipableList.svelte";
   import ProjectSurveyCard from "./ProjectSurveyCard.svelte";
   import { projectCollection, projectSurveyCollection } from "$lib/db/dexie";
@@ -60,7 +61,11 @@
 </script>
 
 <main class="p-4 flex flex-col gap-4">
-  <h1 class="text-lg font-bold">{project?.projectName || ''}</h1>
+  <BackButton />
+  <div>
+    <h1 class="text-xl font-bold">Project surveys</h1>
+    <p>{project?.projectName || ''}</p>
+  </div>
   <SwipableList
     items={projectSurveys}
     deleteItem={handleDelete}

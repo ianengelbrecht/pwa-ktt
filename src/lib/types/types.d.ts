@@ -82,12 +82,13 @@ export type Project = {
 } 
 
 export type ProjectSite = {
-  projectSiteID: string;
-  projectID: string;
-  siteCode: string;
+  projectSiteID: string | null;
+  projectID: string | null;
+  siteCode: string | null;
   verbatimLocation: string | null; // the location as it was entered by the user
   siteLocation: CoordinatesString | null; // coordinates of the site
   thresholdDistance: number | null;
+  sessionOrTransectDuration: number | null; // average time to complete a session or transect at this site
 }
 
 // The survey number / season for this project

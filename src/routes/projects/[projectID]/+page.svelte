@@ -85,7 +85,8 @@
             siteCode: `VP${i + 1}`,
             verbatimLocation: null,
             siteLocation: null,
-            thresholdDistance: null
+            thresholdDistance: null,
+            sessionOrTransectDuration: 0
           });
         }
 
@@ -96,7 +97,8 @@
             siteCode: `WT${i + 1}`,
             verbatimLocation: null,
             siteLocation: null,
-            thresholdDistance: null
+            thresholdDistance: null,
+            sessionOrTransectDuration: 0
           });
         }
 
@@ -107,7 +109,8 @@
             siteCode: `DT${i + 1}`,
             verbatimLocation: null,
             siteLocation: null,
-            thresholdDistance: null
+            thresholdDistance: null,
+            sessionOrTransectDuration: 0
           });
         }
 
@@ -117,7 +120,8 @@
           siteCode: `incidental`,
           verbatimLocation: null,
           siteLocation: null,
-          thresholdDistance: null
+          thresholdDistance: null,
+          sessionOrTransectDuration: 0
         });
         
       }
@@ -133,7 +137,7 @@
     }
 
     toast.push('Project saved')
-    goto(`/projects/${project.projectID}`)
+    goto(`/project-sites?projectID=${project.projectID}`)
   };
 
   
