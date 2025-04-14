@@ -1,17 +1,12 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import type { Project } from '$lib/types/types';
   import BackButton from '$lib/components/BackButton.svelte';
   import SwipableList from '$lib/components/SwipableList.svelte';
   import ProjectCard from './ProjectCard.svelte';
   import { projectCollection } from '$lib/db/dexie';
 
-  const projects: Project[] = $state([]);
-
-  onMount(async () => {
-    const projectsFromDB = await projectCollection.toArray();
-    projects.push(...projectsFromDB);
-  });
+  const { data } = $props();
+  const { projects } = data;
 
   const handleDelete = async (project: Record<string, any>) => {
     await projectCollection.delete(project.projectID);

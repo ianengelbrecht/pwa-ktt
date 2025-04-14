@@ -1,28 +1,17 @@
 <script lang="ts">
-  import { error } from '@sveltejs/kit';
-  import { onMount } from 'svelte';
-  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { toast } from '@zerodevx/svelte-toast';
   import { makeID } from '$lib/utils';
   import ProjectForm from './ProjectForm.svelte';
   import type { Project } from '$lib/types/types';
-  import {
-    projectCollection,
-    projectSiteCollection,
-    settingsCollection,
-  } from '$lib/db/dexie';
+  import { projectCollection, projectSiteCollection } from '$lib/db/dexie';
 
-  // make sure we can only get here if we have a projectID
-  const projectID = page.params.projectID;
-  if (!projectID) {
-    error(403, {
-      message:
-        'Oops, you got here with no projectID! That should not have happened...',
-    });
-  }
+  const { data } = $props();
+  const { project, user } = data;
 
-  let project: Project = $state({
+  const isNew = project == null;
+
+  let projectRecord: Project = $state({
     projectID: null,
     projectName: null,
     vpCount: 3,
@@ -32,31 +21,12 @@
     createdDate: new Date().toISOString(),
   });
 
-  const isNew = page.params.projectID == 'new';
-
-  onMount(async () => {
-    if (isNew) {
-      const settingsFromDB = await settingsCollection.toArray();
-      if (settingsFromDB.length > 0) {
-        project.createdBy = settingsFromDB[0].user!.userInitials;
-      }
-    } else {
-      const dbProject = await projectCollection.get(projectID);
-      if (!dbProject) {
-        error(
-          404,
-          'Uh oh! There is no project with ID ' +
-            projectID +
-            '. Something is wrong!',
-        );
-      } else {
-        project = dbProject;
-      }
-    }
-  });
+  if (!isNew) {
+    projectRecord = project;
+  }
 
   const projectValidations = () => {
-    if (!project.projectName || !project.projectName.trim()) {
+    if (!projectRecord.projectName || !projectRecord.projectName.trim()) {
       alert('Project name is required');
       return false;
     }
@@ -70,11 +40,11 @@
     }
 
     if (isNew) {
-      project.projectID = makeID(10);
+      projectRecord.projectID = makeID(10);
     }
 
     try {
-      await projectCollection.put($state.snapshot(project));
+      await projectCollection.put($state.snapshot(projectRecord));
     } catch (err) {
       if (err instanceof Error) {
         alert('Error saving project: ' + err.message);
@@ -83,47 +53,36 @@
     }
 
     if (isNew) {
+      let siteCountProperties: Record<string, keyof Project> = {
+        VP: 'vpCount',
+        WT: 'wtCount',
+        DT: 'dtCount',
+      };
+
+      //add the project sites
       try {
-        //add the project sites
-        for (let i = 0; i < project.vpCount; i++) {
-          await projectSiteCollection.add({
-            projectSiteID: makeID(10),
-            projectID: project.projectID!,
-            siteCode: `VP${i + 1}`,
-            verbatimLocation: null,
-            siteLocation: null,
-            thresholdDistance: null,
-            sessionOrTransectDuration: 0,
-          });
+        for (const [siteCodePrefix, siteCountProperty] of Object.entries(
+          siteCountProperties,
+        )) {
+          const siteCount = projectRecord[siteCountProperty] as number;
+          for (let i = 0; i < siteCount; i++) {
+            await projectSiteCollection.add({
+              projectSiteID: makeID(10),
+              projectID: projectRecord.projectID!,
+              siteCode: `${siteCodePrefix}${i + 1}`,
+              verbatimLocation: null,
+              siteLocation: null,
+              thresholdDistance: null,
+              sessionOrTransectDuration: 0,
+            });
+          }
         }
 
-        for (let i = 0; i < project.wtCount; i++) {
-          await projectSiteCollection.add({
-            projectSiteID: makeID(10),
-            projectID: project.projectID!,
-            siteCode: `WT${i + 1}`,
-            verbatimLocation: null,
-            siteLocation: null,
-            thresholdDistance: null,
-            sessionOrTransectDuration: 0,
-          });
-        }
-
-        for (let i = 0; i < project.dtCount; i++) {
-          await projectSiteCollection.add({
-            projectSiteID: makeID(10),
-            projectID: project.projectID!,
-            siteCode: `DT${i + 1}`,
-            verbatimLocation: null,
-            siteLocation: null,
-            thresholdDistance: null,
-            sessionOrTransectDuration: 0,
-          });
-        }
-
+        //add the incidental site
+        // this is a special case, so we need to add it separately
         await projectSiteCollection.add({
           projectSiteID: makeID(10),
-          projectID: project.projectID!,
+          projectID: projectRecord.projectID!,
           siteCode: `incidental`,
           verbatimLocation: null,
           siteLocation: null,
@@ -141,24 +100,26 @@
     }
 
     toast.push('Project saved');
-    goto(`/project-sites?projectID=${project.projectID}`);
+    goto(`/project-sites?projectID=${projectRecord.projectID}`);
   };
 </script>
 
 <main class="p-4 flex flex-col gap-4">
   <h2 class="text-xl">{isNew ? 'New' : 'Edit'} project</h2>
-  <ProjectForm bind:project />
+  <ProjectForm bind:project={projectRecord} />
 
   {#if !isNew}
     <div class="flex justify-end gap-2">
       <button
         class="btn"
-        onclick={() => goto('/project-sites?projectID=' + projectID)}
+        onclick={() =>
+          goto('/project-sites?projectID=' + projectRecord.projectID)}
         >Sites</button
       >
       <button
         class="btn"
-        onclick={() => goto('/project-surveys?projectID=' + projectID)}
+        onclick={() =>
+          goto('/project-surveys?projectID=' + projectRecord.projectID)}
         >Surveys</button
       >
     </div>
