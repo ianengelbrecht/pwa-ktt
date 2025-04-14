@@ -10,9 +10,11 @@
   if (navigator.geolocation) {
     navigator.geolocation.watchPosition(
       (position) => {
-        const { latitude, longitude } = position.coords;
-        placeHolderCoordinates = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-        accuracy = Number(position.coords.accuracy.toFixed(0));
+        if (!coordinates) {
+          const { latitude, longitude } = position.coords;
+          placeHolderCoordinates = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+          accuracy = Number(position.coords.accuracy.toFixed(0));
+        }
       },
       (error) => {
         console.error('Error getting location:', error);
