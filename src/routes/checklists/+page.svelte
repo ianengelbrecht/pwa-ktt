@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Checklist } from "$lib/types/types.d.ts";
+  import BackButton from "$lib/components/BackButton.svelte";
   import SwipableList from "$lib/components/SwipableList.svelte";
   import CheckListCard from "./CheckListCard.svelte";
   import { checklistCollection, speciesCollection } from "$lib/db/dexie";
@@ -26,7 +27,8 @@
   };
 
 </script>
-<div class="p-4">
+<div class="p-4 flex flex-col gap-2">
+  <BackButton />
   <h1 class="text-2xl">Checklists:</h1>
   <SwipableList 
     items={checklists} 

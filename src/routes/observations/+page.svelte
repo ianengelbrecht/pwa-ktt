@@ -1,4 +1,5 @@
 <script lang="ts">
+  import BackButton from "$lib/components/BackButton.svelte";
   import SwipableList from "$lib/components/SwipableList.svelte";
   import ObservationCard from "./ObservationCard.svelte";
   import type { ObservationSummary } from "$lib/types/types";
@@ -24,8 +25,11 @@
 </script>
 
 <main class="flex flex-col gap-4 p-4">
-  <h1 class="text-2xl font-bold">Observations</h1>
-  <p>{settings.project?.projectName || ''} {settings.projectSurvey?.surveyName || ''}</p>
+  <BackButton />
+  <div>
+    <h1 class="text-2xl font-bold">Observations</h1>
+    <p>{settings.project?.projectName || ''} {settings.projectSurvey?.surveyName || ''}</p>
+  </div>
   <SwipableList
     items={summarizedObservations}
     deleteItem={deleteObservation}

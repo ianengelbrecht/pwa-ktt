@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import type {Project } from "$lib/types/types";
+  import BackButton from "$lib/components/BackButton.svelte";
   import SwipableList from "$lib/components/SwipableList.svelte";
   import ProjectCard from "./ProjectCard.svelte";
   import { projectCollection } from "$lib/db/dexie";
@@ -23,6 +24,7 @@
 </script>
 
 <main class="p-4">
+  <BackButton />
   <h1 class="text-lg font-bold">Projects</h1>
   <SwipableList
     items={projects}

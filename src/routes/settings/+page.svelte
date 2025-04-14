@@ -2,6 +2,7 @@
   import { toast } from "@zerodevx/svelte-toast";
   import { goto } from "$app/navigation";
   import { makeID } from '$lib/utils';
+  import BackButton from "$lib/components/BackButton.svelte";
   import SettingsForm from "./SettingsForm.svelte";
   import type { Settings } from "$lib/types/types";
   import { settingsCollection, projectSurveyCollection } from "$lib/db/dexie";
@@ -119,6 +120,7 @@
 </script>
 
 <main class="p-4 flex flex-col gap-4">
+  <BackButton />
   <h2 class="text-2xl">Settings</h2>
   <SettingsForm 
   bind:settingsRecord

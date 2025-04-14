@@ -1,5 +1,6 @@
 <script lang="ts">
   // this is outdated and does not confirm to the standard +page pattern, but it works for now and is just a demo
+  import BackButton from '$lib/components/BackButton.svelte';
   import SwipableList from '$lib/components/SwipableList.svelte';
   import RecordCard from './RecordCard.svelte';
   import type { CoordsRecord }  from '$lib/types/types'
@@ -20,6 +21,7 @@
 </script>
 
 <main id="listScreen" class="flex-1 p-4 gap-2">
+  <BackButton />
   <h1 class="text-xl mb-4">Some example data...</h1>
   <SwipableList items={data} {deleteItem} {deleteAll} ItemComponent={RecordCard} />
 </main>
