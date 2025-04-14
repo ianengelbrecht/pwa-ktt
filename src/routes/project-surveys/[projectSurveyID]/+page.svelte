@@ -1,36 +1,17 @@
 <script lang="ts">
-  import { error } from '@sveltejs/kit';
-  import { page } from "$app/state";
   import { toast } from '@zerodevx/svelte-toast'
   import { makeID } from '$lib/utils';
   import ProjectSurveyForm from "./ProjectSurveyForm.svelte";
-  import type { Project, ProjectSurvey } from "$lib/types/types";
-  import { projectCollection, projectSurveyCollection } from "$lib/db/dexie";
+  import type { ProjectSurvey } from "$lib/types/types";
+  import { projectSurveyCollection } from "$lib/db/dexie";
 
+  const { data } = $props()
+  const { project, projectSurvey, projectID } = data
   
-  // make sure we can only get here if we have a projectID
-  const projectID = page.url.searchParams.get("projectID");
-  if (!projectID) {
-    error(403, {
-      message: "Oops, you got here with no projectID! That should not have happened..."
-    });
-  }
-
-  let project: Project | null = $state(null);
-
-  projectCollection
-    .get(projectID)
-    .then(dbProject => {
-      if (!dbProject) {
-        error(404, 'Uh oh! There is no project with ID ' + projectID + '. Something is wrong!');
-      }
-      project = dbProject;
-    });
-
   // new or edit
-  const isNew = page.params.projectSurveyID == 'new'
+  const isNew = projectSurvey == null
 
-  let projectSurvey: ProjectSurvey = $state({
+  let projectSurveyRecord: ProjectSurvey = $state({
     surveyID: null,
     projectID: null,
     surveyName: null,
@@ -40,29 +21,22 @@
   });
 
   if (!isNew) {
-    projectSurveyCollection
-      .get(page.params.projectSurveyID)
-      .then(dbProjectSurvey => {
-        if (!dbProjectSurvey) {
-          error(404, 'Uh oh! There is no project survey with ID ' + page.params.projectSurveyID + '. Something is wrong!');
-        }
-        projectSurvey = dbProjectSurvey;
-      });
+    projectSurveyRecord = projectSurvey
   }
 
   // yay! now we can keep all this logic in the UI component!
   const validateProjectSurvey = () => {
     const missingFields = []
-    if (!projectSurvey.surveyName) {
+    if (!projectSurveyRecord.surveyName) {
       missingFields.push("surveyName")
     }
-    if (!projectSurvey.season) {
+    if (!projectSurveyRecord.season) {
       missingFields.push("season")
     }
-    if (!projectSurvey.startDate) {
+    if (!projectSurveyRecord.startDate) {
       missingFields.push("startDate")
     }
-    if (!projectSurvey.endDate) {
+    if (!projectSurveyRecord.endDate) {
       missingFields.push("endDate")
     }
 
@@ -71,7 +45,7 @@
       return false
     }
 
-    if (projectSurvey.startDate! > projectSurvey.endDate!) {
+    if (projectSurveyRecord.startDate! > projectSurveyRecord.endDate!) {
       alert("Start date cannot be after end date")
       return false
     }
@@ -87,12 +61,12 @@
 
     
     if (isNew) {
-      projectSurvey.surveyID = makeID(10);
-      projectSurvey.projectID = projectID;
+      projectSurveyRecord.surveyID = makeID(10);
+      projectSurveyRecord.projectID = projectID;
     }
 
     try {
-      await projectSurveyCollection.put($state.snapshot(projectSurvey));
+      await projectSurveyCollection.put($state.snapshot(projectSurveyRecord));
       toast.push('record saved')
     }
     catch (err) {
@@ -107,11 +81,11 @@
     }
     else {
       //clear the record
-      projectSurvey.surveyID = null;
-      projectSurvey.surveyName = null;
-      projectSurvey.season = null;
-      projectSurvey.startDate = null;
-      projectSurvey.endDate = null;
+      projectSurveyRecord.surveyID = null;
+      projectSurveyRecord.surveyName = null;
+      projectSurveyRecord.season = null;
+      projectSurveyRecord.startDate = null;
+      projectSurveyRecord.endDate = null;
     }
     
   };
@@ -122,7 +96,7 @@
     <h2 class="text-xl">{ isNew ? 'New' : 'Edit' } Survey/Season</h2>
     <p class="text-sm">{ project?.projectName || 'no name' }</p>
   </div>
-  <ProjectSurveyForm bind:projectSurvey />
+  <ProjectSurveyForm bind:projectSurvey={projectSurveyRecord} />
   <div class="flex justify-between">
     <button class="w-24 btn " onclick={() => window.history.back()}>{ isNew ? 'Done' : 'Cancel'}</button>
     <button class=" btn btn-primary"  onclick={handleSaveClick} >Save{ isNew ? ' and new' : ''}</button>
