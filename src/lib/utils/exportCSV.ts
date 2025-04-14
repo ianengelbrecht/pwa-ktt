@@ -1,44 +1,39 @@
 import Papa from 'papaparse';
 
 /**
- * A generic csv export function that simply exports the current data (no flattening, etc)
+ * A generic csv export function that wraps mapping functions for the input data
  * @param data An array of objects to convert to CSV
- * @param headers Specific headers to include in the CSV. If not provided, all headers from the data will be used.
- * If the headers are provided, only the matching keys in the data will be included in the CSV.
+ * @param mappingFunction The mapping function that flattens the specific data type for CSV export
+ * @param fileName The name of the file to download (optional), e.g. 'observations.csv'. Defaults to 'data.csv'
  */
-export const exportCSV = <T extends Record<string, any>>(data: T[], headers?: string[]): void => {
+export const exportCSV = <T extends Record<string, any>>(data: T[], mappingFunction?: (record: T) => Record<string, any> | null, fileName?: string): void => {
+
+  if (!fileName) {
+    fileName = 'data.csv'
+  }
+  else {
+    if (!fileName.toLowerCase().endsWith('.csv')) {
+      fileName += '.csv'
+    } 
+  }
 
   if (data.length === 0) return alert('No data to export.')
 
-  let exportData: Record<string, any>[] = [];
+  let exportData = data
 
-  if (headers) {
-    if (!Object.keys(data[0]).some(key => headers.includes(key))) {
-      return alert('No matching headers found in data.')
-    }
-    else {
-      exportData = data.map(item => {
-        const filteredItem: Record<string, any> = {}
-        headers.forEach(header => {
-          if (item.hasOwnProperty(header)) {
-            filteredItem[header] = item[header]
-          }
-        })
-        return filteredItem
-      })
-    }
+  if (mappingFunction) {
+    exportData = data.map(mappingFunction).filter((record) => record !== null) as T[]
   }
 
-  if (exportData.length === 0) {
-    exportData = data
-  }
+  if (exportData.length === 0) return alert('no records survived mapping...')
 
   const csv = Papa.unparse(exportData, { header: true });
   const blob = new Blob([csv], { type: 'text/csv' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = 'data.csv'
+  a.download = fileName
   a.click()
   URL.revokeObjectURL(url)
+
 }

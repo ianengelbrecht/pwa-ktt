@@ -4,6 +4,7 @@
   import SwipableList from '$lib/components/SwipableList.svelte';
   import RecordCard from './RecordCard.svelte';
   import type { CoordsRecord }  from '$lib/types/types'
+  import { exportCSV } from '$lib/utils';
 
   const data: CoordsRecord[] = $state(JSON.parse(localStorage.getItem('geoData') || '[]'))
 
@@ -18,10 +19,14 @@
     localStorage.setItem('geoData', JSON.stringify(data))
   }
 
+  const exportData = () => {
+    exportCSV(data, undefined, 'demorecords.csv')
+  }
+
 </script>
 
 <main id="listScreen" class="flex-1 p-4 gap-2">
   <BackButton />
   <h1 class="text-xl mb-4">Some example data...</h1>
-  <SwipableList items={data} {deleteItem} {deleteAll} ItemComponent={RecordCard} />
+  <SwipableList items={data} {deleteItem} {deleteAll} ItemComponent={RecordCard} exportFunction={exportData} />
 </main>
