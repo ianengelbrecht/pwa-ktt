@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { toast } from '@zerodevx/svelte-toast';
   import { dateTimeNow } from '$lib/utils';
   import { makeID } from '$lib/utils';
@@ -44,6 +45,20 @@
   if (observation) {
     observationRecord = observation;
   }
+
+  onMount(() => {
+    if (isNew) {
+      const lastSavedSiteCode = localStorage.getItem('lastSavedSiteCode');
+      if (lastSavedSiteCode) {
+        const site = projectSites.find(
+          (site) => site.siteCode === lastSavedSiteCode,
+        );
+        if (site) {
+          observationRecord.projectSite = site.siteCode;
+        }
+      }
+    }
+  });
 
   // start watching coordinates
   navigator.geolocation.watchPosition(
@@ -109,6 +124,7 @@
 
     try {
       await observationCollection.put($state.snapshot(observationRecord));
+      localStorage.setItem('lastSavedSiteCode', observationRecord.projectSite!);
       toast.push('Observation saved');
     } catch (err) {
       if (err instanceof Error) {

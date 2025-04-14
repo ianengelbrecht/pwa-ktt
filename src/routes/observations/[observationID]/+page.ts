@@ -59,7 +59,7 @@ export const load: PageLoad = async ({ params }) => {
     projectSites = await projectSiteCollection
       .where('projectID')
       .equals(settings.project?.projectID!)
-      .toArray();
+      .sortBy('siteCode');
   } catch (e) {
     if (e instanceof Error) {
       error(500, 'Error fetching project sites: ' + e.message);
