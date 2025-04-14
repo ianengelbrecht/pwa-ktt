@@ -6,7 +6,6 @@
   import { goto } from '$app/navigation';
   import Select from 'svelte-select';
   import DeletableListElement from "./DeletableListElement.svelte";
-  import { exportCSV } from '$lib/utils';
 
   let showSearch = $state(localStorage.getItem(page.url.pathname + 'showSearch') === 'true')
   let searchTerm: string = $state('')
@@ -27,10 +26,11 @@
      */
     deleteAll?: () => void, 
     ItemComponent: Component<{item: T}>, 
-    sortable?: boolean
+    sortable?: boolean,
+    exportFunction?: (exportItems: T[]) => void // optional function to export the data as CSV
   }
   
-  const { items, deleteItem, deleteAll, ItemComponent, sortable = true }: Props<Record<string, any>> = $props()
+  const { items, deleteItem, deleteAll, ItemComponent, sortable = true, exportFunction }: Props<Record<string, any>> = $props()
   
   // same records, but sorted
   let displayData = $derived.by(() => {
@@ -135,9 +135,11 @@
     {/each}
   </ul>
   <div class="flex justify-left gap-8">
-    <button onclick={() => exportCSV(displayData)} class="mt-4 p-2 bg-green-600 rounded cursor-pointer disabled:bg-transparent disabled:cursor-auto " disabled={!items.length}>Export CSV</button>
+    {#if exportFunction}
+      <button onclick={() => exportFunction(displayData)} class="mt-4 p-2 bg-green-600 rounded cursor-pointer disabled:bg-transparent disabled:cursor-auto " disabled={!items.length}>Export CSV</button>
+    {/if}
     {#if deleteAll}
-    <button onclick={confirmAndDeleteAll} class="mt-4 p-2 rounded border-2 border-gray-200 cursor-pointer disabled:cursor-auto" disabled={!items.length} >Delete all</button>
+      <button onclick={confirmAndDeleteAll} class="mt-4 p-2 rounded border-2 border-gray-200 cursor-pointer disabled:cursor-auto" disabled={!items.length} >Delete all</button>
     {/if}
   </div>
 {/if}

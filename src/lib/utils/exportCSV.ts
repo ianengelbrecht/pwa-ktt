@@ -1,6 +1,12 @@
 import Papa from 'papaparse';
 
-export const exportCSV = <T extends Record<string, any>>(data: T[], headers?: string[]) => {
+/**
+ * A generic csv export function that simply exports the current data (no flattening, etc)
+ * @param data An array of objects to convert to CSV
+ * @param headers Specific headers to include in the CSV. If not provided, all headers from the data will be used.
+ * If the headers are provided, only the matching keys in the data will be included in the CSV.
+ */
+export const exportCSV = <T extends Record<string, any>>(data: T[], headers?: string[]): void => {
 
   if (data.length === 0) return alert('No data to export.')
 
