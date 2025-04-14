@@ -4,7 +4,7 @@
   --toastContainerTop: auto;
   --toastContainerRight: 20px;
   --toastContainerBottom: 2rem;
-  --toastBarHeight: 0
+  --toastBarHeight: 0;
 }
 
 @layer components {
@@ -13,22 +13,22 @@
   }
 
   .btn {
-    @apply min-w-24 text-nowrap p-2 border rounded border-slate-100 cursor-pointer
+    @apply min-w-24 text-nowrap p-2 border rounded border-slate-100 cursor-pointer;
   }
 
   .btn:hover {
-    @apply ring ring-white
+    @apply ring ring-white;
   }
 
   .btn:disabled {
-    @apply border-slate-300 text-slate-300
+    @apply border-slate-300 text-slate-300;
   }
 
   .btn:disabled:hover {
-    @apply ring-0 cursor-auto
+    @apply ring-0 cursor-auto;
   }
-  
+
   .btn-primary {
-    @apply bg-green-400
+    @apply bg-green-400;
   }
 }

@@ -1,21 +1,20 @@
 <script lang="ts">
-  import { decimalToTime } from "$lib/utils";
-  import type { ProjectSite } from "$lib/types/types";
+  import { decimalToTime } from '$lib/utils';
+  import type { ProjectSite } from '$lib/types/types';
   const { item } = $props();
-  let site = item as ProjectSite
+  let site = item as ProjectSite;
 
-  const isIncidental = site.siteCode?.toLowerCase().replace(/\s+/g, '') == 'incidental' || false
+  const isIncidental =
+    site.siteCode?.toLowerCase().replace(/\s+/g, '') == 'incidental' || false;
 
   const handleHrefClick = (ev: Event) => {
     if (isIncidental) {
-      ev.preventDefault()
+      ev.preventDefault();
     }
-  }
-
-
+  };
 </script>
 
-<a href={"/project-sites/" + site.projectSiteID} onclick={handleHrefClick}>
+<a href={'/project-sites/' + site.projectSiteID} onclick={handleHrefClick}>
   <div class="p-2 flex flex-col">
     <h2 class="text-lg">{site.siteCode}</h2>
     <div>
@@ -24,7 +23,11 @@
         <p class="text-sm">Threshold: {site.thresholdDistance}</p>
       {/if}
       {#if !isIncidental}
-        <p class="text-sm">Average Duration: { site.sessionOrTransectDuration ? decimalToTime(site.sessionOrTransectDuration) : '0:00'}</p>
+        <p class="text-sm">
+          Average Duration: {site.sessionOrTransectDuration
+            ? decimalToTime(site.sessionOrTransectDuration)
+            : '0:00'}
+        </p>
       {/if}
     </div>
   </div>

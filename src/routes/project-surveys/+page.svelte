@@ -1,16 +1,18 @@
 <script lang="ts">
   import BackButton from '$lib/components/BackButton.svelte';
-  import SwipableList from "$lib/components/SwipableList.svelte";
-  import ProjectSurveyCard from "./ProjectSurveyCard.svelte";
-  import { projectSurveyCollection } from "$lib/db/dexie";
-  import type { ProjectSurvey } from "$lib/types/types";
+  import SwipableList from '$lib/components/SwipableList.svelte';
+  import ProjectSurveyCard from './ProjectSurveyCard.svelte';
+  import { projectSurveyCollection } from '$lib/db/dexie';
+  import type { ProjectSurvey } from '$lib/types/types';
 
-  const { data } = $props()
-  const { project, projectSurveys } = data
+  const { data } = $props();
+  const { project, projectSurveys } = data;
 
   const handleDelete = async (projectSurvey: Record<string, any>) => {
     await projectSurveyCollection.delete(projectSurvey.surveyID);
-    const index = projectSurveys.findIndex((ps) => ps === projectSurvey as ProjectSurvey);
+    const index = projectSurveys.findIndex(
+      (ps) => ps === (projectSurvey as ProjectSurvey),
+    );
     if (index !== -1) {
       projectSurveys.splice(index, 1);
     }
@@ -18,10 +20,8 @@
 
   const handleDeleteAll = async () => {
     await projectSurveyCollection.clear();
-    projectSurveys.length = 0
+    projectSurveys.length = 0;
   };
-
-
 </script>
 
 <main class="p-4 flex flex-col gap-4">

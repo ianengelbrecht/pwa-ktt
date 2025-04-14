@@ -2,20 +2,20 @@ import Papa from 'papaparse';
 
 export function readCSV<T>(file: File): Promise<T[]> {
   return new Promise((resolve, reject) => {
-    const csvRecords: T[] = []
+    const csvRecords: T[] = [];
     // Stream big file in worker thread
     Papa.parse(file, {
       worker: true,
       header: true,
-      step: function(results) {
+      step: function (results) {
         csvRecords.push(results.data as T);
       },
-      complete: function() {
-        resolve(csvRecords)
+      complete: function () {
+        resolve(csvRecords);
       },
-      error: function(error) {
-        reject(error)
+      error: function (error) {
+        reject(error);
       },
     });
-  })
-};
+  });
+}

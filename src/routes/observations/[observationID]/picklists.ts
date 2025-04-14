@@ -1,8 +1,8 @@
-export const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
+export const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 
 export const habitats = [
-  'Agricultural field', 
-  'Drainage line', 
+  'Agricultural field',
+  'Drainage line',
   'Forest/plantation',
   'Man-made structure',
   'No habitat used',
@@ -13,5 +13,5 @@ export const habitats = [
   'Water body',
   'Wetland',
   'Woodland',
-  'Other'
-]
+  'Other',
+];

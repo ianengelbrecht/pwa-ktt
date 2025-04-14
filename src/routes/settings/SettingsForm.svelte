@@ -1,6 +1,11 @@
 <script lang="ts">
-  import type { Settings, Project, ProjectSurvey, Checklist } from "$lib/types/types";
-  import Select from "svelte-select";
+  import type {
+    Settings,
+    Project,
+    ProjectSurvey,
+    Checklist,
+  } from '$lib/types/types';
+  import Select from 'svelte-select';
 
   interface SettingsFormProps {
     settingsRecord: Settings;
@@ -12,15 +17,15 @@
     handleAddSurvey: () => Promise<void>;
   }
 
-  let { settingsRecord = $bindable(), 
-    projects, 
-    projectSurveys, 
-    checklists, 
+  let {
+    settingsRecord = $bindable(),
+    projects,
+    projectSurveys,
+    checklists,
     handleProjectChange,
     handleAddProject,
     handleAddSurvey,
   }: SettingsFormProps = $props();
-
 </script>
 
 <form class="flex flex-col gap-4">
@@ -28,18 +33,36 @@
   <fieldset class="aligned-fields">
     <label for="firstName">
       First Name:
-      <input type="text" id="firstName" class="md:w-1/2 input-base" bind:value={settingsRecord.user!.firstName} required />
+      <input
+        type="text"
+        id="firstName"
+        class="md:w-1/2 input-base"
+        bind:value={settingsRecord.user!.firstName}
+        required
+      />
     </label>
     <label for="lastName">
       Last Name:
-      <input type="text" id="lastName" class="md:w-1/2 input-base" bind:value={settingsRecord.user!.lastName} required />
+      <input
+        type="text"
+        id="lastName"
+        class="md:w-1/2 input-base"
+        bind:value={settingsRecord.user!.lastName}
+        required
+      />
     </label>
     <label for="userInitials">
       User Initials:
-      <input type="text" id="userInitials" class="md:w-1/2 input-base" bind:value={settingsRecord.user!.userInitials} required />
+      <input
+        type="text"
+        id="userInitials"
+        class="md:w-1/2 input-base"
+        bind:value={settingsRecord.user!.userInitials}
+        required
+      />
     </label>
   </fieldset>
-  <hr/>
+  <hr />
   <div>
     <p>Current Project:</p>
     <div class="flex gap-2">
@@ -51,7 +74,7 @@
         itemId={'projectID'}
         label={'projectName'}
         --placeholder-color="oklch(96.8% 0.007 247.896)"
-        --background="oklch(44.6% 0.043 257.281)" 
+        --background="oklch(44.6% 0.043 257.281)"
         --list-background="oklch(44.6% 0.043 257.281)"
         --list-border="4px solid white"
         --item-hover-bg="oklch(70.4% 0.04 256.788)"
@@ -71,13 +94,17 @@
         itemId={'surveyID'}
         label={'surveyName'}
         --placeholder-color="oklch(70.4% 0.04 256.788)"
-        --background="oklch(44.6% 0.043 257.281)" 
+        --background="oklch(44.6% 0.043 257.281)"
         --list-background="oklch(44.6% 0.043 257.281)"
         --list-border="4px solid white"
         --item-hover-bg="oklch(70.4% 0.04 256.788)"
         --item-hover-color="black"
       />
-      <button class="btn" onclick={handleAddSurvey} disabled={!settingsRecord.project}>Add season</button>
+      <button
+        class="btn"
+        onclick={handleAddSurvey}
+        disabled={!settingsRecord.project}>Add season</button
+      >
     </div>
   </div>
   <div>
@@ -90,7 +117,7 @@
         itemId={'checklistID'}
         label={'checklistName'}
         --placeholder-color="oklch(70.4% 0.04 256.788)"
-        --background="oklch(44.6% 0.043 257.281)" 
+        --background="oklch(44.6% 0.043 257.281)"
         --list-background="oklch(44.6% 0.043 257.281)"
         --list-border="4px solid white"
         --item-hover-bg="oklch(70.4% 0.04 256.788)"
@@ -100,11 +127,9 @@
       <!-- <button class="w-36 p-2  rounded border border-white hover:ring ring-white cursor-pointer" onclick={handleAddChecklist}>Add list</button> -->
     </div>
   </div>
-  
 </form>
 
 <style>
-
   .aligned-fields {
     display: grid;
     grid-template-columns: max-content 1fr;
@@ -115,7 +140,4 @@
   .aligned-fields label {
     display: contents; /* allows label text and input to align in separate cells */
   }
-
-
-
 </style>

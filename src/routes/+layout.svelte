@@ -1,9 +1,8 @@
 <script lang="ts">
-	
   import '../app.css';
-  import { SvelteToast } from '@zerodevx/svelte-toast'
-	
-	let { children } = $props();
+  import { SvelteToast } from '@zerodevx/svelte-toast';
+
+  let { children } = $props();
 
   //switching off service worker for now
   // if ('serviceWorker' in navigator) {
@@ -33,7 +32,6 @@
 </script>
 
 <div class="h-vh flex flex-col">
-
   <nav class="w-full bg-slate-800 p-4 flex justify-end gap-4 text-slate-200">
     <a href="/demo">Demo</a>
     <a href="/checklists">Checklists</a>
@@ -41,21 +39,23 @@
     <a href="/projects">Projects</a>
     <a href="/settings">Settings</a>
   </nav>
-  
+
   <div class="w-full flex-1 min-h-0 overflow-auto">
     {@render children()}
   </div>
 </div>
 
-<SvelteToast options={{ duration: 1000, reversed: true, intro: { y: 20 }, 
-  theme: {
-    '--toastColor': 'mintcream',
-    '--toastBackground': 'rgba(72,187,120,0.9)',
-    '--toastBarBackground': '#2F855A'
-  }
- }} />
+<SvelteToast
+  options={{
+    duration: 1000,
+    reversed: true,
+    intro: { y: 20 },
+    theme: {
+      '--toastColor': 'mintcream',
+      '--toastBackground': 'rgba(72,187,120,0.9)',
+      '--toastBarBackground': '#2F855A',
+    },
+  }}
+/>
 
-<div class="fixed bottom-4 right-4">
-  v1.2.2
-</div>
-
+<div class="fixed bottom-4 right-4">v1.2.2</div>

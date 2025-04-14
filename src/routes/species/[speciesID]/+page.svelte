@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { toast } from "@zerodevx/svelte-toast"
-  import { page } from "$app/state";
+  import { toast } from '@zerodevx/svelte-toast';
+  import { page } from '$app/state';
   import { makeID } from '$lib/utils';
-  import type { Species }  from '$lib/types/types';
-  import { speciesCollection, checklistCollection } from "$lib/db/dexie";
-  import BirdSpeciesForm from "./BirdSpeciesForm.svelte";
-  import BackButton from "$lib/components/BackButton.svelte";
+  import type { Species } from '$lib/types/types';
+  import { speciesCollection, checklistCollection } from '$lib/db/dexie';
+  import BirdSpeciesForm from './BirdSpeciesForm.svelte';
+  import BackButton from '$lib/components/BackButton.svelte';
 
   const { data } = $props();
   const { species, checklist } = data;
@@ -27,27 +27,26 @@
     smallBird: false,
     largeBird: false,
     raptor: false,
-    waterbird: false
+    waterbird: false,
   });
 
   if (species) {
-    speciesRecord = species
+    speciesRecord = species;
   }
 
   const handleSaveClick = async (ev: Event) => {
     ev.preventDefault();
-    
+
     if (isNew) {
       speciesRecord.speciesID = makeID();
     }
 
     try {
       await speciesCollection.put($state.snapshot(speciesRecord));
-      toast.push('Species saved')
-    }
-    catch(err) {
+      toast.push('Species saved');
+    } catch (err) {
       if (err instanceof Error) {
-        console.log(err)
+        console.log(err);
         alert('Error saving record: ' + err.message);
       } else {
         alert('Error saving record: ' + JSON.stringify(err));
@@ -56,13 +55,12 @@
 
     if (isNew) {
       // update the checklist count
-      checklist.speciesCount++
+      checklist.speciesCount++;
       try {
-        await checklistCollection.put(checklist)
-      }
-      catch(err) {
+        await checklistCollection.put(checklist);
+      } catch (err) {
         if (err instanceof Error) {
-          console.log(err)
+          console.log(err);
           alert('Error updating checklist count: ' + err.message);
         } else {
           alert('Error updating checklist count: ' + JSON.stringify(err));
@@ -86,14 +84,11 @@
       speciesRecord.raptor = false;
       speciesRecord.waterbird = false;
 
-      window.scrollTo(0, 0) // Scroll to the top of the page after saving
-    }
-    else {
+      window.scrollTo(0, 0); // Scroll to the top of the page after saving
+    } else {
       window.history.back(); // Go back to the previous page after saving
     }
   };
-
-
 </script>
 
 <div class="p-4">
@@ -101,6 +96,8 @@
   <BirdSpeciesForm bind:speciesRecord />
   <div class="flex justify-between">
     <button class="btn" onclick={() => window.history.back()}>Done</button>
-    <button class="btn btn-primary" onclick={handleSaveClick}>Save and new</button>
+    <button class="btn btn-primary" onclick={handleSaveClick}
+      >Save and new</button
+    >
   </div>
 </div>

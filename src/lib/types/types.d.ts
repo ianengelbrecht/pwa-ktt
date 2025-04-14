@@ -10,7 +10,7 @@ export interface CoordsRecord extends Record<string, any> {
 }
 
 export interface dbCollection<T> {
-  get: (id: string) => Promise<T | undefined>; // get a record by ID  
+  get: (id: string) => Promise<T | undefined>; // get a record by ID
   put: (record: T) => Promise<void>; // add or update a record
   delete: (id: string) => Promise<void>; // delete a record by ID
   toArray: () => Promise<T[]>; // get all records in the collection
@@ -18,9 +18,9 @@ export interface dbCollection<T> {
 
 export type schemaField = {
   displayName: string; // the name of the field in the schema
-}
+};
 
-export type schema = Record<string, schemaField> // the schema of the entity, with a displayName property for each field
+export type schema = Record<string, schemaField>; // the schema of the entity, with a displayName property for each field
 
 type CoordinatesString = `${number}, ${number}`; // e.g. "12.34 56.78"
 
@@ -29,7 +29,7 @@ export type UserProfile = {
   firstName: string | null;
   lastName: string | null;
   userInitials: string | null;
-}
+};
 
 export type Settings = {
   settingsID: string | null; // unique ID for the settings
@@ -37,16 +37,16 @@ export type Settings = {
   project: Project | null; // project the user is currently working on
   projectSurvey: ProjectSurvey | null; // survey the user is currently busy with
   checklist: Checklist | null; // checklist the user is currently working with
-}
+};
 
 export type Checklist = {
   checklistID: string | null;
   checklistName: string | null;
-  speciesCount: number
+  speciesCount: number;
   createdBy: string | null; // userID of the creator
   createdDate: string | null; // date of creation
   notes: string | null; // notes about the checklist
-}
+};
 
 // I think having checklists will solve this multiple names problem
 // TODO sort out multiple names in different checklists
@@ -69,8 +69,6 @@ export type Species = {
   waterbird: boolean;
 };
 
-
-
 export type Project = {
   projectID: string | null;
   projectName: string | null;
@@ -79,7 +77,7 @@ export type Project = {
   dtCount: number; // number of DTs in the project
   createdBy: string | null; // initials of the creator
   createdDate: string | null; // date of creation
-} 
+};
 
 export type ProjectSite = {
   projectSiteID: string | null;
@@ -89,7 +87,7 @@ export type ProjectSite = {
   siteLocation: CoordinatesString | null; // coordinates of the site
   thresholdDistance: number | null;
   sessionOrTransectDuration: number | null; // average time to complete a session or transect at this site
-}
+};
 
 // The survey number / season for this project
 export type ProjectSurvey = {
@@ -99,15 +97,15 @@ export type ProjectSurvey = {
   startDate: string | null; // changed from number to string
   endDate: string | null; // changed from number to string
   season: string | null; // summer, autumn, etc
-}
+};
 
 export type SiteVisit = {
   siteVisitID: string;
   siteID: string;
-  date: string; 
-  startTime: string; 
-  endTime: string; 
-}
+  date: string;
+  startTime: string;
+  endTime: string;
+};
 
 export type Observation = {
   observationID: string | null;
@@ -130,10 +128,10 @@ export type Observation = {
   flightEnd: string | null; // changed from number to string
   minHeight: number | null;
   maxHeight: number | null;
-  averageHeight: number | null
+  averageHeight: number | null;
   flightMode: string[];
-  flightEndReason: string | null
-}
+  flightEndReason: string | null;
+};
 
 export type ObservationSummary = {
   observationID: string | null; // unique ID for the observation
@@ -144,4 +142,4 @@ export type ObservationSummary = {
   date: string | null; // date of the observation
   time: string | null; // time of the observation
   observerInitials: string | null; // initials of the observer
-}
+};

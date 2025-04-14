@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { toast } from "@zerodevx/svelte-toast";
-  import { error } from "@sveltejs/kit";
-  import { page } from "$app/state";
-  import { goto } from "$app/navigation";
-  import ChecklistForm  from "./ChecklistForm.svelte";
-  import  { makeID } from '$lib/utils';
-  import type { Settings, Checklist } from "$lib/types/types";
-  import { settingsCollection, checklistCollection } from "$lib/db/dexie";
-  
+  import { toast } from '@zerodevx/svelte-toast';
+  import { error } from '@sveltejs/kit';
+  import { page } from '$app/state';
+  import { goto } from '$app/navigation';
+  import ChecklistForm from './ChecklistForm.svelte';
+  import { makeID } from '$lib/utils';
+  import type { Settings, Checklist } from '$lib/types/types';
+  import { settingsCollection, checklistCollection } from '$lib/db/dexie';
+
   let { data } = $props();
   let { user, checklist: dbChecklist } = data;
 
@@ -47,23 +47,21 @@
       checklist.checklistID = makeID();
     }
     try {
-      await checklistCollection.put( $state.snapshot(checklist));
+      await checklistCollection.put($state.snapshot(checklist));
 
-      toast.push("Checklist saved")
-      
+      toast.push('Checklist saved');
+
       //no form reset, we go straight to the species page
-      goto('/species?checklistID=' + checklist.checklistID); 
-    }
-    catch(err) {
+      goto('/species?checklistID=' + checklist.checklistID);
+    } catch (err) {
       if (err instanceof Error) {
-        console.log(err)
+        console.log(err);
         alert('Error saving record: ' + err.message);
       } else {
         alert('Error saving record: ' + JSON.stringify(err));
       }
     }
   };
-
 </script>
 
 <main class="p-4 flex flex-col gap-2">

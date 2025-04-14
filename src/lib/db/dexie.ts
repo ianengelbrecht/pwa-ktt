@@ -10,7 +10,7 @@ import type {
   ProjectSurvey,
   ProjectSite,
   SiteVisit,
-  Observation
+  Observation,
 } from '$lib/types/types'; // update with your actual file path
 
 class AppDatabase extends Dexie {
@@ -36,16 +36,15 @@ class AppDatabase extends Dexie {
       projectSurveys: 'surveyID, projectID',
       projectSites: 'projectSiteID, projectID',
       siteVisits: 'siteVisitID, siteID, date',
-      observations: 'observationID, projectSurveyID' 
+      observations: 'observationID, projectSurveyID',
     });
 
     // optional: hooks, compound indexes, etc.
-
   }
 }
 
 // Initialize the database and extract all the collections
-const { 
+const {
   settings: settingsCollection,
   checklists: checklistCollection,
   species: speciesCollection,
@@ -54,11 +53,10 @@ const {
   projectSurveys: projectSurveyCollection,
   projectSites: projectSiteCollection,
   siteVisits: siteVisitCollection,
-  observations: observationCollection
+  observations: observationCollection,
 } = new AppDatabase();
 
-
- export {
+export {
   settingsCollection,
   checklistCollection,
   speciesCollection,
@@ -67,5 +65,5 @@ const {
   projectSurveyCollection,
   projectSiteCollection,
   siteVisitCollection,
-  observationCollection
+  observationCollection,
 };

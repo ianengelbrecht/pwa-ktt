@@ -1,117 +1,118 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
+  import { goto } from '$app/navigation';
   import { makeID } from '$lib/utils';
-  import type { Species } from "$lib/types/types";
-  import { speciesSchema } from "$lib/schemas/schemas";
-  import { readCSVRecordsFile, getFileMapping, makeMappedRecord } from "$lib/use-cases/import-records";
-  import { speciesCollection, checklistCollection } from "$lib/db/dexie";
+  import type { Species } from '$lib/types/types';
+  import { speciesSchema } from '$lib/schemas/schemas';
+  import {
+    readCSVRecordsFile,
+    getFileMapping,
+    makeMappedRecord,
+  } from '$lib/use-cases/import-records';
+  import { speciesCollection, checklistCollection } from '$lib/db/dexie';
 
   const { data } = $props();
   const { checklist } = data;
 
-  let fileInput: HTMLInputElement | null = $state(null)
-  let selectedFile: File | null = $state(null)
-  const csvRecords: Record<string, any>[] = []
+  let fileInput: HTMLInputElement | null = $state(null);
+  let selectedFile: File | null = $state(null);
+  const csvRecords: Record<string, any>[] = [];
   let fileMapping: Record<string, string> = $state({});
   let availableFileFields: string[] = $state([]);
 
   $effect(() => {
     if (fileMapping && csvRecords && csvRecords.length) {
-      availableFileFields = Object.keys(csvRecords[0]).filter(csvField => !Object.values(fileMapping).includes(csvField));
+      availableFileFields = Object.keys(csvRecords[0]).filter(
+        (csvField) => !Object.values(fileMapping).includes(csvField),
+      );
     }
   });
 
   // we should ideally be checking if the checklistID is valid, but for now we will just assume it is valid
 
-  const handleChooseFileClick = (ev:Event) => {
-    ev.preventDefault()
-    fileInput?.click()
-  }
+  const handleChooseFileClick = (ev: Event) => {
+    ev.preventDefault();
+    fileInput?.click();
+  };
 
   const handleFileSelected = (ev: Event) => {
     if (fileInput && fileInput.files?.length) {
-      selectedFile = fileInput.files[0]
-      console.log('selected file added')
+      selectedFile = fileInput.files[0];
+      console.log('selected file added');
+    } else {
+      selectedFile = null;
     }
-    else {
-      selectedFile =  null
-    }
-  }
+  };
 
   /**
    * Read the file contents and create the mapping
    */
   const handleMapFieldsClick = async (ev: Event) => {
     if (!selectedFile) {
-      alert('No files selected')
+      alert('No files selected');
       return;
-    }
-    else {
+    } else {
       try {
-        let records = await readCSVRecordsFile(selectedFile)
-        csvRecords.push(...records)
-      }
-      catch(err) {
+        let records = await readCSVRecordsFile(selectedFile);
+        csvRecords.push(...records);
+      } catch (err) {
         if (err instanceof Error) {
-          alert('' + err.message)
+          alert('' + err.message);
+        } else {
+          alert('Unspecified error reading file');
         }
-        else {
-          alert('Unspecified error reading file')
-        }
-  
-        return
+
+        return;
       }
-  
-      fileMapping = getFileMapping(csvRecords[0], speciesSchema)
+
+      fileMapping = getFileMapping(csvRecords[0], speciesSchema);
     }
-  }
+  };
 
-  const handleImportClick = async (ev:Event) => {
-    ev.preventDefault()
+  const handleImportClick = async (ev: Event) => {
+    ev.preventDefault();
 
-    const mappedRecords = []
+    const mappedRecords = [];
     for (const csvRecord of csvRecords) {
-      const mappedRecord = makeMappedRecord(csvRecord, fileMapping, 'speciesID') as Species
+      const mappedRecord = makeMappedRecord(
+        csvRecord,
+        fileMapping,
+        'speciesID',
+      ) as Species;
       if (mappedRecord) {
-        mappedRecord.speciesID = makeID()
-        mappedRecord.checklistID = checklist.checklistID!
-        mappedRecords.push(mappedRecord)
+        mappedRecord.speciesID = makeID();
+        mappedRecord.checklistID = checklist.checklistID!;
+        mappedRecords.push(mappedRecord);
       }
     }
 
     //try save them
     try {
-      await speciesCollection.bulkAdd(mappedRecords)
-    }
-    catch(err) {
+      await speciesCollection.bulkAdd(mappedRecords);
+    } catch (err) {
       if (err instanceof Error) {
-        alert('Error importing records: ' + err.message)
+        alert('Error importing records: ' + err.message);
+      } else {
+        alert('Unspecified error importing records');
       }
-      else {
-        alert('Unspecified error importing records')
-      }
-      return
+      return;
     }
 
     //so far so good, update the checklist record
-    checklist.speciesCount += mappedRecords.length
+    checklist.speciesCount += mappedRecords.length;
     try {
-      await checklistCollection.put(checklist)
-    }
-    catch(err) {
+      await checklistCollection.put(checklist);
+    } catch (err) {
       if (err instanceof Error) {
-        alert('Error updating checklist record: ' + err.message)
+        alert('Error updating checklist record: ' + err.message);
+      } else {
+        alert('Unspecified error updating checklist record');
       }
-      else {
-        alert('Unspecified error updating checklist record')
-      }
-      return
+      return;
     }
 
-    alert('Records imported successfully')
+    alert('Records imported successfully');
     goto('/species' + '?checklistID=' + checklist.checklistID);
-  }
-
+  };
 </script>
 
 <main class="p-4">
@@ -119,24 +120,44 @@
     <h1 class="text-lg">Import Species</h1>
     <p class="">Select a file to import species records from</p>
   </div>
-  <input type="file" accept=".csv" class="invisible" bind:this={fileInput} onchange={handleFileSelected}/>
+  <input
+    type="file"
+    accept=".csv"
+    class="invisible"
+    bind:this={fileInput}
+    onchange={handleFileSelected}
+  />
   <div class="flex gap-4">
-    <button class="w-48 btn" onclick={handleChooseFileClick}>Choose CSV file</button>
-    <button class="w-36 btn" class:btn-primary={selectedFile} disabled={!selectedFile} onclick={handleMapFieldsClick}>Map fields</button>
+    <button class="w-48 btn" onclick={handleChooseFileClick}
+      >Choose CSV file</button
+    >
+    <button
+      class="w-36 btn"
+      class:btn-primary={selectedFile}
+      disabled={!selectedFile}
+      onclick={handleMapFieldsClick}>Map fields</button
+    >
   </div>
   {#if selectedFile}
     <p>{selectedFile.name}</p>
   {/if}
 
   <div class="mt-4 flex flex-col gap-2">
-    {#if fileMapping && Object.keys(fileMapping).length > 0 }
-      {#each Object.keys(fileMapping).filter(x => !x.endsWith('ID')) as schemaField}
+    {#if fileMapping && Object.keys(fileMapping).length > 0}
+      {#each Object.keys(fileMapping).filter((x) => !x.endsWith('ID')) as schemaField}
         <div class="">
           <span>{speciesSchema[schemaField].displayName}</span>
-          <select name="" id="" class="p-1 rounded text-white bg-slate-400" bind:value={fileMapping[schemaField]}>
+          <select
+            name=""
+            id=""
+            class="p-1 rounded text-white bg-slate-400"
+            bind:value={fileMapping[schemaField]}
+          >
             <option value="">no mapping</option>
             {#if fileMapping[schemaField]}
-              <option value={fileMapping[schemaField]}>{fileMapping[schemaField]}</option>
+              <option value={fileMapping[schemaField]}
+                >{fileMapping[schemaField]}</option
+              >
             {/if}
             {#each availableFileFields as fileField}
               <option value={fileField}>{fileField}</option>
@@ -145,9 +166,17 @@
         </div>
       {/each}
       <div class="flex gap-4">
-        <button class="w-24 btn" onclick={() => window.history.back()}>Cancel</button>
-        <button class="w-24 btn" onclick={() => console.log($state.snapshot(fileMapping))}>Cancel</button>
-        <button class="w-24 btn btn-primary" onclick={handleImportClick}>Import</button>
+        <button class="w-24 btn" onclick={() => window.history.back()}
+          >Cancel</button
+        >
+        <button
+          class="w-24 btn"
+          onclick={() => console.log($state.snapshot(fileMapping))}
+          >Cancel</button
+        >
+        <button class="w-24 btn btn-primary" onclick={handleImportClick}
+          >Import</button
+        >
       </div>
     {/if}
   </div>
