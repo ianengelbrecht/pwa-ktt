@@ -30,16 +30,19 @@
   }
 
   const handleCoordinatesChange = (ev: Event) => {
-    if (coordinates) {
-      try {
-        const converted = convert(coordinates);
-        decimalCoordinates = converted.decimalCoordinates;
-        accuracy = null;
-      } catch (error) {
-        console.error('Error converting coordinates:', error);
-        coordinatesError = true;
+    //we need setTimeout so defer the function until after the paste event is completed
+    setTimeout(() => {
+      if (coordinates) {
+        try {
+          const converted = convert(coordinates);
+          decimalCoordinates = converted.decimalCoordinates;
+          accuracy = null;
+        } catch (error) {
+          console.error('Error converting coordinates:', error);
+          coordinatesError = true;
+        }
       }
-    }
+    });
   };
 
   const updateAccuracy = () => {
