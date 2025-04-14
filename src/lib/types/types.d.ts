@@ -16,6 +16,15 @@ export interface dbCollection<T> {
   toArray: () => Promise<T[]>; // get all records in the collection
 }
 
+export interface coordsContainerOptions {
+  inputLabelString: string | null;
+  initialCoordinateString: string | null;
+  maximumAllowedAccuracy: number;
+  handleSuccessfulCoordinates: (
+    coordinatesObject: ReturnType<typeof convert>,
+  ) => void;
+}
+
 export type schemaField = {
   displayName: string; // the name of the field in the schema
 };
