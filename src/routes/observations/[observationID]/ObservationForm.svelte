@@ -38,14 +38,14 @@
 
 </script>
 
-<form id="observation-form" class="flex flex-col gap-2" >
-  <label>
-    Observer:
-    <input type="text" name="observer" class="w-full md:w-1/2 input-base" bind:value={observationRecord.observerInitials} />
+<form id="observation-form" class="w-full flex flex-col gap-2" >
+  <label for="observer" class="">
+    <span>Observer:</span>
+    <input id="observer" type="text" name="observer" class="w-full input-base" bind:value={observationRecord.observerInitials} />
   </label>
-  <label>
-    Site:
-    <select class="w-full md:w-1/2 input-base" bind:value={observationRecord.projectSite} onchange={handleSiteCodeChange}>
+  <label class="flex flex-col">
+    <span>Site:</span>
+    <select class="w-full input-base" bind:value={observationRecord.projectSite} onchange={handleSiteCodeChange}>
       {#if projectSites.length === 0}
         <option value="" disabled>No sites available</option>
       {/if}
@@ -55,7 +55,7 @@
       {/each}
     </select>
   </label>
-  <label>
+  <label class="">
     Species:
     <Select loadOptions={filterSpecies}
     debounceWait={500}
@@ -70,41 +70,43 @@
     --item-hover-color="black"
     bind:value={observationRecord.species} />
   </label>
-  <div class={["flex gap-2 w-full lg:w-1/2 items-center rounded", 
+  <div class={["flex gap-2 w-full items-center rounded", 
     {"ring-2 ring-offset-2 ring-offset-black ring-orange-300": observationRecord.locationAccuracy > 20 && observationRecord.locationAccuracy < 50 },
     , {"ring-3 ring-offset-2 ring-offset-black ring-red-600": observationRecord.locationAccuracy >= 50  }
     ]} >
-    <label class="w-full">
-      Location:
-      <div class="w-full flex gap-2 items-center break-inside-avoid">
-        <input type="text" name="location" class="w-64 md:w-1/2 input-base" bind:value={observationRecord.location} />
-        <span class={["break-inside-avoid", 
+    <label class="w-full flex flex-col ">
+      <span>Location:</span>
+      <div class="w-full flex gap-2 items-center ">
+        <input type="text" name="location" class="flex-1 min-h-0 input-base" bind:value={observationRecord.location} />
+        <span class={["min-w-fit", 
         {"text-orange-300": observationRecord.locationAccuracy > 20 && observationRecord.locationAccuracy < 50 },
         {"text-red-600": observationRecord.locationAccuracy >= 50  }
         ]}> ± {observationRecord.locationAccuracy}m</span>
       </div>
     </label>
   </div>
-  <div class="flex gap-2 items-end">
-    <label class="flex flex-col w-48">
+  <div class="w-full flex gap-2 items-end">
+    <label class="grow flex flex-col">
       Date:
       <input type="date" name="date" class="input-base" bind:value={observationRecord.date} />
     </label>
-    <label class="flex flex-col w-28">
+    <label class="grow flex flex-col">
       Time:
-      <input type="time" name="time" lang="en-GB" class="input-base" bind:value={observationRecord.time} />
+      <input type="time" name="time" class="input-base" bind:value={observationRecord.time} />
     </label>
-    <button class="btn" style="width: fit-content;" onclick={handleClickNow}>Now</button>
   </div>
-  <label>
-    No. individuals:
-    <input type="number" class="w-full md:w-1/2 input-base" bind:value={observationRecord.count} />
+  <button class="btn" onclick={handleClickNow} >
+    Now
+  </button>
+  <label class="flex flex-col">
+    <span>No. individuals:</span>
+    <input type="number" class="w-full input-base" bind:value={observationRecord.count} />
   </label>
-  <label>
-    Dist. at start (m):
-    <input type="number" class="w-full md:w-1/2 input-base" min="0" bind:value={observationRecord.startDistance} />
+  <label class="flex flex-col">
+    <span>Dist. at start (m):</span>
+    <input type="number" class="w-full input-base" min="0" bind:value={observationRecord.startDistance} />
   </label>
-  <label>
+  <label class="">
     Dir. at start:
     <Select items={directions}
     --placeholder-color="oklch(70.4% 0.04 256.788)"
@@ -115,7 +117,7 @@
     --item-hover-color="black"
     bind:value={observationRecord.startDirection} />
   </label>
-  <label>
+  <label class="">
     Habitats utilized
     <Select 
     items={habitats} 
@@ -132,8 +134,8 @@
     bind:value={observationRecord.habitats}
     />
   </label>
-  <label>
-    Notes:
-    <textarea name="notes" class="w-full md:w-1/2 input-base" bind:value={observationRecord.notes} rows="2"></textarea>
+  <label class="w-full flex flex-col">
+    <span>Notes:</span>
+    <textarea name="notes" class="w-full input-base" bind:value={observationRecord.notes} rows="2"></textarea>
   </label>
 </form>

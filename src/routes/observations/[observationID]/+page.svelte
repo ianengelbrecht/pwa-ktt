@@ -153,7 +153,7 @@
 
 </script>
 
-<main class="p-4 flex flex-col gap-4">
+<main class="p-4 md:w-1/2 lg:w-1/3 flex flex-col gap-4">
   <div>
     <h2 class="text-xl">{ isNew ? 'New' : 'Edit'} observation</h2>
     <p class="text-sm">Project/survey: {settings.project?.projectName || ''} {settings.projectSurvey?.surveyName || ''}</p>

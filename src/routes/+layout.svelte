@@ -42,7 +42,7 @@
     <a href="/settings">Settings</a>
   </nav>
   
-  <div class="flex-1 min-h-0 overflow-auto">
+  <div class="w-full flex-1 min-h-0 overflow-auto">
     {@render children()}
   </div>
 </div>
