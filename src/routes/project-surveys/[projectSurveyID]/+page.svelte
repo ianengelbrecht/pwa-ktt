@@ -58,7 +58,6 @@
     if (!validateProjectSurvey()) {
       return
     }
-
     
     if (isNew) {
       projectSurveyRecord.surveyID = makeID(10);

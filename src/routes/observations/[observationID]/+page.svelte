@@ -160,8 +160,8 @@
   </div>
   <ObservationForm 
   bind:observationRecord
-  {projectSites} 
-  {species} 
+  { projectSites } 
+  { species } 
   />
   <div class="flex justify-between">
     <button class="btn" onclick={() => window.history.back()}>{ isNew ? 'Done' : 'Cancel'}</button>
