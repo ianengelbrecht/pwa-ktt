@@ -50,17 +50,7 @@
       missingFields.push('Site code');
     }
 
-    if (
-      otherProjectSites.some(
-        (site) => site.siteCode === projectSiteRecord.siteCode,
-      )
-    ) {
-      toast.push('Site code already exists', {
-        theme: { '--toastBackground': 'red' },
-      });
-      return false;
-    }
-    return true;
+    return missingFields.length == 0;
   };
 
   const handleSaveClick = async (ev: Event) => {

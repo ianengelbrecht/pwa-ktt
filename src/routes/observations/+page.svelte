@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { toast } from '@zerodevx/svelte-toast';
   import BackButton from '$lib/components/BackButton.svelte';
   import SwipableList from '$lib/components/SwipableList.svelte';
   import ObservationCard from './ObservationCard.svelte';
@@ -8,13 +9,26 @@
   const { data } = $props();
   const { settings, summarizedObservations } = data;
 
-  const deleteObservation = (observationRecord: Record<string, any>) => {
-    observationCollection.delete(observationRecord.observationID).then(() => {
-      const index = summarizedObservations.findIndex(
-        (record) => record === (observationRecord as ObservationSummary),
-      );
+  const deleteObservation = async (observationRecord: Record<string, any>) => {
+    try {
+      await observationCollection.delete(observationRecord.observationID);
+    } catch (err) {
+      if (err instanceof Error) {
+        alert('Error deleting record: ' + err.message);
+      } else {
+        alert('Error deleting record: ' + err);
+      }
+      return;
+    }
+    const index = summarizedObservations.findIndex(
+      (record) => record.observationID === observationRecord.observationID,
+    );
+    if (index !== -1) {
       summarizedObservations.splice(index, 1);
-    });
+      toast.push(`Record deleted`, {
+        theme: { '--toastBackground': 'oklch(26.6% 0.079 36.259)' },
+      });
+    }
   };
 
   // TODO do we really want to allow this?

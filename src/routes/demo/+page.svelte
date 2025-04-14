@@ -1,5 +1,6 @@
 <script lang="ts">
   // this is outdated and does not confirm to the standard +page pattern, but it works for now and is just a demo
+  import { toast } from '@zerodevx/svelte-toast';
   import BackButton from '$lib/components/BackButton.svelte';
   import SwipableList from '$lib/components/SwipableList.svelte';
   import RecordCard from './RecordCard.svelte';
@@ -14,6 +15,9 @@
     const index = data.findIndex((record) => record === (item as CoordsRecord));
     data.splice(index, 1);
     localStorage.setItem('geoData', JSON.stringify(data));
+    toast.push(`Record deleted`, {
+      theme: { '--toastBackground': 'oklch(26.6% 0.079 36.259)' },
+    });
   };
 
   const deleteAll = () => {

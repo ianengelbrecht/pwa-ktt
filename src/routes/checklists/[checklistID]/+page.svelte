@@ -1,17 +1,15 @@
 <script lang="ts">
   import { toast } from '@zerodevx/svelte-toast';
-  import { error } from '@sveltejs/kit';
-  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import ChecklistForm from './ChecklistForm.svelte';
   import { makeID } from '$lib/utils';
-  import type { Settings, Checklist } from '$lib/types/types';
-  import { settingsCollection, checklistCollection } from '$lib/db/dexie';
+  import type { Checklist } from '$lib/types/types';
+  import { checklistCollection } from '$lib/db/dexie';
 
   let { data } = $props();
-  let { user, checklist: dbChecklist } = data;
+  let { user, checklist } = data;
 
-  let checklist: Checklist = $state({
+  let checklistRecord: Checklist = $state({
     checklistID: null, // auto generated on save
     checklistName: null,
     speciesCount: 0,
@@ -20,16 +18,16 @@
     notes: null,
   });
 
-  if (dbChecklist) {
-    checklist = dbChecklist;
+  if (checklist) {
+    checklistRecord = checklist;
   }
 
   const validateChecklist = () => {
-    if (!checklist.checklistName) {
+    if (!checklistRecord.checklistName) {
       alert('Checklist name is required!');
       return false;
     }
-    if (!checklist.createdBy) {
+    if (!checklistRecord.createdBy) {
       alert('Created by is required!');
       return false;
     }
@@ -43,16 +41,16 @@
       return;
     }
 
-    if (!checklist.checklistID) {
-      checklist.checklistID = makeID();
+    if (!checklistRecord.checklistID) {
+      checklistRecord.checklistID = makeID();
     }
     try {
-      await checklistCollection.put($state.snapshot(checklist));
+      await checklistCollection.put($state.snapshot(checklistRecord));
 
       toast.push('Checklist saved');
 
       //no form reset, we go straight to the species page
-      goto('/species?checklistID=' + checklist.checklistID);
+      goto('/species?checklistID=' + checklistRecord.checklistID);
     } catch (err) {
       if (err instanceof Error) {
         console.log(err);
@@ -65,7 +63,7 @@
 </script>
 
 <main class="p-4 flex flex-col gap-2">
-  <ChecklistForm bind:checklist />
+  <ChecklistForm bind:checklist={checklistRecord} />
   <div class="flex justify-between">
     <button class="btn" onclick={() => window.history.back()}>Done</button>
     <button class="btn btn-primary" onclick={handleSaveClick}>Save</button>

@@ -109,6 +109,7 @@
 
     try {
       await observationCollection.put($state.snapshot(observationRecord));
+      toast.push('Observation saved');
     } catch (err) {
       if (err instanceof Error) {
         console.log(err);
@@ -144,8 +145,6 @@
       observationRecord.averageHeight = null;
       observationRecord.flightMode = [];
       observationRecord.flightEndReason = null;
-
-      toast.push('Observation saved');
 
       window.scrollTo(0, 0);
     } else {

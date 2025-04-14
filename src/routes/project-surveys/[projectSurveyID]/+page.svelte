@@ -66,7 +66,7 @@
 
     try {
       await projectSurveyCollection.put($state.snapshot(projectSurveyRecord));
-      toast.push('record saved');
+      toast.push('Project survey saved');
     } catch (err) {
       if (err instanceof Error) {
         console.log(err);
