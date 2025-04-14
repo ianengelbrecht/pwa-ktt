@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import SwipableList from '$lib/components/SwipableList.svelte';
   import SpeciesCard from './SpeciesCard.svelte';
+  import BackButton from '$lib/components/BackButton.svelte';
   import type { Species } from '$lib/types/types';
   import { speciesCollection, checklistCollection } from '$lib/db/dexie';
 
@@ -75,7 +76,8 @@
   };
 </script>
 
-<main id="listScreen" class="flex-1 p-4">
+<main class="p-4 flex flex-col gap-4">
+  <BackButton />
   <div class="mb-4">
     <h1 class="text-2xl">Species:</h1>
     <h2 class="">{checklist?.checklistName || 'Oops! No checklist name...'}</h2>
