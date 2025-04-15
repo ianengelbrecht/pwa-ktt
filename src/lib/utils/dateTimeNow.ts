@@ -6,6 +6,6 @@ export function dateTimeNow() {
   const correctedDateNow = new Date(dateNow + ' UTC')
     .toISOString()
     .split('T')[0]; // we need this so that Date() doesn't make any adjustments for the local timezone
-  const timeNow = dateTimeNowParts[4].split(':').slice(0, 2).join(':');
+  const timeNow = dateTimeNowParts[4];
   return { dateNow: correctedDateNow, timeNow };
 }

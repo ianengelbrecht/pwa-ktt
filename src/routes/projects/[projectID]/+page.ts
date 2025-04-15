@@ -16,7 +16,7 @@ export const load: PageLoad = async ({ params }) => {
     });
   }
 
-  if (projectID != 'new ') {
+  if (projectID != 'new') {
     project = (await projectCollection.get(projectID!)) || null;
     if (!project) {
       error(

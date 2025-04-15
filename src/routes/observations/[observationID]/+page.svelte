@@ -1,18 +1,19 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import type { Snapshot } from './$types';
   import { toast } from '@zerodevx/svelte-toast';
   import { dateTimeNow } from '$lib/utils';
   import { makeID } from '$lib/utils';
   import ObservationForm from './ObservationForm.svelte';
-  import type { Observation } from '$lib/types/types';
+  import MapComponent from '$lib/components/MapComponent.svelte';
+  import type { Observation, MapCoordinates } from '$lib/types/types';
   import { observationCollection } from '$lib/db/dexie';
 
   const { data } = $props();
   const { observation, settings, projectSites, species } = data;
 
   const isNew = observation === null;
-
-  let coordsError: boolean = $state(false);
+  let showMap: boolean = $state(false);
 
   let { dateNow, timeNow } = dateTimeNow();
 
@@ -21,8 +22,11 @@
     projectSurveyID: settings.projectSurvey?.surveyID!,
     projectSite: null,
     species: null,
-    location: null, // from GPS
-    locationAccuracy: null, // from GPS
+    verbatimCoordinates: null, // the coordinates as entered by the user
+    decimalLatitude: null, // the latitude
+    decimalLongitude: null, // the longitude
+    coordinatesAccuracy: null,
+    coordinatesSource: null,
     date: dateNow, //date now, not UTC date
     time: timeNow, //ditto, see above
     observerInitials: data.settings.user?.userInitials!,
@@ -49,7 +53,7 @@
   onMount(() => {
     if (isNew) {
       const lastSavedSiteCode = localStorage.getItem('lastSavedSiteCode');
-      if (lastSavedSiteCode) {
+      if (lastSavedSiteCode && !observationRecord.projectSite) {
         const site = projectSites.find(
           (site) => site.siteCode === lastSavedSiteCode,
         );
@@ -60,25 +64,11 @@
     }
   });
 
-  // start watching coordinates
-  navigator.geolocation.watchPosition(
-    (position) => {
-      coordsError = false;
-      observationRecord.location = `${Number(position.coords.latitude.toFixed(6))}, ${Number(position.coords.longitude.toFixed(6))}`;
-      observationRecord.locationAccuracy = Number(
-        position.coords.accuracy.toFixed(0),
-      );
-    },
-    (error) => {
-      // see https://developer.mozilla.org/en-US/docs/Web/API/GeolocationPositionError
-      // TODO we need to handle permission errors here specifically... There's a permissions API
-      coordsError = true;
-      console.error(error);
-    },
-    {
-      enableHighAccuracy: true,
-    },
-  );
+  //preserving state when navigating back, e.g. from the map
+  export const snapshot: Snapshot<Observation> = {
+    capture: () => observationRecord,
+    restore: (value) => (observationRecord = value),
+  };
 
   const recordValidation = (): boolean => {
     const requiredFields: string[] = [];
@@ -87,12 +77,12 @@
       requiredFields.push('projectSite');
     }
 
-    if (!observationRecord.location) {
-      requiredFields.push('location');
-    }
-
     if (!observationRecord.species) {
       requiredFields.push('species');
+    }
+
+    if (!observationRecord.verbatimCoordinates) {
+      requiredFields.push('coordinates');
     }
 
     // the complicated stuff about SCC and WEF species here
@@ -142,6 +132,11 @@
       let { dateNow, timeNow } = dateTimeNow();
       observationRecord.observationID = null;
       observationRecord.species = null;
+      observationRecord.verbatimCoordinates = null;
+      observationRecord.decimalLatitude = null;
+      observationRecord.decimalLongitude = null;
+      observationRecord.coordinatesAccuracy = null;
+      observationRecord.coordinatesSource = null;
       observationRecord.date = dateNow;
       observationRecord.time = timeNow;
       observationRecord.count = null;
@@ -168,6 +163,15 @@
       window.history.back();
     }
   };
+
+  const handleNewMapCoordinates = (newMapCoordinates: MapCoordinates) => {
+    observationRecord.verbatimCoordinates = newMapCoordinates.coords;
+    const [lat, lng] = newMapCoordinates.coords.split(',').map(Number);
+    observationRecord.decimalLatitude = lat;
+    observationRecord.decimalLongitude = lng;
+    observationRecord.coordinatesAccuracy = null;
+    observationRecord.coordinatesSource = newMapCoordinates.mapType + ' map';
+  };
 </script>
 
 <main class="p-4 md:w-1/2 lg:w-1/3 flex flex-col gap-4">
@@ -178,7 +182,12 @@
       {settings.projectSurvey?.surveyName || ''}
     </p>
   </div>
-  <ObservationForm bind:observationRecord {projectSites} {species} />
+  <ObservationForm
+    bind:observationRecord
+    {projectSites}
+    {species}
+    handleMapButtonClick={() => (showMap = true)}
+  />
   <div class="flex justify-between">
     <button class="btn" onclick={() => window.history.back()}
       >{isNew ? 'Done' : 'Cancel'}</button
@@ -186,5 +195,19 @@
     <button class="btn btn-primary" onclick={handleSaveClick}
       >Save {isNew ? 'and new' : ''}</button
     >
+  </div>
+  <div class="fixed w-vw h-vh flex flex-col" class:hidden={showMap}>
+    <div class="flex-1">
+      <MapComponent
+        startingPoint={observationRecord.decimalLatitude
+          ? `${observationRecord.decimalLatitude!}, ${observationRecord.decimalLongitude!}`
+          : null}
+        startingZoom={12}
+        {handleNewMapCoordinates}
+      />
+      <button class="w-full button" onclick={() => (showMap = false)}
+        >Done</button
+      >
+    </div>
   </div>
 </main>

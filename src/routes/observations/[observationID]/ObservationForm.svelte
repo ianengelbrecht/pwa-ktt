@@ -1,9 +1,19 @@
 <script lang="ts">
   import Select from 'svelte-select';
   import { dateTimeNow } from '$lib/utils';
-  import type { Species } from '$lib/types/types';
-  const { observationRecord = $bindable(), projectSites, species } = $props();
+  import type {
+    Species,
+    ConvertedCoordinatesWithAccuracy,
+  } from '$lib/types/types';
   import { directions, habitats } from './picklists';
+  import CoordinatesInput from '$lib/components/CoordinatesInput.svelte';
+
+  const {
+    observationRecord = $bindable(),
+    projectSites,
+    species,
+    handleMapButtonClick,
+  } = $props();
 
   // for filtering in the species Select
   const filterSpecies = async (filterText: string) => {
@@ -39,6 +49,21 @@
 
   const handleSiteCodeChange = (e: Event) => {
     console.log('selected site is', observationRecord.projectSite);
+  };
+
+  const handleSuccessfulCoordinates = (
+    coords: ConvertedCoordinatesWithAccuracy,
+  ) => {
+    observationRecord.verbatimCoordinates = coords.verbatimCoordinates;
+    observationRecord.decimalLatitude = coords.decimalLatitude;
+    observationRecord.decimalLongitude = coords.decimalLongitude;
+    observationRecord.coordinatesAccuracy = coords.accuracy;
+    // if the user entered the coordinates manually they need to select the source themselves
+    if (coords.source === 'device') {
+      observationRecord.coordinatesSource = 'device GPS';
+    } else {
+      observationRecord.coordinatesSource == null;
+    }
   };
 </script>
 
@@ -86,46 +111,12 @@
       bind:value={observationRecord.species}
     />
   </label>
-  <div
-    class={[
-      'flex gap-2 w-full items-center rounded',
-      {
-        'ring-2 ring-offset-2 ring-offset-black ring-orange-300':
-          observationRecord.locationAccuracy > 20 &&
-          observationRecord.locationAccuracy < 50,
-      },
-      ,
-      {
-        'ring-3 ring-offset-2 ring-offset-black ring-red-600':
-          observationRecord.locationAccuracy >= 50,
-      },
-    ]}
-  >
-    <label class="w-full flex flex-col">
-      <span>Location:</span>
-      <div class="w-full flex gap-2 items-center">
-        <input
-          type="text"
-          name="location"
-          class="flex-1 min-h-0 input-base"
-          bind:value={observationRecord.location}
-        />
-        <span
-          class={[
-            'min-w-fit',
-            {
-              'text-orange-300':
-                observationRecord.locationAccuracy > 20 &&
-                observationRecord.locationAccuracy < 50,
-            },
-            { 'text-red-600': observationRecord.locationAccuracy >= 50 },
-          ]}
-        >
-          ± {observationRecord.locationAccuracy}m</span
-        >
-      </div>
-    </label>
-  </div>
+  <CoordinatesInput
+    labelString="Observation coordinates"
+    coordinatesString={observationRecord.location}
+    {handleSuccessfulCoordinates}
+    {handleMapButtonClick}
+  />
   <div class="w-full flex gap-2 items-end">
     <label class="grow flex flex-col">
       Date:
@@ -142,6 +133,7 @@
         type="time"
         name="time"
         class="input-base"
+        step="1"
         bind:value={observationRecord.time}
       />
     </label>

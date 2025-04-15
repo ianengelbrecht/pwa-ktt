@@ -1,27 +1,34 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { getContext } from 'svelte';
   import { convert } from 'geo-coordinates-parser';
-  import type { coordsContainerOptions } from '$lib/types/types';
-
-  const {
-    inputLabelString,
-    initialCoordinateString,
-    maximumAllowedAccuracy,
-    handleSuccessfulCoordinates,
-  }: coordsContainerOptions = getContext('coordsContainer');
+  import type { CoordsContainerOptions } from '$lib/types/types';
 
   let placeHolderCoordinates = $state('Add coordinates');
   let coordinates: string | null = $state(null);
   let decimalCoordinates: string | null = $state(null);
   let accuracy: number | null = $state(null);
+  let source: 'manual' | 'device' | null = null;
   let coordinatesError = $state('');
   let locationWatcher: number | null = $state(null);
 
-  if (initialCoordinateString) {
-    coordinates = initialCoordinateString;
+  const {
+    labelString,
+    coordinatesString,
+    maximumAllowedAccuracy = 50,
+    handleSuccessfulCoordinates,
+    handleMapButtonClick,
+  }: CoordsContainerOptions = $props();
+
+  $effect(() => {
+    if (coordinatesString) {
+      console.log('got new coordinates for input:', coordinatesString);
+    }
+  });
+
+  if (coordinatesString) {
+    coordinates = coordinatesString;
     try {
-      const converted = convert(initialCoordinateString);
+      const converted = convert(coordinatesString);
       decimalCoordinates = converted.decimalCoordinates;
     } catch (err) {
       if (err instanceof Error) {
@@ -31,6 +38,11 @@
       }
     }
   }
+
+  onMount(() => {
+    window.addEventListener('click', handleFirstContact);
+    window.addEventListener('touchstart', handleFirstContact);
+  });
 
   const cancelLocationWatcher = () => {
     if (locationWatcher) {
@@ -69,11 +81,6 @@
     window.removeEventListener('touchstart', handleFirstContact);
   };
 
-  onMount(() => {
-    window.addEventListener('click', handleFirstContact);
-    window.addEventListener('touchstart', handleFirstContact);
-  });
-
   const handleCoordinatesChange = (ev: Event) => {
     //we need setTimeout so defer the function until after the paste event is completed
     setTimeout(() => {
@@ -83,8 +90,12 @@
           const converted = convert(coordinates);
           decimalCoordinates = converted.decimalCoordinates;
           accuracy = null;
+          source = 'manual';
           coordinatesError = '';
-          handleSuccessfulCoordinates(converted);
+          handleSuccessfulCoordinates({
+            ...converted,
+            ...{ accuracy, source },
+          });
         } catch (error) {
           if (error instanceof Error) {
             coordinatesError = error.message;
@@ -102,10 +113,10 @@
         cancelLocationWatcher();
         coordinates = placeHolderCoordinates;
         decimalCoordinates = placeHolderCoordinates;
-        accuracy = null;
+        source = 'device';
         coordinatesError = '';
         const converted = convert(coordinates); // this will always work, no need for try catch...
-        handleSuccessfulCoordinates(converted);
+        handleSuccessfulCoordinates({ ...converted, ...{ accuracy, source } });
       } else {
         alert('Cannot record coordinates for accuracy greater than 50m');
       }
@@ -119,15 +130,11 @@
     accuracy = null;
     watchLocation();
   };
-
-  const updateAccuracy = () => {
-    accuracy = 50;
-  };
 </script>
 
 <div class="flex justify-between">
   <label for="coordinates-input" class="flex-1">
-    {inputLabelString ? inputLabelString : 'Coordinates:'}
+    {labelString ? labelString : 'Coordinates:'}
   </label>
   <span
     class={[
@@ -196,7 +203,7 @@
           </span>
         </button>
       {/if}
-      <button class="h-10 w-10 cursor-pointer">
+      <button class="h-10 w-10 cursor-pointer" onclick={handleMapButtonClick}>
         <span
           class="material-symbols-outlined text-slate-200 leading-none align-middle text-xl"
         >
@@ -222,6 +229,3 @@
     </span>
   {/if}
 </div>
-
-<!-- TODO for testing only, remove -->
-<button class="btn mt-4" onclick={updateAccuracy}>Add 50m uncertainty</button>

@@ -1,3 +1,29 @@
+import { convert } from 'geo-coordinates-parser';
+
+export type schemaField = {
+  displayName: string; // the name of the field in the schema
+};
+
+export type schema = Record<string, schemaField>; // the schema of the entity, with a displayName property for each field
+
+type CoordinatesString = `${number}, ${number}`; // e.g. "12.34 56.78"
+
+export type ConvertedCoordinatesWithAccuracy = ReturnType<typeof convert> & {
+  accuracy: number | null;
+  source: 'manual' | 'device';
+};
+
+export interface MapComponentProps {
+  startingPoint?: CoordinatesString | null;
+  startingZoom?: number;
+  handleNewMapCoordinates: (mapCoordsResults: MapCoordinates) => void;
+}
+
+export interface MapCoordinates {
+  coords: CoordinatesString;
+  mapType: string;
+}
+
 // note these have to kept in sync with schemas
 
 //this is just temporary, used in the original testing
@@ -16,23 +42,17 @@ export interface dbCollection<T> {
   toArray: () => Promise<T[]>; // get all records in the collection
 }
 
-export interface coordsContainerOptions {
-  inputLabelString: string | null;
-  initialCoordinateString: string | null;
-  maximumAllowedAccuracy: number;
+export interface CoordsContainerOptions {
+  labelString?: string;
+  coordinatesString: string | null;
+  maximumAllowedAccuracy?: number;
   handleSuccessfulCoordinates: (
-    coordinatesObject: ReturnType<typeof convert>,
+    coordinatesObject: ConvertedCoordinatesWithAccuracy,
   ) => void;
+  handleMapButtonClick: (ev: Event) => void;
 }
 
-export type schemaField = {
-  displayName: string; // the name of the field in the schema
-};
-
-export type schema = Record<string, schemaField>; // the schema of the entity, with a displayName property for each field
-
-type CoordinatesString = `${number}, ${number}`; // e.g. "12.34 56.78"
-
+// not in db yet, only in settings
 export type UserProfile = {
   userID: string | null;
   firstName: string | null;
@@ -78,8 +98,30 @@ export type Species = {
   waterbird: boolean;
 };
 
+// Need to think about how best to do this.
+// should species not be single entities, and
+// included in different checklists?
+// Then we can just update individual species.
+// Might be tricky keeping everyone up to date.
+// Another option is to have speciesConcepts,
+// so have a species concept and it's name according to a checklist.
+// But it can get very complicated with changing species concepts.
+// let's experiment and see what works...
+export type ChecklistMapping = {};
+
+// species expected for the project area
+export type ExpectedSpecies = {
+  projectID: string | null;
+  checklistID: string | null;
+  speciesID: string | null;
+  probability: number | null; // SABAP FP value, e.g. 0.5
+};
+
 export type Project = {
   projectID: string | null;
+  checklistID: string | null; // the checklist used for this project
+  expectedSpeciesProbabilitySource: string | null; // the source of the expected species probability, e.g. SABAP or eBird
+  warningProbabilityThreshold: number | null; // the threshold below which a warning probability is given
   projectName: string | null;
   vpCount: number; // number of VPs in the project
   wtCount: number; // number of WTs in the project
@@ -108,8 +150,9 @@ export type ProjectSurvey = {
   season: string | null; // summer, autumn, etc
 };
 
-export type SiteVisit = {
-  siteVisitID: string;
+// Stints at a VP or transect
+export type SessionOrTransect = {
+  sessionOrTransectID: string;
   siteID: string;
   date: string;
   startTime: string;
@@ -120,8 +163,11 @@ export type Observation = {
   observationID: string | null;
   projectSurveyID: string | null;
   projectSite: string | null; // the site name
-  location: CoordinatesString | null; // the coordinates
-  locationAccuracy: number | null; // gps accuracy in meters
+  verbatimCoordinates: string | null; // the coordinates as entered by the user
+  decimalLatitude: number | null; // the latitude
+  decimalLongitude: number | null; // the longitude
+  coordinatesAccuracy: number | null; // gps accuracy in meters
+  coordinatesSource: string | null; // the source of the coordinates, e.g. GPS, manual entry
   date: string | null; // changed from number to string
   time: string | null; // changed from number to string
   observerInitials: string | null; // from the user profile

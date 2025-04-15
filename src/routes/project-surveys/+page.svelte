@@ -31,11 +31,6 @@
       });
     }
   };
-
-  const handleDeleteAll = async () => {
-    await projectSurveyCollection.clear();
-    projectSurveys.length = 0;
-  };
 </script>
 
 <main class="p-4 flex flex-col gap-4">
@@ -47,7 +42,6 @@
   <SwipableList
     items={projectSurveys}
     deleteItem={handleDelete}
-    deleteAll={handleDeleteAll}
     ItemComponent={ProjectSurveyCard}
     sortable={true}
   />

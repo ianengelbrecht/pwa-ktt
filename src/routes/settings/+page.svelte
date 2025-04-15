@@ -89,7 +89,7 @@
     try {
       const success = await saveSettings();
       if (success) {
-        goto('/project-surveys/' + settingsRecord.project?.projectID);
+        goto('/project-surveys?projectID=' + settingsRecord.project?.projectID);
       }
     } catch (err) {
       if (err instanceof Error) {
