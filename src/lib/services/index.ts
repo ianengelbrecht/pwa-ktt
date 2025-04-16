@@ -1,1 +1,11 @@
 export { userService } from './userService';
+export { teamsService } from './teamsService';
+export { settingsService } from './settingsService';
+export { checklistService } from './checklistService';
+export { speciesService } from './speciesService';
+export { projectsService } from './projectsService';
+export { projectSiteService } from './projectSitesService';
+export { projectSurveyService } from './projectSurveysService';
+export { expectedSpeciesService } from './expectedSpeciesService';
+export { sessionOrTransectService } from './sessionOrTransectService';
+export { observationService } from './observationService';

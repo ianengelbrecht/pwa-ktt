@@ -27,7 +27,7 @@ async function getSettingsWithRelations(
   } as Settings;
 }
 
-export const userService: SettingsService = {
+export const settingsService: SettingsService = {
   get: async (id) => {
     const result = await settings.get(id);
     if (!result) return undefined;

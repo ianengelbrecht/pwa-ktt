@@ -3,6 +3,6 @@ import type { ProjectService } from './types';
 
 const { projects } = db;
 
-export const projectService: ProjectService = {
+export const projectsService: ProjectService = {
   ...projects,
 };
