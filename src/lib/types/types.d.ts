@@ -35,13 +35,6 @@ export interface CoordsRecord extends Record<string, any> {
   accuracy: number;
 }
 
-export interface dbCollection<T> {
-  get: (id: string) => Promise<T | undefined>; // get a record by ID
-  put: (record: T) => Promise<void>; // add or update a record
-  delete: (id: string) => Promise<void>; // delete a record by ID
-  toArray: () => Promise<T[]>; // get all records in the collection
-}
-
 export interface CoordsContainerOptions {
   labelString?: string;
   coordinatesString: string | null;
@@ -53,140 +46,12 @@ export interface CoordsContainerOptions {
 }
 
 // not in db yet, only in settings
-export type UserProfile = {
-  userID: string | null;
-  firstName: string | null;
-  lastName: string | null;
-  userInitials: string | null;
-};
 
-export type Settings = {
-  settingsID: string | null; // unique ID for the settings
-  user: UserProfile | null; // user profile of the logged in user
-  project: Project | null; // project the user is currently working on
-  projectSurvey: ProjectSurvey | null; // survey the user is currently busy with
-  checklist: Checklist | null; // checklist the user is currently working with
-};
-
-export type Checklist = {
-  checklistID: string | null;
-  checklistName: string | null;
-  speciesCount: number;
-  createdBy: string | null; // userID of the creator
-  createdDate: string | null; // date of creation
-  notes: string | null; // notes about the checklist
-};
+// checklist management to come, do we want them and their mappings to be
+// globally available?
 
 // I think having checklists will solve this multiple names problem
 // TODO sort out multiple names in different checklists
-export type Species = {
-  speciesID: string;
-  checklistID: string;
-  commonName1: string;
-  commonName2: string;
-  taxonName1: string;
-  taxonName2: string;
-  priority: boolean;
-  scc: boolean;
-  priorityRank: string;
-  globalStatus: string;
-  regionalStatus: string;
-  notes: string;
-  smallBird: boolean;
-  largeBird: boolean;
-  raptor: boolean;
-  waterbird: boolean;
-};
-
-// Need to think about how best to do this.
-// should species not be single entities, and
-// included in different checklists?
-// Then we can just update individual species.
-// Might be tricky keeping everyone up to date.
-// Another option is to have speciesConcepts,
-// so have a species concept and it's name according to a checklist.
-// But it can get very complicated with changing species concepts.
-// let's experiment and see what works...
-export type ChecklistMapping = {};
-
-// species expected for the project area
-export type ExpectedSpecies = {
-  projectID: string | null;
-  checklistID: string | null;
-  speciesID: string | null;
-  probability: number | null; // SABAP FP value, e.g. 0.5
-};
-
-export type Project = {
-  projectID: string | null;
-  checklistID: string | null; // the checklist used for this project
-  expectedSpeciesProbabilitySource: string | null; // the source of the expected species probability, e.g. SABAP or eBird
-  warningProbabilityThreshold: number | null; // the threshold below which a warning probability is given
-  projectName: string | null;
-  vpCount: number; // number of VPs in the project
-  wtCount: number; // number of WTs in the project
-  dtCount: number; // number of DTs in the project
-  createdBy: string | null; // initials of the creator
-  createdDate: string | null; // date of creation
-};
-
-export type ProjectSite = {
-  projectSiteID: string | null;
-  projectID: string | null;
-  siteCode: string | null;
-  verbatimLocation: string | null; // the location as it was entered by the user
-  siteLocation: CoordinatesString | null; // coordinates of the site
-  thresholdDistance: number | null;
-  sessionOrTransectDuration: number | null; // average time to complete a session or transect at this site
-};
-
-// The survey number / season for this project
-export type ProjectSurvey = {
-  surveyID: string | null;
-  projectID: string | null;
-  surveyName: string | null; // name of the survey (e.g. "Year 2 Season 4")
-  startDate: string | null; // changed from number to string
-  endDate: string | null; // changed from number to string
-  season: string | null; // summer, autumn, etc
-};
-
-// Stints at a VP or transect
-export type SessionOrTransect = {
-  sessionOrTransectID: string;
-  siteID: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-};
-
-export type Observation = {
-  observationID: string | null;
-  projectSurveyID: string | null;
-  projectSite: string | null; // the site name
-  verbatimCoordinates: string | null; // the coordinates as entered by the user
-  decimalLatitude: number | null; // the latitude
-  decimalLongitude: number | null; // the longitude
-  coordinatesAccuracy: number | null; // gps accuracy in meters
-  coordinatesSource: string | null; // the source of the coordinates, e.g. GPS, manual entry
-  date: string | null; // changed from number to string
-  time: string | null; // changed from number to string
-  observerInitials: string | null; // from the user profile
-  species: Species | null;
-  count: number | null;
-  startDistance: number | null;
-  startDirection: string | null;
-  habitats: string[]; // changed from string to string[]
-  notes: string | null;
-  isFlight: boolean;
-  flightNumber: string | null;
-  flightStart: string | null; // changed from number to string
-  flightEnd: string | null; // changed from number to string
-  minHeight: number | null;
-  maxHeight: number | null;
-  averageHeight: number | null;
-  flightMode: string[];
-  flightEndReason: string | null;
-};
 
 export type ObservationSummary = {
   observationID: string | null; // unique ID for the observation

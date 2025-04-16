@@ -68,77 +68,79 @@
 </script>
 
 <form id="observation-form" class="w-full flex flex-col gap-2">
-  <label for="observer" class="">
-    <span>Observer:</span>
-    <input
-      id="observer"
-      type="text"
-      name="observer"
-      class="w-full input-base"
-      bind:value={observationRecord.observerInitials}
-    />
-  </label>
-  <label class="flex flex-col">
-    <span>Site:</span>
-    <select
-      class="w-full input-base"
-      bind:value={observationRecord.projectSite}
-      onchange={handleSiteCodeChange}
-    >
-      {#if projectSites.length === 0}
-        <option value="" disabled>No sites available</option>
-      {/if}
-      <option value="" selected>Select an option</option>
-      {#each projectSites as site}
-        <option value={site.siteCode}>{site.siteCode}</option>
-      {/each}
-    </select>
-  </label>
-  <label class="">
-    Species:
-    <Select
-      loadOptions={filterSpecies}
-      debounceWait={500}
-      itemId="speciesID"
-      label="commonName1"
-      placeholder="Search for species..."
-      --placeholder-color="oklch(70.4% 0.04 256.788)"
-      --background="oklch(44.6% 0.043 257.281)"
-      --list-background="oklch(44.6% 0.043 257.281)"
-      --list-border="4px solid white"
-      --item-hover-bg="oklch(70.4% 0.04 256.788)"
-      --item-hover-color="black"
-      bind:value={observationRecord.species}
-    />
-  </label>
-  <CoordinatesInput
-    labelString="Observation coordinates"
-    coordinatesString={observationRecord.location}
-    {handleSuccessfulCoordinates}
-    {handleMapButtonClick}
-  />
-  <div class="w-full flex gap-2 items-end">
-    <label class="grow flex flex-col">
-      Date:
+  <fieldset id="primary-fields">
+    <label for="observer" class="">
+      <span>Observer:</span>
       <input
-        type="date"
-        name="date"
-        class="input-base"
-        bind:value={observationRecord.date}
+        id="observer"
+        type="text"
+        name="observer"
+        class="w-full input-base"
+        bind:value={observationRecord.observerInitials}
       />
     </label>
-    <label class="grow flex flex-col">
-      Time:
-      <input
-        type="time"
-        name="time"
-        class="input-base"
-        step="1"
-        bind:value={observationRecord.time}
+    <label class="flex flex-col">
+      <span>Site:</span>
+      <select
+        class="w-full input-base"
+        bind:value={observationRecord.projectSite}
+        onchange={handleSiteCodeChange}
+      >
+        {#if projectSites.length === 0}
+          <option value="" disabled>No sites available</option>
+        {/if}
+        <option value="" selected>Select an option</option>
+        {#each projectSites as site}
+          <option value={site.siteCode}>{site.siteCode}</option>
+        {/each}
+      </select>
+    </label>
+    <label class="">
+      Species:
+      <Select
+        loadOptions={filterSpecies}
+        debounceWait={500}
+        itemId="speciesID"
+        label="commonName1"
+        placeholder="Search for species..."
+        --placeholder-color="oklch(70.4% 0.04 256.788)"
+        --background="oklch(44.6% 0.043 257.281)"
+        --list-background="oklch(44.6% 0.043 257.281)"
+        --list-border="4px solid white"
+        --item-hover-bg="oklch(70.4% 0.04 256.788)"
+        --item-hover-color="black"
+        bind:value={observationRecord.species}
       />
     </label>
-  </div>
-  <button class="btn" onclick={handleClickNow}> Now </button>
+    <CoordinatesInput
+      labelString="Observation coordinates"
+      coordinatesString={observationRecord.location}
+      {handleSuccessfulCoordinates}
+      {handleMapButtonClick}
+    />
+    <div class="w-full flex gap-2 items-end">
+      <label class="grow flex flex-col">
+        Date:
+        <input
+          type="date"
+          name="date"
+          class="input-base"
+          bind:value={observationRecord.date}
+        />
+      </label>
+      <label class="grow flex flex-col">
+        Time:
+        <input
+          type="time"
+          name="time"
+          class="input-base"
+          step="1"
+          bind:value={observationRecord.time}
+        />
+      </label>
+    </div>
+    <button class="btn" onclick={handleClickNow}> Now </button>
+  </fieldset>
   <label class="flex flex-col">
     <span>No. individuals:</span>
     <input
@@ -147,7 +149,18 @@
       bind:value={observationRecord.count}
     />
   </label>
-  <label class="flex flex-col">
+  <label
+    class={[
+      'flex flex-col',
+      {
+        'ring ring-amber-300':
+          observationRecord.species &&
+          (observationRecord.species.scc ||
+            observationRecord.species.priority) &&
+          observationRecord.startDistance === null,
+      },
+    ]}
+  >
     <span>Dist. at start (m):</span>
     <input
       type="number"
@@ -156,7 +169,17 @@
       bind:value={observationRecord.startDistance}
     />
   </label>
-  <label class="">
+  <label
+    class={[
+      {
+        'ring ring-amber-300':
+          observationRecord.species &&
+          (observationRecord.species.scc ||
+            observationRecord.species.priority) &&
+          observationRecord.startDirection === null,
+      },
+    ]}
+  >
     Dir. at start:
     <Select
       items={directions}
@@ -169,7 +192,17 @@
       bind:value={observationRecord.startDirection}
     />
   </label>
-  <label class="">
+  <label
+    class={[
+      {
+        'ring ring-amber-300':
+          observationRecord.species &&
+          (observationRecord.species.scc ||
+            observationRecord.species.priority) &&
+          observationRecord.habitats.length == 0,
+      },
+    ]}
+  >
     Habitats utilized
     <Select
       items={habitats}
@@ -194,5 +227,57 @@
       bind:value={observationRecord.notes}
       rows="2"
     ></textarea>
+  </label>
+  <!-- Flight should be two buttons -->
+  <label class="flex flex-col">
+    <span>Flight:</span>
+    <div
+      class={[
+        'flex gap-2',
+        {
+          'ring ring-amber-300':
+            observationRecord.species &&
+            (observationRecord.species.scc ||
+              observationRecord.species.priority) &&
+            observationRecord.isFlight === null,
+        },
+      ]}
+    >
+      <button
+        type="button"
+        class={[
+          'btn',
+          { 'bg-white text-black': observationRecord.isFlight === true },
+        ]}
+        onclick={() => (observationRecord.isFlight = true)}
+      >
+        Yes
+      </button>
+      <button
+        type="button"
+        class={[
+          'btn',
+          { 'bg-white text-black': observationRecord.isFlight === false },
+        ]}
+        onclick={() => (observationRecord.isFlight = false)}
+      >
+        No
+      </button>
+
+      <button
+        type="button"
+        class="btn"
+        onclick={() => (observationRecord.isFlight = true)}
+      >
+        Yes
+      </button>
+      <button
+        type="button"
+        class="btn"
+        onclick={() => (observationRecord.isFlight = false)}
+      >
+        No
+      </button>
+    </div>
   </label>
 </form>

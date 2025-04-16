@@ -15,7 +15,7 @@
   const isNew = observation === null;
   let showMap: boolean = $state(false);
 
-  let { dateNow, timeNow } = dateTimeNow();
+  const { dateNow, timeNow } = dateTimeNow();
 
   let observationRecord: Observation = $state({
     observationID: null, //auto generated on save
@@ -48,6 +48,15 @@
 
   if (observation) {
     observationRecord = observation;
+  } else {
+    // attempting to update the date and time when the tab is in focus
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        let { dateNow, timeNow } = dateTimeNow();
+        observationRecord.date = dateNow;
+        observationRecord.time = timeNow;
+      }
+    });
   }
 
   onMount(() => {
@@ -73,8 +82,13 @@
   const recordValidation = (): boolean => {
     const requiredFields: string[] = [];
 
+    //required fields
     if (!observationRecord.projectSite) {
       requiredFields.push('projectSite');
+    }
+
+    if (!observationRecord.observerInitials) {
+      requiredFields.push('observerInitials');
     }
 
     if (!observationRecord.species) {
@@ -83,6 +97,37 @@
 
     if (!observationRecord.verbatimCoordinates) {
       requiredFields.push('coordinates');
+    }
+
+    if (!observationRecord.date) {
+      requiredFields.push('date');
+    }
+
+    if (!observationRecord.time) {
+      requiredFields.push('time');
+    }
+
+    if (!observationRecord.count) {
+      requiredFields.push('count');
+    }
+
+    // WEF / SCC required fields
+
+    if (
+      (observationRecord.species && observationRecord.species.scc) ||
+      observationRecord.species?.priority
+    ) {
+      if (!observationRecord.startDistance) {
+        requiredFields.push('distance');
+      }
+
+      if (!observationRecord.startDirection) {
+        requiredFields.push('direction');
+      }
+
+      if (!observationRecord.habitats.length) {
+        requiredFields.push('habitats');
+      }
     }
 
     // the complicated stuff about SCC and WEF species here
@@ -108,8 +153,6 @@
     if (isNew) {
       // TODO set fields that need setting
       observationRecord.observationID = makeID();
-      observationRecord.date = '';
-      observationRecord.time = '';
     }
 
     try {
@@ -144,7 +187,7 @@
       observationRecord.startDirection = null;
       observationRecord.habitats = [];
       observationRecord.notes = null;
-      observationRecord.isFlight = false;
+      observationRecord.isFlight = null;
       observationRecord.flightNumber = null;
       observationRecord.flightStart = null;
       observationRecord.flightEnd = null;

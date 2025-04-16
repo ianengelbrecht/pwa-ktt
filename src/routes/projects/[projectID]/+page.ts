@@ -1,13 +1,13 @@
 import type { PageLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import type { Project, Settings, UserProfile } from '$lib/types/types';
+import type { Project, Settings, User } from '$lib/types/types';
 import { projectCollection, settingsCollection } from '$lib/db/dexie';
 
 export const load: PageLoad = async ({ params }) => {
   const projectID = params.projectID || null;
   let project: Project | null = null;
   let settings: Settings | null = null;
-  let userProfile: UserProfile | null = null;
+  let userProfile: User | null = null;
 
   if (!projectID) {
     error(400, {

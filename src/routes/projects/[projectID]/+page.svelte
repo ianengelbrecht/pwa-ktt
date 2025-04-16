@@ -17,6 +17,10 @@
     vpCount: 3,
     wtCount: 3,
     dtCount: 3,
+    checklistID: null,
+    expectedSpeciesProbabilitySource: null,
+    warningProbabilityThreshold: null,
+    availableTo: [],
     createdBy: null,
     createdDate: new Date().toISOString(),
   });
@@ -25,13 +29,21 @@
     projectRecord = project;
   }
 
-  const projectValidations = () => {
+  const projectValidations = (): boolean => {
+    const requiredFields: string[] = [];
     if (!projectRecord.projectName || !projectRecord.projectName.trim()) {
-      alert('Project name is required');
-      return false;
+      requiredFields.push('Project Name');
     }
 
-    return true;
+    if (!projectRecord.checklistID) {
+      requiredFields.push('Checklist');
+    }
+
+    if (requiredFields.length) {
+      alert('The following fields are required: ' + requiredFields.join(', '));
+    }
+
+    return requiredFields.length === 0;
   };
 
   const handleSaveClick = async () => {
@@ -52,6 +64,7 @@
       }
     }
 
+    //add the project sites
     if (isNew) {
       let siteCountProperties: Record<string, keyof Project> = {
         VP: 'vpCount',
@@ -59,7 +72,6 @@
         DT: 'dtCount',
       };
 
-      //add the project sites
       try {
         for (const [siteCodePrefix, siteCountProperty] of Object.entries(
           siteCountProperties,

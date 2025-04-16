@@ -3,7 +3,7 @@
 </script>
 
 <div class="p-4 flex flex-col gap-4">
-  <h2 class="text-xl">{page.status}</h2>
+  <h2 class="text-xl">Error: {page.status}</h2>
   <p>
     {page.error?.message || 'Something went wrong...'}
   </p>

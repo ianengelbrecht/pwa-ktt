@@ -3,12 +3,21 @@
   import { settingsCollection } from '$lib/db/dexie';
 
   console.log('about to get settings');
-  settingsCollection.toArray().then((settings) => {
-    console.log('managed to get the settings');
-    if (!settings || settings.length === 0 || !settings[0].user?.userInitials) {
+  settingsCollection.toArray().then((settingsArray) => {
+    if (!settingsArray.length) {
       goto('/settings');
     } else {
-      goto('/observations/new');
+      const settings = settingsArray[0];
+      if (
+        !settings ||
+        !settings.user?.userInitials ||
+        !settings.project ||
+        !settings.projectSurvey
+      ) {
+        goto('/settings');
+      } else {
+        goto('/observations/new');
+      }
     }
   });
 </script>
