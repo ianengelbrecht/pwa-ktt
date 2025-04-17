@@ -1,60 +1,16 @@
-import type {
-  UserRecord,
-  TeamRecord,
-  SettingsRecord,
-  ChecklistRecord,
-  SpeciesRecord,
-  ExpectedSpeciesRecord,
-  ProjectRecord,
-  ProjectSiteRecord,
-  ProjectSurveyRecord,
-  SessionOrTransectRecord,
-  ObservationRecord,
-} from '../types';
-
-export type User = UserRecord;
-
-export type Team = TeamRecord;
-
-export type Settings = Omit<
-  SettingsRecord,
-  'userID' | 'projectID' | 'projectSurveyID'
-> & {
-  user: User;
-  project: Project | null;
-  projectSurvey: ProjectSurvey | null;
-};
-
-export type Checklist = ChecklistRecord;
-
-export type Species = SpeciesRecord;
-
-//TODO checklistmapping
-
-// TODO figure out what to add here when we use this in the app
-export type ExpectedSpecies = ExpectedSpeciesRecord;
-
-export type Project = ProjectRecord;
-
-export type ProjectSite = Omit<ProjectSiteRecord, 'projectID'> & {
-  project: Project;
-};
-
-export type ProjectSurvey = Omit<ProjectSurveyRecord, 'projectID'> & {
-  project: Project;
-};
-
-export type SessionOrTransect = Omit<SessionOrTransectRecord, 'siteID'> & {
-  site: ProjectSite;
-};
-
-export type Observation = Omit<
-  ObservationRecord,
-  'projectSurveyID' | 'projectSiteID'
-> & {
-  projectSurvey: ProjectSurvey;
-  projectSite: ProjectSite; // the site name
-};
+import {
+  Checklist,
+  ExpectedSpecies,
+  Observation,
+  Project,
+  ProjectSite,
+  ProjectSurvey,
+  SessionOrTransect,
+  Settings,
+  Species,
+  Team,
+  User,
+} from '../../types/types';
 
 // we have the same methods on every service as we do on a db collection
 interface BaseService<T> {

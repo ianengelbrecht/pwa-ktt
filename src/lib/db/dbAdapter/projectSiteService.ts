@@ -1,6 +1,7 @@
 import { db } from '../dbInterface';
 import type { ProjectSiteRecord } from '../types';
-import type { ProjectSite, ProjectSiteService } from './types';
+import type { ProjectSiteService } from './types';
+import type { ProjectSite } from '../../types/types';
 
 const { projectSites } = db;
 

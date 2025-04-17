@@ -1,12 +1,7 @@
 import { db } from '../dbInterface';
 import type { SettingsRecord } from '../types';
-import type {
-  User,
-  Project,
-  ProjectSurvey,
-  Settings,
-  SettingsService,
-} from './types';
+import type { SettingsService } from './types';
+import type { Settings } from '../../types/types';
 
 const { settings, users, projects, projectSurveys } = db;
 

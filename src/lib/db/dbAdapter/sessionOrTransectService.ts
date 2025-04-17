@@ -1,6 +1,7 @@
 import { db } from '../dbInterface';
 import type { SessionOrTransectRecord } from '../types';
-import type { SessionOrTransect, SessionOrTransectService } from './types';
+import type { SessionOrTransectService } from './types';
+import type { SessionOrTransect } from '../../types/types';
 
 const { sessionsOrTransects, projects } = db;
 

@@ -10,4 +10,6 @@ We have the following:
 - /dbAdapter - maps between application and database objects
 - index.ts - pulls everything out of the adapter again and makes it available to the rest of the app via `import * from './lib/db'
 
+Note that the db service interfaces are defined in the types.d.ts file, and can be extended there to include additional database methods if they're needed.
+
 Ideally we want dependency injection at some point so this might all be rearranged.

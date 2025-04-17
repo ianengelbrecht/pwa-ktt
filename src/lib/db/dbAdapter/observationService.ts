@@ -4,12 +4,14 @@ import type {
   ProjectSiteRecord,
   ProjectSurveyRecord,
 } from '../types';
+
+import type { ObservationService } from './types.d';
+
 import type {
   Observation,
-  ObservationService,
   ProjectSurvey,
   ProjectSite,
-} from './types';
+} from '../../types/types';
 
 const { observations, projectSurveys, projectSites, projects } = db;
 

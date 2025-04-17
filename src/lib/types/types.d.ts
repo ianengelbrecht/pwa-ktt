@@ -1,4 +1,62 @@
-import { convert } from 'geo-coordinates-parser';
+import type {
+  UserRecord,
+  TeamRecord,
+  SettingsRecord,
+  ChecklistRecord,
+  SpeciesRecord,
+  ExpectedSpeciesRecord,
+  ProjectRecord,
+  ProjectSiteRecord,
+  ProjectSurveyRecord,
+  SessionOrTransectRecord,
+  ObservationRecord,
+} from '../db/types';
+
+export type User = UserRecord;
+
+export type Team = TeamRecord;
+
+export type Settings = Omit<
+  SettingsRecord,
+  'userID' | 'projectID' | 'projectSurveyID'
+> & {
+  user: User;
+  project: Project | null;
+  projectSurvey: ProjectSurvey | null;
+};
+
+export type Checklist = ChecklistRecord;
+
+export type Species = SpeciesRecord;
+
+//TODO checklistmapping
+
+// TODO figure out what to add here when we use this in the app
+export type ExpectedSpecies = ExpectedSpeciesRecord;
+
+export type Project = ProjectRecord;
+
+export type ProjectSite = Omit<ProjectSiteRecord, 'projectID'> & {
+  project: Project;
+};
+
+export type ProjectSurvey = Omit<ProjectSurveyRecord, 'projectID'> & {
+  project: Project;
+};
+
+export type SessionOrTransect = Omit<SessionOrTransectRecord, 'siteID'> & {
+  site: ProjectSite;
+};
+
+export type Observation = Omit<
+  ObservationRecord,
+  'projectSurveyID' | 'projectSiteID'
+> & {
+  projectSurvey: ProjectSurvey;
+  projectSite: ProjectSite; // the site name
+};
+
+/// NOTE THESE ARE THE OLD TYPES, THEY WILL NEED TO BE MOVED TO THE RELEVANT PLACES AS WE GO
 
 export type schemaField = {
   displayName: string; // the name of the field in the schema
