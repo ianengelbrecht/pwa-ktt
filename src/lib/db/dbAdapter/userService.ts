@@ -1,4 +1,4 @@
-import { db } from '../db/db';
+import { db } from '../dbInterface';
 import type { UserService } from './types';
 
 const { users } = db;

@@ -1,4 +1,4 @@
-import { db } from '../db/db';
+import { db } from '../dbInterface';
 import type { SpeciesService } from './types';
 
 const { species } = db;

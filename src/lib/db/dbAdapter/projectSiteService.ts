@@ -1,5 +1,5 @@
-import { db } from '../db/db';
-import type { ProjectSiteRecord } from '../db/types';
+import { db } from '../dbInterface';
+import type { ProjectSiteRecord } from '../types';
 import type { ProjectSite, ProjectSiteService } from './types';
 
 const { projectSites } = db;

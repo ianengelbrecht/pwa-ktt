@@ -1,5 +1,5 @@
-import { db } from '../db/db';
-import type { SessionOrTransectRecord } from '../db/types';
+import { db } from '../dbInterface';
+import type { SessionOrTransectRecord } from '../types';
 import type { SessionOrTransect, SessionOrTransectService } from './types';
 
 const { sessionsOrTransects, projects } = db;

@@ -10,7 +10,7 @@ import type {
   ProjectSurveyRecord,
   SessionOrTransectRecord,
   ObservationRecord,
-} from '../db/types';
+} from '../types';
 
 export type User = UserRecord;
 

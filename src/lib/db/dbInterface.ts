@@ -30,46 +30,11 @@ function makeCollection<T extends Record<string, any>>(
       const localFilter: Record<string, any> = {};
       for (const key of queryKeys) {
         if (indexes.includes(key)) {
-          function makeCollection<T extends Record<string, any>>(
-            table: Table<T>,
-          ): Collection<T> {
-            return {
-              get: (id: string) => table.get(id),
-              all: () => table.toArray(),
-              find: async (query: Partial<T>) => {
-                const indexes = table.schema.indexes.map((index) => index.name);
-                const queryKeys = Object.keys(query);
-                const dbQuery: Record<string, any> = {};
-                const localFilter: Record<string, any> = {};
-                for (const key of queryKeys) {
-                  if (indexes.includes(key)) {
-                    dbQuery[key] = query[key];
-                  } else {
-                    localFilter[key] = query[key];
-                  }
-                }
-
-                const dbResults = await table.where(dbQuery).toArray();
-                const filteredResults = dbResults.filter((record) => {
-                  return Object.entries(localFilter).every(([key, value]) => {
-                    return record[key] === value;
-                  });
-                });
-
-                return filteredResults;
-              },
-              put: async (record: T) => {
-                table.put(record);
-                return record;
-              },
-              delete: (id: string) => table.delete(id),
-            };
-          }
+          dbQuery[key] = query[key];
         } else {
           localFilter[key] = query[key];
         }
       }
-
       const dbResults = await table.where(dbQuery).toArray();
       const filteredResults = dbResults.filter((record) => {
         return Object.entries(localFilter).every(([key, value]) => {

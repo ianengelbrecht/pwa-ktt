@@ -1,5 +1,5 @@
-import { db } from '../db/db';
-import type { SettingsRecord } from '../db/types';
+import { db } from '../dbInterface';
+import type { SettingsRecord } from '../types';
 import type {
   User,
   Project,

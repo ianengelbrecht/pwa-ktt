@@ -1,8 +1,8 @@
-import { db } from '../db/db';
+import { db } from '../dbInterface';
 import type { TeamService } from './types';
 
 const { teams } = db;
 
-export const teamsService: TeamService = {
+export const teamService: TeamService = {
   ...teams,
 };

@@ -1,9 +1,9 @@
-import { db } from '../db/db';
+import { db } from '../dbInterface';
 import type {
   ObservationRecord,
   ProjectSiteRecord,
   ProjectSurveyRecord,
-} from '../db/types';
+} from '../types';
 import type {
   Observation,
   ObservationService,

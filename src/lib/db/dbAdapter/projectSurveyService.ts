@@ -1,5 +1,5 @@
-import { db } from '../db/db';
-import type { ProjectSurveyRecord } from '../db/types';
+import { db } from '../dbInterface';
+import type { ProjectSurveyRecord } from '../types';
 import type { ProjectSurvey, ProjectSurveyService } from './types';
 
 const { projectSurveys } = db;
